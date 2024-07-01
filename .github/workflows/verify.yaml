@@ -1,0 +1,64 @@
+name: verify
+on:
+  pull_request:
+
+env:
+  JDK_VERSION: 21
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build and Run Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    env:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Set up JDK ${{ env.JDK_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt'
+          java-version: '${{ env.JDK_VERSION }}'
+          cache: 'gradle'
+      - name: Build and Run Tests
+        run: ./gradlew test
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+  detekt:
+    name: Detekt
+    runs-on: ubuntu-latest
+    permissions:
+      # required for all workflows
+      security-events: write
+      checks: write
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+    env:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Set up JDK ${{ env.JDK_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt'
+          java-version: '${{ env.JDK_VERSION }}'
+          cache: 'gradle'
+      - name: Run Detekt
+        run: ./gradlew detekt
+      - name: Publish Detekt Report
+        uses: jwgmeligmeyling/checkstyle-github-action@master
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          path: 'build/reports/detekt/merge.xml'

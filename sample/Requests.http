@@ -1,0 +1,22 @@
+### GET list of all posts
+GET http://localhost:8080/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJteWFwcCIsInNjb3BlIjoiUkVBRF9QT1NUUyBQVUJMSVNIX1BPU1RTIn0.PlyisraSSOl-utpqpZamwgyOdfIR1inNlpMM9GE9IBc
+
+###
+
+### Delete post
+DELETE http://localhost:8080/posts/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJteWFwcCIsInNjb3BlIjoiUkVBRF9QT1NUUyBQVUJMSVNIX1BPU1RTIn0.PlyisraSSOl-utpqpZamwgyOdfIR1inNlpMM9GE9IBc
+
+###
+
+### Delete post
+DELETE http://localhost:8080/posts/1
+
+###
+
+### GET list of all posts
+GET http://localhost:8080/async
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJteWFwcCIsInNjb3BlIjoiUkVBRF9QT1NUUyBQVUJMSVNIX1BPU1RTIn0.PlyisraSSOl-utpqpZamwgyOdfIR1inNlpMM9GE9IBc
+
+###
