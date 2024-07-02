@@ -384,7 +384,47 @@ Kotlet provides an interceptor functionality that allows you to intercept reques
 interceptors to add custom logic before or after handling a request, such as logging, authentication, or error handling.
 
 To create an interceptor, implement the `kotlet.http.Interceptor` interface and override one of the following methods:
-`beforeCall`, `aroundCall` or `afterCall`. Then add the interceptor to the routing using the `use` method.
+`beforeCall`, `aroundCall` or `afterCall`. Then add the interceptor to the routing using the `use` or `install` method.
+
+#### Types of interceptors
+
+There are two types of interceptors: global and route-specific. The difference between them is that global interceptors
+are applied to all routes, while route-specific interceptors are applied only to specific route handlers.
+
+To add a global interceptor, use the `install` method:
+```kotlin
+Kotlet.routing {
+    install(MyInterceptor()) // this is a global interceptor
+  
+    get("/hello", ::hello) // MyInterceptor will be applied to this route
+}
+```
+
+To add a route-specific interceptor, use the `use` method
+```kotlin
+Kotlet.routing {
+    use(MyInterceptor1()) {
+        get("/hello", ::hello) // MyInterceptor will be applied to this route
+        use(MyInterceptor2()) {
+            get("/world", ::world) // MyInterceptor1 and MyInterceptor2 will be applied to this route
+        }
+    }
+}
+```
+
+or `withInterceptor` method from the route settings block
+```kotlin
+Kotlet.routing {
+    get("/hello", ::hello) { // MyInterceptor will be applied to this route
+        withInterceptor(MyInterceptor())
+    }
+}
+```
+
+Notice: Global interceptors have a peculiarity: if we have defined only one route `/test` with the `GET` method, then the global
+the interceptor will be applied to any http method and /test route path, i.e. `GET`, `POST`, `PUT`, etc. 
+But route-specific interceptors will be applied only to `GET` /test requests.
+
 
 #### Interceptor methods:
 
