@@ -151,7 +151,7 @@ Or to pom.xml if you use Maven:
 Define the Kotlet routing in your application, and you're ready to go!
 
 ```kotlin
-Kotlet.routing {
+val routing = Kotlet.routing {
     get("/hello") { call ->
         call.responseText("Hello, World!")
     }
@@ -228,11 +228,13 @@ patch("/document") { call ->
 implementation("com.ecwid:kotlet-jwt:1.0.0")
 ```
 
+> [!IMPORTANT]
+> For using this extension you must add to your
+> dependencies [com.auth0:java-jwt](https://mvnrepository.com/artifact/com.auth0/java-jwt) library.
+
 You can use the `installJWTAuthentication` method to add JWT authentication to your routes. The method takes a
 `com.auth0.jwt.interfaces.JWTVerifier` object as a parameter, which contains the logic for constructing and validating
 JWT tokens.
-For using this extension you must add to your dependencies [
-`com.auth0:java-jwt`](https://mvnrepository.com/artifact/com.auth0/java-jwt) library.
 
 ```kotlin
 val jwtVerifier = JWT.require(Algorithm.HMAC256("secret"))
@@ -252,7 +254,8 @@ Kotlet.routing {
 }
 ```
 
-Additionally, you can build your own identity object by providing a `identityBuilder: IdentityBuilder<*>` function.
+> [!TIP]
+> Additionally, you can build your own identity object by providing a `identityBuilder: IdentityBuilder<*>` function.
 
 ```kotlin
 val jwtVerifier = JWT.require(Algorithm.HMAC256("secret"))
@@ -291,11 +294,13 @@ Kotlet.routing {
 implementation("com.ecwid:kotlet-metrics:1.0.0")
 ```
 
+> [!IMPORTANT]
+> For using prometheus metrics you must add to your dependencies
+> [io.prometheus:prometheus-metrics-core](https://mvnrepository.com/artifact/io.prometheus/prometheus-metrics-core)
+> library.
+
 You can use the `installPrometheus` method to add metrics to your routes. The method takes a `PrometheusRegistry` object
 as a parameter.
-Additionally, you must add to your dependencies  [
-`io.prometheus:prometheus-metrics-core`](https://mvnrepository.com/artifact/io.prometheus/prometheus-metrics-core)
-library.
 
 ```kotlin
 Kotlet.routing {
@@ -306,13 +311,12 @@ Kotlet.routing {
 }
 ```
 
-Available metrics:
+##### Available metrics:
 
 | Metric Name                             | Description                                            |
 |-----------------------------------------|--------------------------------------------------------|
 | `kotlet_http_requests_total`            | Total number of HTTP requests.                         |
 | `kotlet_http_requests_duration_seconds` | Duration of HTTP requests in seconds with percentiles. |
-
 
 ##### Custom metrics
 
@@ -352,7 +356,9 @@ Kotlet.routing {
 ```
 
 After that the extension will automatically create spans for each request and send them to the library.
-Notice: you must configure OpenTelemetry before using this extension.
+
+> [!IMPORTANT]  
+> You must configure OpenTelemetry before using this extension.
 
 #### Type-Safe request objects
 
@@ -392,15 +398,17 @@ There are two types of interceptors: global and route-specific. The difference b
 are applied to all routes, while route-specific interceptors are applied only to specific route handlers.
 
 To add a global interceptor, use the `install` method:
+
 ```kotlin
 Kotlet.routing {
     install(MyInterceptor()) // this is a global interceptor
-  
+
     get("/hello", ::hello) // MyInterceptor will be applied to this route
 }
 ```
 
 To add a route-specific interceptor, use the `use` method
+
 ```kotlin
 Kotlet.routing {
     use(MyInterceptor1()) {
@@ -413,6 +421,7 @@ Kotlet.routing {
 ```
 
 or `withInterceptor` method from the route settings block
+
 ```kotlin
 Kotlet.routing {
     get("/hello", ::hello) { // MyInterceptor will be applied to this route
@@ -421,10 +430,10 @@ Kotlet.routing {
 }
 ```
 
-Notice: Global interceptors have a peculiarity: if we have defined only one route `/test` with the `GET` method, then the global
-the interceptor will be applied to any http method and /test route path, i.e. `GET`, `POST`, `PUT`, etc. 
-But route-specific interceptors will be applied only to `GET` /test requests.
-
+> [!NOTE]
+> Global interceptors have a peculiarity: if we have defined only one route `/test` with the `GET` method, then the
+> global interceptors will be applied to any http method i.e. `GET`, `POST`, `PUT`, etc. but only for `/test` route.
+> Route-specific interceptors will be applied only to `GET` `/test` requests.
 
 #### Interceptor methods:
 
