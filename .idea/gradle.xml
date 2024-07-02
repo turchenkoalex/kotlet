@@ -10,7 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/benchmarks" />
-            <option value="$PROJECT_DIR$/http" />
+            <option value="$PROJECT_DIR$/http-core" />
             <option value="$PROJECT_DIR$/http-cors" />
             <option value="$PROJECT_DIR$/http-json" />
             <option value="$PROJECT_DIR$/http-jwt" />

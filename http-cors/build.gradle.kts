@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":http"))
+    implementation(project(":http-core"))
     compileOnly(libs.jakarta.api)
 
     testImplementation(kotlin("test"))

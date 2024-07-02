@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     // Kotlet
-    implementation(project(":http"))
+    implementation(project(":http-core"))
     implementation(project(":http-typesafe"))
 
     // CORS

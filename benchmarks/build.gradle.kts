@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    jmh(project(":http"))
+    jmh(project(":http-core"))
     jmh(libs.jakarta.api)
     jmh(libs.mockk)
 }

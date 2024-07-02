@@ -133,7 +133,7 @@ Add the following dependency to your build.gradle.kts file:
 
 ```kotlin
 dependencies {
-    implementation("com.ecwid:kotlet-http:1.0.0")
+    implementation("com.ecwid:kotlet-core:1.0.0")
 }
 ```
 
@@ -143,7 +143,7 @@ Or to pom.xml if you use Maven:
 
 <dependency>
     <groupId>com.ecwid</groupId>
-    <artifactId>kotlet-http</artifactId>
+    <artifactId>kotlet-core</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```

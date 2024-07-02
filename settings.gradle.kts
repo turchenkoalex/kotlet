@@ -4,7 +4,7 @@ plugins {
 
 rootProject.name = "kotlet"
 
-include("http")
+include("http-core")
 include("http-json")
 include("http-typesafe")
 include("http-cors")
