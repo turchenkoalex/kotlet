@@ -33,14 +33,14 @@ internal data class Route(
     /**
      * Handle the HTTP call.
      * Find the handler for the HTTP method and call it.
-     * If the handler is not found, throw a [MethodNotAllowedException].
+     * If the handler is not found, throw a [MethodNotFoundException].
      *
      * @param httpCall HTTP call to handle.
-     * @throws MethodNotAllowedException if the handler is not found.
+     * @throws MethodNotFoundException if the handler is not found.
      */
     private fun handleCall(httpCall: HttpCall) {
         val routeHandler = handlers[httpCall.httpMethod]
-            ?: throw MethodNotAllowedException()
+            ?: throw MethodNotFoundException()
 
         routeHandler(httpCall)
     }

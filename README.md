@@ -540,7 +540,7 @@ sequenceDiagram
 Kotlet support error handling by providing a way to define error handlers for few types of errors:
 
 * `routeNotFound`: Invoked when no route matches the request path.
-* `methodNotAllowed`: Invoked when the route matches the request path but does not support the request method.
+* `methodNotFound`: Invoked when the route matches the request path but does not support the request method.
 * `internalServerError`: Invoked when an exception occurs during request processing.
 
 For overriding default error handling you can implement `kotlet.ErrorsHandler` interface and provide it to

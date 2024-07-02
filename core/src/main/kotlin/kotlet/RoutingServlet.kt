@@ -20,7 +20,7 @@ internal class RoutingServlet(
                 ?: return errorsHandler.routeNotFound(request, response)
 
             val httpMethod = HttpMethod.parse(request.method)
-                ?: return errorsHandler.methodNotAllowed(request, response)
+                ?: return errorsHandler.methodNotFound(request, response)
 
             val httpCall = HttpCallImpl(
                 httpMethod = httpMethod,
@@ -31,8 +31,8 @@ internal class RoutingServlet(
             )
 
             route.handler(httpCall)
-        } catch (_: MethodNotAllowedException) {
-            errorsHandler.methodNotAllowed(request, response)
+        } catch (_: MethodNotFoundException) {
+            errorsHandler.methodNotFound(request, response)
         } catch (e: Throwable) {
             errorsHandler.internalServerError(request, response, e)
         }

@@ -20,10 +20,10 @@ interface ErrorsHandler {
     /**
      * Handling method not allowed.
      *
-     * If a method is not allowed, the [RoutingServlet] will call the [methodNotAllowed] method.
+     * If a method is not found, the [RoutingServlet] will call the [methodNotFound] method.
      * By default, it will send a 405 error with the message "Method not allowed".
      */
-    fun methodNotAllowed(request: HttpServletRequest, response: HttpServletResponse) {
+    fun methodNotFound(request: HttpServletRequest, response: HttpServletResponse) {
         response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Method not allowed")
     }
 
