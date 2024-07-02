@@ -48,7 +48,16 @@ interface Interceptor {
             return interceptors.foldRight(handler) { interceptor: Interceptor, next: Handler ->
                 { call ->
                     val interceptedCall = interceptor.beforeCall(call)
-                    interceptor.aroundCall(interceptedCall, next)
+                    try {
+                        interceptor.aroundCall(interceptedCall, next)
+                    } catch (e: Exception) {
+                        // Always call afterCall even if an exception is thrown
+                        // This is to ensure that resources are cleaned up
+                        interceptor.afterCall(interceptedCall)
+
+                        // Re-throw the exception
+                        throw e
+                    }
                     interceptor.afterCall(interceptedCall)
                 }
             }

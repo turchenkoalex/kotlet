@@ -465,15 +465,17 @@ sequenceDiagram
     participant Interceptor1
     participant Interceptor2
     participant Handler as Business Handler
-    Kotlet ->> Interceptor1: handleCall(call)
+    Kotlet ->> Interceptor1: handle(call)
     activate Interceptor1
     Interceptor1 ->> Interceptor1: beforeCall
-    Interceptor1 ->> Interceptor2: aroundCall
+    Interceptor1 ->> Interceptor1: aroundCall
+    Interceptor1 ->> Interceptor2: next(call)
     activate Interceptor2
     Interceptor2 ->> Interceptor2: beforeCall
-    Interceptor2 ->> Handler: aroundCall
+    Interceptor2 ->> Interceptor2: aroundCall
+    Interceptor2 ->> Handler: next(call)
     activate Handler
-    Handler ->> Handler: handleCall
+    Handler ->> Handler: handle(call)
     deactivate Handler
     Handler ->> Interceptor2: return
     Interceptor2 ->> Interceptor2: afterCall
