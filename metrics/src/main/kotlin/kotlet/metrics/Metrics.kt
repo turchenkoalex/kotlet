@@ -1,7 +1,7 @@
 package kotlet.metrics
 
-import kotlet.http.Interceptor
-import kotlet.http.Routing
+import kotlet.Interceptor
+import kotlet.Routing
 
 object Metrics {
     fun interceptor(collector: MetricsCollector): Interceptor {

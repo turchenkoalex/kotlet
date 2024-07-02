@@ -8,7 +8,7 @@ import io.opentelemetry.instrumentation.api.semconv.http.HttpServerAttributesGet
 import io.opentelemetry.instrumentation.api.semconv.http.HttpSpanNameExtractor
 import io.opentelemetry.semconv.NetworkAttributes
 import jakarta.servlet.http.HttpServletResponse
-import kotlet.http.HttpCall
+import kotlet.HttpCall
 
 internal fun buildServerInstrumenter(
     openTelemetry: OpenTelemetry,

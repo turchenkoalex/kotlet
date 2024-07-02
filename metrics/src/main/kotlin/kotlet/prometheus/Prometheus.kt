@@ -1,7 +1,7 @@
 package kotlet.prometheus
 
 import io.prometheus.metrics.model.registry.PrometheusRegistry
-import kotlet.http.Routing
+import kotlet.Routing
 import kotlet.metrics.installMetrics
 
 /**

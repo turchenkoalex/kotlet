@@ -5,7 +5,7 @@ import io.prometheus.metrics.core.metrics.Summary
 import io.prometheus.metrics.model.registry.PrometheusRegistry
 import jakarta.servlet.AsyncEvent
 import jakarta.servlet.AsyncListener
-import kotlet.http.HttpCall
+import kotlet.HttpCall
 import kotlet.metrics.MetricsCollector
 
 private const val START_TIME_ATTRIBUTE = "kotlet.prometheus.started_at"

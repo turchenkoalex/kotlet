@@ -8,11 +8,11 @@ import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jetty.JettyServer
-import kotlet.http.ErrorsHandler
-import kotlet.http.HttpCall
-import kotlet.http.Kotlet
-import kotlet.http.cors.CORS
-import kotlet.http.cors.installCORS
+import kotlet.ErrorsHandler
+import kotlet.HttpCall
+import kotlet.Kotlet
+import kotlet.cors.CORS
+import kotlet.cors.installCORS
 import kotlet.jwt.installJWTAuthentication
 import kotlet.prometheus.installPrometheus
 import kotlet.tracing.installTracing

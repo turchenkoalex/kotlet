@@ -1,7 +1,7 @@
 package kotlet.metrics
 
-import kotlet.http.HttpCall
-import kotlet.http.Interceptor
+import kotlet.HttpCall
+import kotlet.Interceptor
 
 internal class MetricsInterceptor(
     private val metricsCollector: MetricsCollector

@@ -1,6 +1,6 @@
-import kotlet.http.Handler
-import kotlet.http.HttpCall
-import kotlet.http.Interceptor
+import kotlet.Handler
+import kotlet.HttpCall
+import kotlet.Interceptor
 
 /**
  * Example of simple interceptor

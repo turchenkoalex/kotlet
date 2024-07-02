@@ -5,9 +5,9 @@ import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter
 import jakarta.servlet.AsyncEvent
 import jakarta.servlet.AsyncListener
 import jakarta.servlet.http.HttpServletResponse
-import kotlet.http.Handler
-import kotlet.http.HttpCall
-import kotlet.http.Interceptor
+import kotlet.Handler
+import kotlet.HttpCall
+import kotlet.Interceptor
 
 /**
  * An interceptor that traces HTTP calls using the provided opentelemetry [instrumenter].

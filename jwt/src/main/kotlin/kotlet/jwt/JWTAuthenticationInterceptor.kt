@@ -3,8 +3,8 @@ package kotlet.jwt
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.JWTVerifier
 import jakarta.servlet.AsyncListener
-import kotlet.http.HttpCall
-import kotlet.http.Interceptor
+import kotlet.HttpCall
+import kotlet.Interceptor
 
 private const val AUTHORIZATION_HEADER = "Authorization"
 private const val BEARER_PREFIX = "Bearer "

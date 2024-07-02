@@ -4,9 +4,9 @@ import io.opentelemetry.api.OpenTelemetry
 import io.opentelemetry.context.propagation.TextMapGetter
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter
 import jakarta.servlet.http.HttpServletResponse
-import kotlet.http.HttpCall
-import kotlet.http.Interceptor
-import kotlet.http.Routing
+import kotlet.HttpCall
+import kotlet.Interceptor
+import kotlet.Routing
 
 
 object Tracing {

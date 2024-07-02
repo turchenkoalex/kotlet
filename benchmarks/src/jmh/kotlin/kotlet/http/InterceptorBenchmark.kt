@@ -3,6 +3,10 @@ package kotlet.http
 import io.mockk.mockk
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import kotlet.Handler
+import kotlet.HttpCall
+import kotlet.HttpMethod
+import kotlet.Interceptor
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.State

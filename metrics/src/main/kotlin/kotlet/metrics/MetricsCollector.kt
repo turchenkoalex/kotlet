@@ -1,6 +1,6 @@
 package kotlet.metrics
 
-import kotlet.http.HttpCall
+import kotlet.HttpCall
 
 interface MetricsCollector {
     fun startRequest(call: HttpCall)

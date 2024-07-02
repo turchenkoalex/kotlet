@@ -1,7 +1,7 @@
 package kotlet.tracing
 
 import io.opentelemetry.context.propagation.TextMapGetter
-import kotlet.http.HttpCall
+import kotlet.HttpCall
 
 /**
  * A default [TextMapGetter] for extracting context from HTTP calls.

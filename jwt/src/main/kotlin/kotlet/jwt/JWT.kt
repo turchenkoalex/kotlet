@@ -2,8 +2,8 @@ package kotlet.jwt
 
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.auth0.jwt.interfaces.JWTVerifier
-import kotlet.http.Interceptor
-import kotlet.http.Routing
+import kotlet.Interceptor
+import kotlet.Routing
 
 object JWT {
     /**
@@ -11,7 +11,10 @@ object JWT {
      * @param verifier JWT verifier
      * @param identityBuilder Identity builder
      */
-    fun interceptor(verifier: JWTVerifier, identityBuilder: IdentityBuilder<*> = ::decodedJWTIdentityBuilder): Interceptor {
+    fun interceptor(
+        verifier: JWTVerifier,
+        identityBuilder: IdentityBuilder<*> = ::decodedJWTIdentityBuilder
+    ): Interceptor {
         return JWTAuthenticationInterceptor(verifier, identityBuilder)
     }
 }

@@ -1,10 +1,10 @@
 package auth
 
 import jakarta.servlet.http.HttpServletResponse
-import kotlet.http.Handler
-import kotlet.http.HttpCall
-import kotlet.http.Interceptor
-import kotlet.http.Routing
+import kotlet.Handler
+import kotlet.HttpCall
+import kotlet.Interceptor
+import kotlet.Routing
 import kotlet.jwt.identity
 
 /**

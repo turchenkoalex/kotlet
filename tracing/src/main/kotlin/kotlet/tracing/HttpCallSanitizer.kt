@@ -1,6 +1,6 @@
 package kotlet.tracing
 
-import kotlet.http.HttpCall
+import kotlet.HttpCall
 
 /**
  * An interface to sanitize the HTTP call for tracing.

@@ -1,8 +1,8 @@
 import jakarta.servlet.http.HttpServletResponse
-import kotlet.http.HttpCall
-import kotlet.http.receiveBody
-import kotlet.http.receivePath
-import kotlet.http.respondJson
+import kotlet.HttpCall
+import kotlet.receiveBody
+import kotlet.receivePath
+import kotlet.respondJson
 import kotlinx.serialization.Serializable
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
