@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":http-core"))
+    implementation(project(":core"))
     compileOnly(libs.jakarta.api)
     implementation(libs.opentelemetry.api)
     implementation(libs.opentelemetry.instrumentation.api)

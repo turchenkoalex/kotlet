@@ -5,14 +5,14 @@ plugins {
 
 dependencies {
     // Kotlet
-    implementation(project(":http-core"))
-    implementation(project(":http-typesafe"))
+    implementation(project(":core"))
+    implementation(project(":typesafe"))
 
     // CORS
-    implementation(project(":http-cors"))
+    implementation(project(":cors"))
 
     // Json
-    implementation(project(":http-json"))
+    implementation(project(":json"))
     implementation(libs.kotlinx.serialization.json)
 
     // Jetty
@@ -20,16 +20,16 @@ dependencies {
     implementation(libs.jetty.ee10.servlet)
 
     // JWT
-    implementation(project(":http-jwt"))
+    implementation(project(":jwt"))
     implementation(libs.auth0.jwt)
 
     // Prometheus metrics
-    implementation(project(":http-metrics"))
+    implementation(project(":metrics"))
     implementation(libs.prometheus.metrics.core)
     implementation(libs.prometheus.metrics.exporter.servlet.jakarta)
 
     // Tracing
-    implementation(project(":http-tracing"))
+    implementation(project(":tracing"))
     implementation(libs.opentelemetry.sdk)
     implementation(libs.opentelemetry.exporter.otlp)
     implementation(libs.opentelemetry.semconv)

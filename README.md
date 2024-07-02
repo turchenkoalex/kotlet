@@ -383,7 +383,7 @@ post("/user/{name?}") { call ->
 Kotlet provides an interceptor functionality that allows you to intercept requests and responses. You can use
 interceptors to add custom logic before or after handling a request, such as logging, authentication, or error handling.
 
-To create an interceptor, implement the `kotlet.http.Interceptor` interface and override one of the following methods:
+To create an interceptor, implement the `kotlet.Interceptor` interface and override one of the following methods:
 `beforeCall`, `aroundCall` or `afterCall`. Then add the interceptor to the routing using the `use` or `install` method.
 
 #### Types of interceptors
@@ -532,7 +532,7 @@ Kotlet support error handling by providing a way to define error handlers for fe
 * `methodNotAllowed`: Invoked when the route matches the request path but does not support the request method.
 * `internalServerError`: Invoked when an exception occurs during request processing.
 
-For overriding default error handling you can implement `kotlet.http.ErrorsHandler` interface and provide it to
+For overriding default error handling you can implement `kotlet.ErrorsHandler` interface and provide it to
 `Kotlet.servlet` method.
 
 ## Contributing

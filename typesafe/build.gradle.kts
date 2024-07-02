@@ -3,17 +3,18 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":http-core"))
+    implementation(kotlin("reflect"))
+    implementation(project(":core"))
     compileOnly(libs.jakarta.api)
 
     testImplementation(kotlin("test"))
     testImplementation(libs.mockk)
-    testImplementation(libs.jakarta.api)
 }
 
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(21)
 }

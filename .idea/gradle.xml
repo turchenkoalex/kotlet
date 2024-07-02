@@ -10,14 +10,14 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/benchmarks" />
-            <option value="$PROJECT_DIR$/http-core" />
-            <option value="$PROJECT_DIR$/http-cors" />
-            <option value="$PROJECT_DIR$/http-json" />
-            <option value="$PROJECT_DIR$/http-jwt" />
-            <option value="$PROJECT_DIR$/http-metrics" />
-            <option value="$PROJECT_DIR$/http-tracing" />
-            <option value="$PROJECT_DIR$/http-typesafe" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/cors" />
+            <option value="$PROJECT_DIR$/json" />
+            <option value="$PROJECT_DIR$/jwt" />
+            <option value="$PROJECT_DIR$/metrics" />
             <option value="$PROJECT_DIR$/sample" />
+            <option value="$PROJECT_DIR$/tracing" />
+            <option value="$PROJECT_DIR$/typesafe" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -4,13 +4,13 @@ plugins {
 
 rootProject.name = "kotlet"
 
-include("http-core")
-include("http-json")
-include("http-typesafe")
-include("http-cors")
-include("http-jwt")
-include("http-metrics")
-include("http-tracing")
+include("core")
+include("json")
+include("typesafe")
+include("cors")
+include("jwt")
+include("metrics")
+include("tracing")
 include("sample")
 include("benchmarks")
 

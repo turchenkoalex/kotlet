@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":http-core"))
+    implementation(project(":core"))
     compileOnly(libs.jakarta.api)
     implementation(libs.auth0.jwt)
 }

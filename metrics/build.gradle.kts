@@ -3,14 +3,15 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":http-core"))
+    implementation(project(":core"))
     compileOnly(libs.jakarta.api)
-    implementation(libs.kotlinx.serialization.json)
+    compileOnly(libs.prometheus.metrics.core)
 }
 
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(21)
 }
