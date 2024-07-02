@@ -17,7 +17,7 @@ intuitive and powerful API that makes the process of creating routes easy and fa
 # Example Usage
 
 ```kotlin
-val Kotlet.routing = {
+val routing = Kotlet.routing {
     get("/hello") { call ->
         call.responseText("Hello, World!")
     }
