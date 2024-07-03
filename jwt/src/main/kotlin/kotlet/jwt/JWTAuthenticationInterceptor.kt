@@ -8,12 +8,7 @@ import kotlet.Interceptor
 
 private const val AUTHORIZATION_HEADER = "Authorization"
 private const val BEARER_PREFIX = "Bearer "
-private const val IDENTITY_PARAMETER_NAME = "kotlet.jwt.identity"
-
-fun <T> HttpCall.identity(): T? {
-    @Suppress("UNCHECKED_CAST")
-    return this.rawRequest.getAttribute(IDENTITY_PARAMETER_NAME) as? T
-}
+internal const val IDENTITY_PARAMETER_NAME = "kotlet.jwt.identity"
 
 internal class JWTAuthenticationInterceptor(
     private val verifier: JWTVerifier,
@@ -68,3 +63,4 @@ private object JWTAttributeCleaner : AsyncListener {
     override fun onStartAsync(event: jakarta.servlet.AsyncEvent) {
     }
 }
+
