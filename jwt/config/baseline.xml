@@ -1,15 +1,12 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
-    <ManuallySuppressedIssues></ManuallySuppressedIssues>
-    <CurrentIssues>
-        <ID>NewLineAtEndOfFile:IdentityBuilder.kt$kotlet.jwt.IdentityBuilder.kt</ID>
-        <ID>NewLineAtEndOfFile:JWT.kt$kotlet.jwt.JWT.kt</ID>
-        <ID>NewLineAtEndOfFile:JWTAuthenticationInterceptor.kt$kotlet.jwt.JWTAuthenticationInterceptor.kt</ID>
-        <ID>ReturnCount:JWTAuthenticationInterceptor.kt$JWTAuthenticationInterceptor$override fun beforeCall(call:
-            HttpCall): HttpCall
-        </ID>
-        <ID>SwallowedException:JWTAuthenticationInterceptor.kt$JWTAuthenticationInterceptor$e:
-            JWTVerificationException
-        </ID>
-    </CurrentIssues>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ForbiddenComment:JWTAuthenticationInterceptor.kt$JWTAuthenticationInterceptor$// TODO: write error info</ID>
+    <ID>NewLineAtEndOfFile:IdentityBuilder.kt$kotlet.jwt.IdentityBuilder.kt</ID>
+    <ID>NewLineAtEndOfFile:JWT.kt$kotlet.jwt.JWT.kt</ID>
+    <ID>NewLineAtEndOfFile:JWTAuthenticationInterceptor.kt$kotlet.jwt.JWTAuthenticationInterceptor.kt</ID>
+    <ID>ReturnCount:JWTAuthenticationInterceptor.kt$JWTAuthenticationInterceptor$override fun beforeCall(call: HttpCall): HttpCall</ID>
+    <ID>SwallowedException:JWTAuthenticationInterceptor.kt$JWTAuthenticationInterceptor$e: JWTVerificationException</ID>
+  </CurrentIssues>
 </SmellBaseline>

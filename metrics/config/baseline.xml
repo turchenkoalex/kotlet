@@ -1,29 +1,24 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
-    <ManuallySuppressedIssues></ManuallySuppressedIssues>
-    <CurrentIssues>
-        <ID>MagicNumber:PrometheusMetricsCollector.kt$100</ID>
-        <ID>MagicNumber:PrometheusMetricsCollector.kt$599</ID>
-        <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.001</ID>
-        <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.005</ID>
-        <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.01</ID>
-        <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.05</ID>
-        <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.5</ID>
-        <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.9</ID>
-        <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.95</ID>
-        <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.99</ID>
-        <ID>NewLineAtEndOfFile:Metrics.kt$kotlet.metrics.Metrics.kt</ID>
-        <ID>NewLineAtEndOfFile:MetricsCollector.kt$kotlet.metrics.MetricsCollector.kt</ID>
-        <ID>NewLineAtEndOfFile:PrometheusMetricsCollector.kt$kotlet.prometheus.PrometheusMetricsCollector.kt</ID>
-        <ID>
-            NewLineAtEndOfFile:PrometheusMetricsCollectorUnitTest.kt$kotlet.metrics.PrometheusMetricsCollectorUnitTest.kt
-        </ID>
-        <ID>UnusedPrivateProperty:PrometheusMetricsCollectorUnitTest.kt$PrometheusMetricsCollectorUnitTest$val routing1
-            = Kotlet.routing { installMetrics(prometheusMetricsCollector) }
-        </ID>
-        <ID>UnusedPrivateProperty:PrometheusMetricsCollectorUnitTest.kt$PrometheusMetricsCollectorUnitTest$val routing2
-            = Kotlet.routing { installMetrics(prometheusMetricsCollector) }
-        </ID>
-        <ID>WildcardImport:PrometheusMetricsCollectorUnitTest.kt$import io.mockk.*</ID>
-    </CurrentIssues>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>MagicNumber:PrometheusMetricsCollector.kt$100</ID>
+    <ID>MagicNumber:PrometheusMetricsCollector.kt$1_000_000_000.0</ID>
+    <ID>MagicNumber:PrometheusMetricsCollector.kt$599</ID>
+    <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.001</ID>
+    <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.005</ID>
+    <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.01</ID>
+    <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.05</ID>
+    <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.5</ID>
+    <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.9</ID>
+    <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.95</ID>
+    <ID>MagicNumber:PrometheusMetricsCollector.kt$PrometheusMetricsCollector$0.99</ID>
+    <ID>NewLineAtEndOfFile:Metrics.kt$kotlet.metrics.Metrics.kt</ID>
+    <ID>NewLineAtEndOfFile:MetricsCollector.kt$kotlet.metrics.MetricsCollector.kt</ID>
+    <ID>NewLineAtEndOfFile:PrometheusMetricsCollector.kt$kotlet.prometheus.PrometheusMetricsCollector.kt</ID>
+    <ID>NewLineAtEndOfFile:PrometheusMetricsCollectorUnitTest.kt$kotlet.metrics.PrometheusMetricsCollectorUnitTest.kt</ID>
+    <ID>UnusedPrivateProperty:PrometheusMetricsCollectorUnitTest.kt$PrometheusMetricsCollectorUnitTest$val routing1 = Kotlet.routing { installMetrics(prometheusMetricsCollector) }</ID>
+    <ID>UnusedPrivateProperty:PrometheusMetricsCollectorUnitTest.kt$PrometheusMetricsCollectorUnitTest$val routing2 = Kotlet.routing { installMetrics(prometheusMetricsCollector) }</ID>
+    <ID>WildcardImport:PrometheusMetricsCollectorUnitTest.kt$import io.mockk.*</ID>
+  </CurrentIssues>
 </SmellBaseline>
