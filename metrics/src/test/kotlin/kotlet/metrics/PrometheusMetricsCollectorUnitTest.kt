@@ -1,6 +1,11 @@
 package kotlet.metrics
 
-import io.mockk.*
+import io.mockk.Matcher
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.verify
 import io.prometheus.metrics.core.metrics.Metric
 import io.prometheus.metrics.model.registry.Collector
 import io.prometheus.metrics.model.registry.PrometheusRegistry

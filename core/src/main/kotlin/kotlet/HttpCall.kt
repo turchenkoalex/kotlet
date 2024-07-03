@@ -91,4 +91,3 @@ internal data class HttpCallImpl(
     override val rawResponse: HttpServletResponse,
     override val parameters: Map<String, String>
 ) : HttpCall
-

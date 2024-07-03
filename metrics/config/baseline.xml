@@ -5,9 +5,7 @@
     <ID>NewLineAtEndOfFile:Metrics.kt$kotlet.metrics.Metrics.kt</ID>
     <ID>NewLineAtEndOfFile:MetricsCollector.kt$kotlet.metrics.MetricsCollector.kt</ID>
     <ID>NewLineAtEndOfFile:PrometheusMetricsCollector.kt$kotlet.prometheus.PrometheusMetricsCollector.kt</ID>
-    <ID>NewLineAtEndOfFile:PrometheusMetricsCollectorUnitTest.kt$kotlet.metrics.PrometheusMetricsCollectorUnitTest.kt</ID>
     <ID>UnusedPrivateProperty:PrometheusMetricsCollectorUnitTest.kt$PrometheusMetricsCollectorUnitTest$val routing1 = Kotlet.routing { installMetrics(prometheusMetricsCollector) }</ID>
     <ID>UnusedPrivateProperty:PrometheusMetricsCollectorUnitTest.kt$PrometheusMetricsCollectorUnitTest$val routing2 = Kotlet.routing { installMetrics(prometheusMetricsCollector) }</ID>
-    <ID>WildcardImport:PrometheusMetricsCollectorUnitTest.kt$import io.mockk.*</ID>
   </CurrentIssues>
 </SmellBaseline>

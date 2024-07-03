@@ -1,6 +1,10 @@
 package kotlet
 
-import kotlet.selector.*
+import kotlet.selector.OptionalParamSegmentSelector
+import kotlet.selector.ParamSegmentSelector
+import kotlet.selector.StaticSegmentSelector
+import kotlet.selector.TailSegmentSelector
+import kotlet.selector.WildcardSegmentSelector
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

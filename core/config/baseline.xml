@@ -24,8 +24,5 @@
     <ID>UseRequire:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("Optional selector must be in the last position: $routePath")</ID>
     <ID>UseRequire:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("Parameter $paramName is duplicated")</ID>
     <ID>UseRequire:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("Tail selector must be in the last position: $routePath")</ID>
-    <ID>WildcardImport:AllRoutesMatcher.kt$import kotlet.selector.*</ID>
-    <ID>WildcardImport:RouteHelpers.kt$import kotlet.selector.*</ID>
-    <ID>WildcardImport:RouteHelpersUnitTest.kt$import kotlet.selector.*</ID>
   </CurrentIssues>
 </SmellBaseline>

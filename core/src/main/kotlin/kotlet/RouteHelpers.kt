@@ -1,7 +1,13 @@
 package kotlet
 
 import jakarta.servlet.http.HttpServletRequest
-import kotlet.selector.*
+import kotlet.selector.EvaluationResult
+import kotlet.selector.OptionalParamSegmentSelector
+import kotlet.selector.ParamSegmentSelector
+import kotlet.selector.Selector
+import kotlet.selector.StaticSegmentSelector
+import kotlet.selector.TailSegmentSelector
+import kotlet.selector.WildcardSegmentSelector
 
 object RouteHelpers {
 

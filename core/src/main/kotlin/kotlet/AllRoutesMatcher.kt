@@ -2,7 +2,12 @@ package kotlet
 
 import jakarta.servlet.http.HttpServletRequest
 import kotlet.RouteHelpers.RouteMatchResult
-import kotlet.selector.*
+import kotlet.selector.OptionalParamSegmentSelector
+import kotlet.selector.ParamSegmentSelector
+import kotlet.selector.Selector
+import kotlet.selector.StaticSegmentSelector
+import kotlet.selector.TailSegmentSelector
+import kotlet.selector.WildcardSegmentSelector
 import java.util.logging.Level
 import java.util.logging.Logger
 
