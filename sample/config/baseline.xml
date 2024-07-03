@@ -2,8 +2,6 @@
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
-    <ID>MagicNumber:AppTracing.kt$AppTracing$10000</ID>
-    <ID>MagicNumber:Main.kt$8080</ID>
     <ID>NewLineAtEndOfFile:AppTracing.kt$tracing.AppTracing.kt</ID>
     <ID>NewLineAtEndOfFile:AuthorizationInterceptor.kt$auth.AuthorizationInterceptor.kt</ID>
     <ID>NewLineAtEndOfFile:JettyServer.kt$jetty.JettyServer.kt</ID>
