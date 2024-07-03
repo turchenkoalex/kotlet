@@ -32,7 +32,7 @@ object RouteHelpers {
     ): MutableList<Selector> {
         val selectors = mutableListOf<Selector>()
 
-        // А теперь селекторы по сегментам пути
+        // Now let's create selectors for each path segment
         parsePathToSegments(routePath).forEach { pathSegment ->
             val selector = if (pathSegment == WILDCARD_SEGMENT) {
                 WildcardSegmentSelector
@@ -57,33 +57,33 @@ object RouteHelpers {
     fun checkSelectorsList(
         routePath: String, selectors: List<Selector>
     ) {
-        // Некоторые очевидные проверки для настроек роутинга
+        // Some obvious checks for routing settings
 
-        // Tail selector может быть только один
+        // Tail selector can be only one
         val tailsCount = selectors.count { it is TailSegmentSelector }
         if (tailsCount > 1) {
             throw IllegalArgumentException("$tailsCount tails have been found. You can't have more than 1 tail selector: $routePath")
         }
 
-        // OptionalParam selector может быть только один
+        // OptionalParam selector can be only one
         val optionalParamsCount = selectors.count { it is OptionalParamSegmentSelector }
         if (optionalParamsCount > 1) {
             throw IllegalArgumentException("$optionalParamsCount optionals have been found. You can't have more than 1 optional selector: $routePath")
         }
 
-        // Если tail selector вообще есть, то он должен стоять последним
+        // If there is a Tail selector, it must be the last one
         val lastSelectorIsTail = (selectors.lastOrNull() is TailSegmentSelector)
         if (tailsCount == 1 && !lastSelectorIsTail) {
             throw IllegalArgumentException("Tail selector must be in the last position: $routePath")
         }
 
-        // Если есть OptionalParamSegmentSelector, то он тоже должен быть только в конце
+        // If there is an OptionalParamSegmentSelector, it must be the last one
         val lastSelectorIsOptionalParam = (selectors.lastOrNull() is OptionalParamSegmentSelector)
         if (optionalParamsCount == 1 && !lastSelectorIsOptionalParam) {
             throw IllegalArgumentException("Optional selector must be in the last position: $routePath")
         }
 
-        // У всех параметров должны быть уникальные имена
+        // All parameters must have unique names
         val allParamsNames = selectors.filterIsInstance<ParamSegmentSelector>().map { it.parameterName }.toSet()
         allParamsNames.forEach { paramName ->
             val count = selectors.filterIsInstance<ParamSegmentSelector>().count { it.parameterName == paramName }

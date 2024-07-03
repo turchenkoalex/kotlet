@@ -9,6 +9,5 @@
     <ID>NewLineAtEndOfFile:PostsService.kt$.PostsService.kt</ID>
     <ID>NewLineAtEndOfFile:Scope.kt$auth.Scope.kt</ID>
     <ID>NewLineAtEndOfFile:User.kt$auth.User.kt</ID>
-    <ID>ReturnCount:AuthorizationInterceptor.kt$AuthorizationInterceptor$override fun aroundCall(call: HttpCall, next: Handler)</ID>
   </CurrentIssues>
 </SmellBaseline>

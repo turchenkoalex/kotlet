@@ -2,9 +2,6 @@
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
-    <ID>MaxLineLength:DataClassHelpers.kt$DataClassHelpers$// If the parameter is not in the list of values AND this argument has a default value in the data class description</ID>
-    <ID>MaxLineLength:HttpCallTypeSafe.kt$// However, it is absolutely unclear how to "fit" such a data structure into a data-class, so for such multi-parameters</ID>
     <ID>NewLineAtEndOfFile:DataClassHelpersUnitTest.kt$kotlet.DataClassHelpersUnitTest.kt</ID>
-    <ID>TooManyFunctions:DataClassHelpers.kt$DataClassHelpers</ID>
   </CurrentIssues>
 </SmellBaseline>

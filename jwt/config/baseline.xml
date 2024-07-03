@@ -6,7 +6,6 @@
     <ID>NewLineAtEndOfFile:IdentityBuilder.kt$kotlet.jwt.IdentityBuilder.kt</ID>
     <ID>NewLineAtEndOfFile:JWT.kt$kotlet.jwt.JWT.kt</ID>
     <ID>NewLineAtEndOfFile:JWTAuthenticationInterceptor.kt$kotlet.jwt.JWTAuthenticationInterceptor.kt</ID>
-    <ID>ReturnCount:JWTAuthenticationInterceptor.kt$JWTAuthenticationInterceptor$override fun beforeCall(call: HttpCall): HttpCall</ID>
     <ID>SwallowedException:JWTAuthenticationInterceptor.kt$JWTAuthenticationInterceptor$e: JWTVerificationException</ID>
   </CurrentIssues>
 </SmellBaseline>

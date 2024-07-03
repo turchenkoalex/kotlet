@@ -33,8 +33,8 @@ internal class RoutingServlet(
             route.handler(httpCall)
         } catch (_: MethodNotFoundException) {
             errorsHandler.methodNotFound(request, response)
-        } catch (e: Throwable) {
-            errorsHandler.internalServerError(request, response, e)
+        } catch (expected: Throwable) {
+            errorsHandler.internalServerError(request, response, expected)
         }
     }
 }
