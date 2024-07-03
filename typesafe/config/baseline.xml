@@ -1,7 +1,0 @@
-<?xml version="1.0" ?>
-<SmellBaseline>
-  <ManuallySuppressedIssues></ManuallySuppressedIssues>
-  <CurrentIssues>
-    <ID>NewLineAtEndOfFile:DataClassHelpersUnitTest.kt$kotlet.DataClassHelpersUnitTest.kt</ID>
-  </CurrentIssues>
-</SmellBaseline>

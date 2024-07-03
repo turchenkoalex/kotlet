@@ -82,5 +82,5 @@ internal class DataClassHelpersUnitTest {
         assertEquals(expectedPerson, DataClassHelpers.convertMapToDataClass(Person::class, actualValues))
     }
 
-    private enum class Color { RED, GREEN, BLUE }
+    private enum class Color { GREEN }
 }

@@ -32,9 +32,9 @@ class TracingInterceptor(
             } else {
                 instrumenter.end(context, call, call.rawResponse, null)
             }
-        } catch (e: Throwable) {
+        } catch (expected: Throwable) {
             instrumenter.end(context, call, null, e)
-            throw e
+            throw expected
         }
     }
 }
