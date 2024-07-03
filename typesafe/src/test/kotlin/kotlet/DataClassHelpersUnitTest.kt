@@ -27,7 +27,7 @@ internal class DataClassHelpersUnitTest {
             DataClassHelpers.convertMapToDataClass(Person::class, actualValues)
         }
 
-        // Дополнительно проверим что это исключение именно про невозможность конвертации длинной строки в Char
+        // Additional check that this exception is about the impossibility of converting a long string to Char
         assertContains(requireNotNull(exception.message), "it has more than 1 character")
     }
 
