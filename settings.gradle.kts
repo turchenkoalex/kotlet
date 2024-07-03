@@ -4,15 +4,15 @@ plugins {
 
 rootProject.name = "kotlet"
 
+include("benchmarks")
 include("core")
-include("json")
-include("typesafe")
 include("cors")
+include("json")
 include("jwt")
 include("metrics")
-include("tracing")
 include("sample")
-include("benchmarks")
+include("tracing")
+include("typesafe")
 
 dependencyResolutionManagement {
     versionCatalogs {
