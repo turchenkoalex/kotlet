@@ -45,9 +45,10 @@ object DataClassHelpers {
 
             if (value == null && parameter.isOptional) {
                 // This is a special empty branch for code readability
-                // If the parameter is not in the list of values AND this argument has a default value in the data class description
-                // then you don't need to put a null value in the constructor arguments, you just need to skip
-                // this argument, then Kotlin will substitute the default value specified in the class description
+                // If the parameter is not in the list of values AND this argument has a default value in the data
+                // class description then you don't need to put a null value in the constructor arguments, you just
+                // need to skip this argument, then Kotlin will substitute the default value specified in the class
+                // description
                 // NO OPERATION
             } else {
                 arguments[parameter] = value

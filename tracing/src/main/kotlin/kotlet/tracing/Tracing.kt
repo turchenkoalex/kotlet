@@ -28,7 +28,8 @@ fun Routing.installTracing(
 }
 
 /**
- * Install tracing to the [Routing] using the new instance of [TracingInterceptor] created with the provided [openTelemetry].
+ * Install tracing to the [Routing] using the new instance of [TracingInterceptor] created with the provided
+ * [openTelemetry].
  */
 fun Routing.installTracing(
     /**

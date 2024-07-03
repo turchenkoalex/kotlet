@@ -12,7 +12,8 @@ package kotlet
  */
 enum class HttpMethod {
     /**
-     * The GET method requests a representation of the specified resource. Requests using GET should only retrieve data.
+     * The GET method requests a representation of the specified resource.
+     * Requests using GET should only retrieve data.
      */
     GET,
 
@@ -22,7 +23,8 @@ enum class HttpMethod {
     HEAD,
 
     /**
-     * The POST method submits an entity to the specified resource, often causing a change in state or side effects on the server.
+     * The POST method submits an entity to the specified resource,
+     * often causing a change in state or side effects on the server.
      */
     POST,
 

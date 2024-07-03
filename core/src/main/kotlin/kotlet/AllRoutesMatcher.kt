@@ -22,9 +22,9 @@ internal class AllRoutesMatcher(routes: List<Route>) {
 
     /**
      * Special case for installed root router '/'
-     * It is a very common behavior in the industry - the root router not only catches '/' routes, but all unmatched routes too
-     * So, I think we have to implement this common thing here too – if a root router has been defined, the router
-     * has to catch all unmatched routes as well.
+     * It is a very common behavior in the industry - the root router not only catches '/' routes, but all unmatched
+     * routes too. So, I think we have to implement this common thing here too – if a root router has been defined,
+     * the router has to catch all unmatched routes as well.
      */
     private val rootMatcher: OneRouteMatcher?
 

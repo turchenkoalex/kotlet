@@ -15,7 +15,7 @@ trim_trailing_whitespace = false
 wildcard_import_limit = 999
 ij_kotlin_name_count_to_use_star_import = 999
 ij_kotlin_name_count_to_use_star_import_for_members = 999
-max_line_length = 140
+max_line_length = 120
 ij_wrap_on_typing = true
 ij_kotlin_finally_on_new_line = true
 

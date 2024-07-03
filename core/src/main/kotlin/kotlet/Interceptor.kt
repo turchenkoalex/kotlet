@@ -20,7 +20,8 @@ interface Interceptor {
     }
 
     /**
-     * Called around the call. This method is the main method to override to modify the call, or to stop the call from being made.
+     * Called around the call. This method is the main method to override to modify the call, or to stop the call
+     * from being made.
      * For stopping the call, the [next] handler should not be called.
      */
     fun aroundCall(call: HttpCall, next: Handler) {

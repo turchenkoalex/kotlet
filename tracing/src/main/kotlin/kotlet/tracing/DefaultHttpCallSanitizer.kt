@@ -3,7 +3,8 @@ package kotlet.tracing
 import kotlet.HttpCall
 
 /**
- * Default implementation of [HttpCallSanitizer] that extracts information from [HttpCall] using default methods without any modification.
+ * Default implementation of [HttpCallSanitizer] that extracts information from [HttpCall] using default methods
+ * without any modification.
  */
 object DefaultHttpCallSanitizer : HttpCallSanitizer {
     override fun getHttpRequestHeader(call: HttpCall, name: String): MutableList<String> {
