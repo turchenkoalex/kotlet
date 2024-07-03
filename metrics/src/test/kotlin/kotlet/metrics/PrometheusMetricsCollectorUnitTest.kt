@@ -22,11 +22,11 @@ class PrometheusMetricsCollectorUnitTest {
 
         val prometheusMetricsCollector = PrometheusMetricsCollector(registry)
 
-        val routing1 = Kotlet.routing {
+        Kotlet.routing {
             installMetrics(prometheusMetricsCollector)
         }
 
-        val routing2 = Kotlet.routing {
+        Kotlet.routing {
             installMetrics(prometheusMetricsCollector)
         }
 
