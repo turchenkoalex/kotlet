@@ -299,12 +299,14 @@ implementation("com.ecwid:kotlet-metrics:1.0.0")
 > [io.prometheus:prometheus-metrics-core](https://mvnrepository.com/artifact/io.prometheus/prometheus-metrics-core)
 > library.
 
-You can use the `installPrometheus` method to add metrics to your routes. The method takes a `PrometheusRegistry` object
+You can use the `installMetrics` method to add metrics to your routes. The method takes a `MetricsCollector` object
 as a parameter.
 
 ```kotlin
+val kotletMetrics = PrometheusMetricsCollector(PrometheusRegistry.defaultRegistry) // this collector can be reused for multiple routes
+
 Kotlet.routing {
-    installPrometheus(PrometheusRegistry.defaultRegistry)
+    installMetrics(kotletMetrics) // Now all requests of this routing will be measured
     get("/hello") { call ->
         call.responseText("Hello, World!")
     }
@@ -320,7 +322,8 @@ Kotlet.routing {
 
 ##### Custom metrics
 
-Also, you can add custom metrics with implementation of `kotlet.metrics.MetricsCollector` interface.
+Also, you can define your own metrics collector by implementing the `kotlet.metrics.MetricsCollector` interface, like in
+the example below:
 
 ```kotlin
 class MyMetricsCollector : MetricsCollector {

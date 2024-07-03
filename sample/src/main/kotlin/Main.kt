@@ -14,7 +14,8 @@ import kotlet.Kotlet
 import kotlet.cors.CORS
 import kotlet.cors.installCORS
 import kotlet.jwt.installJWTAuthentication
-import kotlet.prometheus.installPrometheus
+import kotlet.metrics.installMetrics
+import kotlet.prometheus.PrometheusMetricsCollector
 import kotlet.tracing.installTracing
 import tracing.AppTracing
 import java.util.concurrent.CountDownLatch
@@ -26,12 +27,13 @@ fun main() {
     val postsService = PostsService()
     val versionHeader = SetHeaderInterceptor("X-App-Version", "1.0")
     val registry = PrometheusRegistry.defaultRegistry
+    val kotletMetrics = PrometheusMetricsCollector(registry)
 
     // Routing
     val routing = Kotlet.routing {
 
         // Global interceptors, order matters
-        installPrometheus(registry)
+        installMetrics(kotletMetrics)
         installTracing(tracing.openTelemetry)
         installCORS(CORS.allowAll)
         installJWTAuthentication(Auth.createVerifier(), identityBuilder = User::fromJWT)

@@ -12,13 +12,13 @@ class CORSUnitTest {
         val interceptor = CORS.interceptor(CORS.allowAll)
 
         val response = mockk<HttpServletResponse> {
-            every { setHeader(any(), any()) } just runs
+            every { setHeader(any(), any()) } just Runs
         }
         val call = mockk<HttpCall> {
             every { httpMethod } returns HttpMethod.OPTIONS
             every { rawResponse } returns response
         }
-        every { call setProperty ("status") value any<Int>() } just runs
+        every { call setProperty ("status") value any<Int>() } just Runs
 
         interceptor.aroundCall(call) {
             error("Should not be called")
@@ -40,13 +40,13 @@ class CORSUnitTest {
         val interceptor = CORS.interceptor(CORS.allowOrigin("https://example.com"))
 
         val response = mockk<HttpServletResponse> {
-            every { setHeader(any(), any()) } just runs
+            every { setHeader(any(), any()) } just Runs
         }
         val call = mockk<HttpCall> {
             every { httpMethod } returns HttpMethod.OPTIONS
             every { rawResponse } returns response
         }
-        every { call setProperty ("status") value any<Int>() } just runs
+        every { call setProperty ("status") value any<Int>() } just Runs
 
         interceptor.aroundCall(call) {
             error("Should not be called")
@@ -68,13 +68,13 @@ class CORSUnitTest {
         val interceptor = CORS.interceptor(CORS.allowAll)
 
         val response = mockk<HttpServletResponse> {
-            every { setHeader(any(), any()) } just runs
+            every { setHeader(any(), any()) } just Runs
         }
         val call = mockk<HttpCall> {
             every { httpMethod } returns HttpMethod.GET
             every { rawResponse } returns response
         }
-        every { call setProperty ("status") value any<Int>() } just runs
+        every { call setProperty ("status") value any<Int>() } just Runs
 
         interceptor.aroundCall(call) {
             // set status to 201 for checking

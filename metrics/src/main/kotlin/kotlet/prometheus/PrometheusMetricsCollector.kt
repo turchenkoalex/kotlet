@@ -10,8 +10,8 @@ import kotlet.metrics.MetricsCollector
 
 private const val START_TIME_ATTRIBUTE = "kotlet.prometheus.started_at"
 
-internal data class PrometheusMetricsCollector(
-    private val registry: PrometheusRegistry
+class PrometheusMetricsCollector(
+    registry: PrometheusRegistry
 ) : MetricsCollector {
     override fun startRequest(call: HttpCall) {
         call.rawRequest.setAttribute(START_TIME_ATTRIBUTE, System.nanoTime())
