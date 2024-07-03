@@ -18,6 +18,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
             version("kotlin", "2.0.0")
+            version("detekt", "1.23.6")
 
             version("jakarta", "6.1.0")
             library("jakarta-api", "jakarta.servlet", "jakarta.servlet-api").versionRef("jakarta")
