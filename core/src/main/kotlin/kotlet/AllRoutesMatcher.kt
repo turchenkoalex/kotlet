@@ -31,12 +31,11 @@ internal class AllRoutesMatcher(routes: List<Route>) {
     init {
         val allMatchers = routes.map { route ->
             val routeSelectors = RouteHelpers.prepareSelectorsList(route)
-            @Suppress("SwallowedException")
             try {
                 RouteHelpers.checkSelectorsList(route.path, routeSelectors)
-            } catch (e: IllegalArgumentException) {
+            } catch (expected: IllegalArgumentException) {
                 log.log(Level.WARNING, "Invalid selectors for route ${route.path}: ${e.message}", e)
-                throw RoutingConfigurationException(e.message ?: "")
+                throw RoutingConfigurationException(expected.message ?: "")
             }
             OneRouteMatcher(route, routeSelectors)
         }

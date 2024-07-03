@@ -35,8 +35,7 @@ internal class JWTAuthenticationInterceptor(
         try {
             val decodedToken = verifier.verify(token)
             call.rawRequest.setAttribute(IDENTITY_PARAMETER_NAME, identityBuilder(decodedToken))
-        } catch (e: JWTVerificationException) {
-            // TODO: write error info
+        } catch (ignored: JWTVerificationException) {
             // verification failed
         }
 
