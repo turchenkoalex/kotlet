@@ -303,7 +303,8 @@ You can use the `installMetrics` method to add metrics to your routes. The metho
 as a parameter.
 
 ```kotlin
-val kotletMetrics = PrometheusMetricsCollector(PrometheusRegistry.defaultRegistry) // this collector can be reused for multiple routes
+val kotletMetrics =
+    PrometheusMetricsCollector(PrometheusRegistry.defaultRegistry) // this collector can be reused for multiple routes
 
 Kotlet.routing {
     installMetrics(kotletMetrics) // Now all requests of this routing will be measured

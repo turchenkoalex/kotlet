@@ -1,13 +1,13 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
-  <ManuallySuppressedIssues></ManuallySuppressedIssues>
-  <CurrentIssues>
-    <ID>MaxLineLength:CorsHeaders.kt$CorsHeaders$*</ID>
-    <ID>NewLineAtEndOfFile:CORS.kt$kotlet.cors.CORS.kt</ID>
-    <ID>NewLineAtEndOfFile:CORSUnitTest.kt$kotlet.cors.CORSUnitTest.kt</ID>
-    <ID>NewLineAtEndOfFile:ConstantCorsRules.kt$kotlet.cors.ConstantCorsRules.kt</ID>
-    <ID>NewLineAtEndOfFile:CorsHeaders.kt$kotlet.cors.CorsHeaders.kt</ID>
-    <ID>NewLineAtEndOfFile:CorsInterceptor.kt$kotlet.cors.CorsInterceptor.kt</ID>
-    <ID>WildcardImport:CORSUnitTest.kt$import io.mockk.*</ID>
-  </CurrentIssues>
+    <ManuallySuppressedIssues></ManuallySuppressedIssues>
+    <CurrentIssues>
+        <ID>MaxLineLength:CorsHeaders.kt$CorsHeaders$*</ID>
+        <ID>NewLineAtEndOfFile:CORS.kt$kotlet.cors.CORS.kt</ID>
+        <ID>NewLineAtEndOfFile:CORSUnitTest.kt$kotlet.cors.CORSUnitTest.kt</ID>
+        <ID>NewLineAtEndOfFile:ConstantCorsRules.kt$kotlet.cors.ConstantCorsRules.kt</ID>
+        <ID>NewLineAtEndOfFile:CorsHeaders.kt$kotlet.cors.CorsHeaders.kt</ID>
+        <ID>NewLineAtEndOfFile:CorsInterceptor.kt$kotlet.cors.CorsInterceptor.kt</ID>
+        <ID>WildcardImport:CORSUnitTest.kt$import io.mockk.*</ID>
+    </CurrentIssues>
 </SmellBaseline>

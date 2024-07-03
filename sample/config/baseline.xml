@@ -1,16 +1,18 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
-  <ManuallySuppressedIssues></ManuallySuppressedIssues>
-  <CurrentIssues>
-    <ID>MagicNumber:AppTracing.kt$AppTracing$10000</ID>
-    <ID>MagicNumber:Main.kt$8080</ID>
-    <ID>NewLineAtEndOfFile:AppTracing.kt$tracing.AppTracing.kt</ID>
-    <ID>NewLineAtEndOfFile:AuthorizationInterceptor.kt$auth.AuthorizationInterceptor.kt</ID>
-    <ID>NewLineAtEndOfFile:JettyServer.kt$jetty.JettyServer.kt</ID>
-    <ID>NewLineAtEndOfFile:Main.kt$.Main.kt</ID>
-    <ID>NewLineAtEndOfFile:PostsService.kt$.PostsService.kt</ID>
-    <ID>NewLineAtEndOfFile:Scope.kt$auth.Scope.kt</ID>
-    <ID>NewLineAtEndOfFile:User.kt$auth.User.kt</ID>
-    <ID>ReturnCount:AuthorizationInterceptor.kt$AuthorizationInterceptor$override fun aroundCall(call: HttpCall, next: Handler)</ID>
-  </CurrentIssues>
+    <ManuallySuppressedIssues></ManuallySuppressedIssues>
+    <CurrentIssues>
+        <ID>MagicNumber:AppTracing.kt$AppTracing$10000</ID>
+        <ID>MagicNumber:Main.kt$8080</ID>
+        <ID>NewLineAtEndOfFile:AppTracing.kt$tracing.AppTracing.kt</ID>
+        <ID>NewLineAtEndOfFile:AuthorizationInterceptor.kt$auth.AuthorizationInterceptor.kt</ID>
+        <ID>NewLineAtEndOfFile:JettyServer.kt$jetty.JettyServer.kt</ID>
+        <ID>NewLineAtEndOfFile:Main.kt$.Main.kt</ID>
+        <ID>NewLineAtEndOfFile:PostsService.kt$.PostsService.kt</ID>
+        <ID>NewLineAtEndOfFile:Scope.kt$auth.Scope.kt</ID>
+        <ID>NewLineAtEndOfFile:User.kt$auth.User.kt</ID>
+        <ID>ReturnCount:AuthorizationInterceptor.kt$AuthorizationInterceptor$override fun aroundCall(call: HttpCall,
+            next: Handler)
+        </ID>
+    </CurrentIssues>
 </SmellBaseline>

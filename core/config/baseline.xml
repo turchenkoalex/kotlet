@@ -1,37 +1,63 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
-  <ManuallySuppressedIssues></ManuallySuppressedIssues>
-  <CurrentIssues>
-    <ID>MagicNumber:AllRoutesMatcher.kt$1000</ID>
-    <ID>MagicNumber:AllRoutesMatcher.kt$1001</ID>
-    <ID>MagicNumber:AllRoutesMatcher.kt$1002</ID>
-    <ID>MagicNumber:AllRoutesMatcher.kt$1003</ID>
-    <ID>MagicNumber:AllRoutesMatcher.kt$1_000_000_000</ID>
-    <ID>MaxLineLength:AllRoutesMatcher.kt$AllRoutesMatcher$*</ID>
-    <ID>MaxLineLength:HttpMethod.kt$HttpMethod.POST$* The POST method submits an entity to the specified resource, often causing a change in state or side effects on the server.</ID>
-    <ID>MaxLineLength:Interceptor.kt$Interceptor$*</ID>
-    <ID>MaxLineLength:OptionalParamSegmentSelector.kt$OptionalParamSegmentSelector$// 1) Pattern is /user/{userId?} and path is /user/123. In this case segmentIndex has to be less than pathSegments.size</ID>
-    <ID>MaxLineLength:OptionalParamSegmentSelector.kt$OptionalParamSegmentSelector$// 2) Pattern is /user/{userId?} and path is /user. In this case segmentIndex has to be equal to pathSegments.size</ID>
-    <ID>MaxLineLength:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("$optionalParamsCount optionals have been found. You can't have more than 1 optional selector: $routePath")</ID>
-    <ID>MaxLineLength:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("$tailsCount tails have been found. You can't have more than 1 tail selector: $routePath")</ID>
-    <ID>NestedBlockDepth:RouteHelpers.kt$RouteHelpers$internal fun matchRequestRouteSelectors( request: HttpServletRequest, selectors: List&lt;Selector&gt; ): RouteMatchResult</ID>
-    <ID>NewLineAtEndOfFile:ErrorsHandler.kt$kotlet.ErrorsHandler.kt</ID>
-    <ID>NewLineAtEndOfFile:Interceptor.kt$kotlet.Interceptor.kt</ID>
-    <ID>NewLineAtEndOfFile:InterceptorUnitTest.kt$kotlet.InterceptorUnitTest.kt</ID>
-    <ID>NewLineAtEndOfFile:MethodNotFoundException.kt$kotlet.MethodNotFoundException.kt</ID>
-    <ID>NewLineAtEndOfFile:RoutingConfigurationException.kt$kotlet.RoutingConfigurationException.kt</ID>
-    <ID>ReturnCount:RouteHelpers.kt$RouteHelpers$internal fun matchRequestRouteSelectors( request: HttpServletRequest, selectors: List&lt;Selector&gt; ): RouteMatchResult</ID>
-    <ID>ThrowsCount:RouteHelpers.kt$RouteHelpers$fun checkSelectorsList( routePath: String, selectors: List&lt;Selector&gt; )</ID>
-    <ID>TooGenericExceptionCaught:Interceptor.kt$Interceptor.Companion$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:RoutingServlet.kt$RoutingServlet$e: Throwable</ID>
-    <ID>TooManyFunctions:Routing.kt$Routing</ID>
-    <ID>UseRequire:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("$optionalParamsCount optionals have been found. You can't have more than 1 optional selector: $routePath")</ID>
-    <ID>UseRequire:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("$tailsCount tails have been found. You can't have more than 1 tail selector: $routePath")</ID>
-    <ID>UseRequire:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("Optional selector must be in the last position: $routePath")</ID>
-    <ID>UseRequire:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("Parameter $paramName is duplicated")</ID>
-    <ID>UseRequire:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("Tail selector must be in the last position: $routePath")</ID>
-    <ID>WildcardImport:AllRoutesMatcher.kt$import kotlet.selector.*</ID>
-    <ID>WildcardImport:RouteHelpers.kt$import kotlet.selector.*</ID>
-    <ID>WildcardImport:RouteHelpersUnitTest.kt$import kotlet.selector.*</ID>
-  </CurrentIssues>
+    <ManuallySuppressedIssues></ManuallySuppressedIssues>
+    <CurrentIssues>
+        <ID>MagicNumber:AllRoutesMatcher.kt$1000</ID>
+        <ID>MagicNumber:AllRoutesMatcher.kt$1001</ID>
+        <ID>MagicNumber:AllRoutesMatcher.kt$1002</ID>
+        <ID>MagicNumber:AllRoutesMatcher.kt$1003</ID>
+        <ID>MagicNumber:AllRoutesMatcher.kt$1_000_000_000</ID>
+        <ID>MaxLineLength:AllRoutesMatcher.kt$AllRoutesMatcher$*</ID>
+        <ID>MaxLineLength:HttpMethod.kt$HttpMethod.POST$* The POST method submits an entity to the specified resource,
+            often causing a change in state or side effects on the server.
+        </ID>
+        <ID>MaxLineLength:Interceptor.kt$Interceptor$*</ID>
+        <ID>MaxLineLength:OptionalParamSegmentSelector.kt$OptionalParamSegmentSelector$// 1) Pattern is /user/{userId?}
+            and path is /user/123. In this case segmentIndex has to be less than pathSegments.size
+        </ID>
+        <ID>MaxLineLength:OptionalParamSegmentSelector.kt$OptionalParamSegmentSelector$// 2) Pattern is /user/{userId?}
+            and path is /user. In this case segmentIndex has to be equal to pathSegments.size
+        </ID>
+        <ID>MaxLineLength:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("$optionalParamsCount optionals
+            have been found. You can't have more than 1 optional selector: $routePath")
+        </ID>
+        <ID>MaxLineLength:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("$tailsCount tails have been
+            found. You can't have more than 1 tail selector: $routePath")
+        </ID>
+        <ID>NestedBlockDepth:RouteHelpers.kt$RouteHelpers$internal fun matchRequestRouteSelectors( request:
+            HttpServletRequest, selectors: List&lt;Selector&gt; ): RouteMatchResult
+        </ID>
+        <ID>NewLineAtEndOfFile:ErrorsHandler.kt$kotlet.ErrorsHandler.kt</ID>
+        <ID>NewLineAtEndOfFile:Interceptor.kt$kotlet.Interceptor.kt</ID>
+        <ID>NewLineAtEndOfFile:InterceptorUnitTest.kt$kotlet.InterceptorUnitTest.kt</ID>
+        <ID>NewLineAtEndOfFile:MethodNotFoundException.kt$kotlet.MethodNotFoundException.kt</ID>
+        <ID>NewLineAtEndOfFile:RoutingConfigurationException.kt$kotlet.RoutingConfigurationException.kt</ID>
+        <ID>ReturnCount:RouteHelpers.kt$RouteHelpers$internal fun matchRequestRouteSelectors( request:
+            HttpServletRequest, selectors: List&lt;Selector&gt; ): RouteMatchResult
+        </ID>
+        <ID>ThrowsCount:RouteHelpers.kt$RouteHelpers$fun checkSelectorsList( routePath: String, selectors: List&lt;Selector&gt;
+            )
+        </ID>
+        <ID>TooGenericExceptionCaught:Interceptor.kt$Interceptor.Companion$e: Exception</ID>
+        <ID>TooGenericExceptionCaught:RoutingServlet.kt$RoutingServlet$e: Throwable</ID>
+        <ID>TooManyFunctions:Routing.kt$Routing</ID>
+        <ID>UseRequire:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("$optionalParamsCount optionals have
+            been found. You can't have more than 1 optional selector: $routePath")
+        </ID>
+        <ID>UseRequire:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("$tailsCount tails have been found.
+            You can't have more than 1 tail selector: $routePath")
+        </ID>
+        <ID>UseRequire:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("Optional selector must be in the
+            last position: $routePath")
+        </ID>
+        <ID>UseRequire:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("Parameter $paramName is
+            duplicated")
+        </ID>
+        <ID>UseRequire:RouteHelpers.kt$RouteHelpers$throw IllegalArgumentException("Tail selector must be in the last
+            position: $routePath")
+        </ID>
+        <ID>WildcardImport:AllRoutesMatcher.kt$import kotlet.selector.*</ID>
+        <ID>WildcardImport:RouteHelpers.kt$import kotlet.selector.*</ID>
+        <ID>WildcardImport:RouteHelpersUnitTest.kt$import kotlet.selector.*</ID>
+    </CurrentIssues>
 </SmellBaseline>

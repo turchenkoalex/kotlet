@@ -56,9 +56,8 @@ jobs:
           cache: 'gradle'
       - name: Run Detekt
         run: ./gradlew detekt
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+      - name: Publish Detekt Report
+        uses: mikepenz/action-junit-report@v4
         if: success() || failure() # always run even if the previous step fails
         with:
-          sarif_file: build/reports/detekt/merge.sarif
-          category: "Detekt"
+          report_paths: 'build/reports/detekt/merge.xml'

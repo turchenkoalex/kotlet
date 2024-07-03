@@ -1,15 +1,20 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
-  <ManuallySuppressedIssues></ManuallySuppressedIssues>
-  <CurrentIssues>
-    <ID>MaxLineLength:DefaultHttpCallSanitizer.kt$DefaultHttpCallSanitizer$* Default implementation of [HttpCallSanitizer] that extracts information from [HttpCall] using default methods without any modification.</ID>
-    <ID>MaxLineLength:Tracing.kt$* Install tracing to the [Routing] using the new instance of [TracingInterceptor] created with the provided [openTelemetry].</ID>
-    <ID>NewLineAtEndOfFile:DefaultHttpCallSanitizer.kt$kotlet.tracing.DefaultHttpCallSanitizer.kt</ID>
-    <ID>NewLineAtEndOfFile:DefaultHttpCallTextMapGetter.kt$kotlet.tracing.DefaultHttpCallTextMapGetter.kt</ID>
-    <ID>NewLineAtEndOfFile:HttpCallInstrumenter.kt$kotlet.tracing.HttpCallInstrumenter.kt</ID>
-    <ID>NewLineAtEndOfFile:HttpCallSanitizer.kt$kotlet.tracing.HttpCallSanitizer.kt</ID>
-    <ID>NewLineAtEndOfFile:Tracing.kt$kotlet.tracing.Tracing.kt</ID>
-    <ID>TooGenericExceptionCaught:TracingInterceptor.kt$TracingInterceptor$e: Throwable</ID>
-    <ID>TooManyFunctions:HttpCallInstrumenter.kt$ServletHttpServerAttributesGetter : HttpServerAttributesGetter</ID>
-  </CurrentIssues>
+    <ManuallySuppressedIssues></ManuallySuppressedIssues>
+    <CurrentIssues>
+        <ID>MaxLineLength:DefaultHttpCallSanitizer.kt$DefaultHttpCallSanitizer$* Default implementation of
+            [HttpCallSanitizer] that extracts information from [HttpCall] using default methods without any
+            modification.
+        </ID>
+        <ID>MaxLineLength:Tracing.kt$* Install tracing to the [Routing] using the new instance of [TracingInterceptor]
+            created with the provided [openTelemetry].
+        </ID>
+        <ID>NewLineAtEndOfFile:DefaultHttpCallSanitizer.kt$kotlet.tracing.DefaultHttpCallSanitizer.kt</ID>
+        <ID>NewLineAtEndOfFile:DefaultHttpCallTextMapGetter.kt$kotlet.tracing.DefaultHttpCallTextMapGetter.kt</ID>
+        <ID>NewLineAtEndOfFile:HttpCallInstrumenter.kt$kotlet.tracing.HttpCallInstrumenter.kt</ID>
+        <ID>NewLineAtEndOfFile:HttpCallSanitizer.kt$kotlet.tracing.HttpCallSanitizer.kt</ID>
+        <ID>NewLineAtEndOfFile:Tracing.kt$kotlet.tracing.Tracing.kt</ID>
+        <ID>TooGenericExceptionCaught:TracingInterceptor.kt$TracingInterceptor$e: Throwable</ID>
+        <ID>TooManyFunctions:HttpCallInstrumenter.kt$ServletHttpServerAttributesGetter : HttpServerAttributesGetter</ID>
+    </CurrentIssues>
 </SmellBaseline>
