@@ -62,15 +62,19 @@ object RouteHelpers {
         // Tail selector can be only one
         val tailsCount = selectors.count { it is TailSegmentSelector }
         if (tailsCount > 1) {
-            throw IllegalArgumentException("$tailsCount tails have been found. " +
-                "You can't have more than 1 tail selector: $routePath")
+            throw IllegalArgumentException(
+                "$tailsCount tails have been found. " +
+                    "You can't have more than 1 tail selector: $routePath"
+            )
         }
 
         // OptionalParam selector can be only one
         val optionalParamsCount = selectors.count { it is OptionalParamSegmentSelector }
         if (optionalParamsCount > 1) {
-            throw IllegalArgumentException("$optionalParamsCount optionals have been found. " +
-                "You can't have more than 1 optional selector: $routePath")
+            throw IllegalArgumentException(
+                "$optionalParamsCount optionals have been found. " +
+                    "You can't have more than 1 optional selector: $routePath"
+            )
         }
 
         // If there is a Tail selector, it must be the last one
