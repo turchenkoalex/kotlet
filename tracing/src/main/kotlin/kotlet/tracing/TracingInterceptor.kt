@@ -33,7 +33,7 @@ class TracingInterceptor(
                 instrumenter.end(context, call, call.rawResponse, null)
             }
         } catch (expected: Throwable) {
-            instrumenter.end(context, call, null, e)
+            instrumenter.end(context, call, null, expected)
             throw expected
         }
     }
