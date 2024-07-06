@@ -51,15 +51,11 @@ interface Interceptor {
                     val interceptedCall = interceptor.beforeCall(call)
                     try {
                         interceptor.aroundCall(interceptedCall, next)
-                    } catch (expected: Exception) {
+                    } finally {
                         // Always call afterCall even if an exception is thrown
                         // This is to ensure that resources are cleaned up
                         interceptor.afterCall(interceptedCall)
-
-                        // Re-throw the exception
-                        throw expected
                     }
-                    interceptor.afterCall(interceptedCall)
                 }
             }
         }

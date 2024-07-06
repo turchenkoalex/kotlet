@@ -42,7 +42,7 @@ class JWTAuthenticationInterceptorUnitTest {
     }
 
     @Test
-    fun `interceptor should covert identity to call and remove it afterCall`() {
+    fun `interceptor should convert identity to call and remove it afterCall`() {
         val verifier = JWT.require(Algorithm.none()).build()
         val interceptor = JWTAuthenticationInterceptor(verifier) {
             TestIdentity(scope = it.getClaim("scope").asString())
