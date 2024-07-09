@@ -52,53 +52,29 @@ subprojects {
     }
 }
 
-// Kover - coverage
-
-val excludedProjects = listOf(
-    ":benchmarks",
-    ":mocks",
-    ":sample",
+val coverageExclusions = setOf(
+    "benchmarks",
+    "mocks",
+    "sample",
 )
 
 subprojects {
-    apply(plugin = "org.jetbrains.kotlinx.kover")
+    if (this.name !in coverageExclusions) {
+        apply(plugin = "org.jetbrains.kotlinx.kover")
 
-    kover {
-        reports {
-            filters {
-                excludes {
-                    projects.addAll(excludedProjects)
-                }
-            }
+        // register kover for generating merged report from all subprojects
+        rootProject.dependencies {
+            kover(project)
+        }
 
-            verify {
-                rule {
-                    minBound(50)
+        kover {
+            reports {
+                verify {
+                    rule("Minimal line coverage rate in percents") {
+                        minBound(50)
+                    }
                 }
             }
         }
     }
-}
-
-// Total kover rules
-kover {
-    reports {
-        total {
-            verify {
-                rule {
-                    minBound(50)
-                }
-            }
-        }
-    }
-}
-
-dependencies {
-    kover(project(":core"))
-    kover(project(":cors"))
-    kover(project(":json"))
-    kover(project(":jwt"))
-    kover(project(":metrics"))
-    kover(project(":tracing"))
-    kover(project(":typesafe"))
 }
