@@ -15,10 +15,15 @@ include("tracing")
 include("typesafe")
 
 dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+
     versionCatalogs {
         create("libs") {
             version("kotlin", "2.0.0")
             version("detekt", "1.23.6")
+            version("kover", "0.8.2")
 
             version("jakarta", "6.1.0")
             library("jakarta-api", "jakarta.servlet", "jakarta.servlet-api").versionRef("jakarta")

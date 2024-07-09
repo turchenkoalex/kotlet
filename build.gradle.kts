@@ -1,5 +1,6 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
+import kotlin.math.min
 
 group = "com.ecwid"
 version = "1.0-SNAPSHOT"
@@ -8,6 +9,7 @@ plugins {
     kotlin("jvm") version libs.versions.kotlin.get() apply false
     kotlin("plugin.serialization") version libs.versions.kotlin.get() apply false
     id("io.gitlab.arturbosch.detekt") version libs.versions.detekt.get()
+    id("org.jetbrains.kotlinx.kover") version libs.versions.kover.get()
 }
 
 // register task before using in subprojects
@@ -15,11 +17,8 @@ val reportMerge by tasks.registering(ReportMergeTask::class) {
     output.set(rootProject.layout.buildDirectory.file("reports/detekt/merge.xml"))
 }
 
+// Detekt configuration
 subprojects {
-    repositories {
-        mavenCentral()
-    }
-
     apply(plugin = "io.gitlab.arturbosch.detekt")
 
     detekt {
@@ -46,4 +45,41 @@ subprojects {
             tasks.withType<Detekt>().map { it.xmlReportFile }
         )
     }
+}
+
+// Kover - coverage
+subprojects {
+    apply(plugin = "org.jetbrains.kotlinx.kover")
+
+    kover {
+        reports {
+            verify {
+                rule {
+                    minBound(50)
+                }
+            }
+        }
+    }
+}
+
+kover {
+    reports {
+        total {
+            verify {
+                rule {
+                    minBound(50)
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    kover(project(":core"))
+    kover(project(":cors"))
+    kover(project(":json"))
+    kover(project(":jwt"))
+    kover(project(":metrics"))
+    kover(project(":tracing"))
+    kover(project(":typesafe"))
 }

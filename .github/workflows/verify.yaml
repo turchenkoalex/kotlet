@@ -4,6 +4,7 @@ on:
 
 env:
   JDK_VERSION: 21
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -16,8 +17,6 @@ jobs:
     permissions:
       contents: read
       checks: write
-    env:
-      GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -44,8 +43,6 @@ jobs:
       # only required for workflows in private repositories
       actions: read
       contents: read
-    env:
-      GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -62,3 +59,34 @@ jobs:
         if: success() || failure() # always run even if the previous step fails
         with:
           path: 'build/reports/detekt/merge.xml'
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    permissions:
+      # required for all workflows
+      pull-requests: write
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Set up JDK ${{ env.JDK_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt'
+          java-version: '${{ env.JDK_VERSION }}'
+          cache: 'gradle'
+      - name: Run Kover
+        run: ./gradlew koverXmlReport
+      - name: Publish Kover Report
+        uses: madrapps/jacoco-report@v1.6.1
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          paths: |
+            ${{ github.workspace }}/build/reports/kover/report.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 50
+          min-coverage-changed-files: 60
+      - name: Run Kover Verify
+        run: ./gradlew koverVerify
