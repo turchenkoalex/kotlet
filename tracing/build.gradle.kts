@@ -8,6 +8,11 @@ dependencies {
     implementation(libs.opentelemetry.api)
     implementation(libs.opentelemetry.instrumentation.api)
     implementation(libs.opentelemetry.semconv)
+
+    testImplementation(kotlin("test"))
+    testImplementation(project(":mocks"))
+    testImplementation(libs.mockk)
+    testImplementation(libs.jakarta.api)
 }
 
 tasks.test {
