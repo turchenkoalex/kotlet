@@ -1,6 +1,5 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
-import kotlin.math.min
 
 group = "com.ecwid"
 version = "1.0-SNAPSHOT"
@@ -54,11 +53,24 @@ subprojects {
 }
 
 // Kover - coverage
+
+val excludedProjects = listOf(
+    ":benchmarks",
+    ":mocks",
+    ":sample",
+)
+
 subprojects {
     apply(plugin = "org.jetbrains.kotlinx.kover")
 
     kover {
         reports {
+            filters {
+                excludes {
+                    projects.addAll(excludedProjects)
+                }
+            }
+
             verify {
                 rule {
                     minBound(50)
@@ -68,6 +80,7 @@ subprojects {
     }
 }
 
+// Total kover rules
 kover {
     reports {
         total {
