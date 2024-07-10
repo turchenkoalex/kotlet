@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm")
+    alias(libs.plugins.kotlin.jvm)
 }
 
 dependencies {
@@ -7,8 +7,8 @@ dependencies {
     compileOnly(libs.jakarta.api)
     implementation(libs.auth0.jwt)
 
-    testImplementation(kotlin("test"))
     testImplementation(project(":mocks"))
+    testImplementation(libs.kotlin.test)
     testImplementation(libs.mockk)
     testImplementation(libs.jakarta.api)
 }
