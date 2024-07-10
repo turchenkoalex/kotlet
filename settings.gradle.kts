@@ -14,9 +14,3 @@ include("mocks")
 include("sample")
 include("tracing")
 include("typesafe")
-
-dependencyResolutionManagement {
-    repositories {
-        mavenCentral()
-    }
-}

@@ -12,6 +12,12 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
 // register task before using in subprojects
 val reportMerge by tasks.registering(ReportMergeTask::class) {
     output.set(rootProject.layout.buildDirectory.file("reports/detekt/merge.xml"))
