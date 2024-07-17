@@ -23,7 +23,7 @@ class TracingInterceptorUnitTest {
 
         every { instrumenter.shouldStart(any(), any()) } returns false
 
-        val call = Mocks.mockHttpCall(
+        val call = Mocks.httpCall(
             method = HttpMethod.GET,
             headers = emptyMap()
         )

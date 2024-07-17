@@ -39,7 +39,7 @@ internal class JWTAuthenticationInterceptor(
 
     override fun afterCall(call: HttpCall): HttpCall {
         if (call.rawRequest.isAsyncStarted) {
-            call.rawRequest.asyncContext.addListener(JWTAttributeCleaner)
+            call.rawRequest.asyncContext.addListener(JWTAttributeAsyncCleaner)
         } else {
             call.rawRequest.removeAttribute(IDENTITY_PARAMETER_NAME)
         }
@@ -47,7 +47,7 @@ internal class JWTAuthenticationInterceptor(
     }
 }
 
-private object JWTAttributeCleaner : AsyncListener {
+private object JWTAttributeAsyncCleaner : AsyncListener {
     override fun onComplete(event: jakarta.servlet.AsyncEvent) {
         event.asyncContext.request.removeAttribute(IDENTITY_PARAMETER_NAME)
     }

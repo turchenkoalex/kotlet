@@ -17,6 +17,7 @@ class MockHttpCall(
     requestData: ByteArray,
 ) : HttpCall {
     private var contentTypeField: String = ""
+    private var statusField: Int = 200
     private val responseStream = ByteArrayOutputStream()
 
     override val routePath = "/"
@@ -53,10 +54,14 @@ class MockHttpCall(
 
         rawResponse = mockk {
             every { outputStream } returns ByteArrayServletOutputStream(responseStream)
-            every { contentType = any() } answers {
-                contentTypeField = this.firstArg()
-            }
+
+            // contentTypeField is a private field, so we need to use a setter to set it
+            every { contentType = any() } answers { contentTypeField = this.firstArg() }
             every { contentType } answers { contentTypeField }
+
+            // statusField is a private field, so we need to use a setter to set it
+            every { status = any() } answers { statusField = this.firstArg() }
+            every { status } answers { statusField }
         }
     }
 }

@@ -22,7 +22,7 @@ class JWTAuthenticationInterceptorUnitTest {
             .withClaim("scope", "test")
             .sign(Algorithm.none())
 
-        val call = Mocks.mockHttpCall(
+        val call = Mocks.httpCall(
             method = HttpMethod.GET,
             headers = mapOf("Authorization" to "Bearer $jwtToken")
         )
@@ -50,7 +50,7 @@ class JWTAuthenticationInterceptorUnitTest {
             .withClaim("scope", "test")
             .sign(Algorithm.none())
 
-        val call = Mocks.mockHttpCall(
+        val call = Mocks.httpCall(
             method = HttpMethod.GET,
             headers = mapOf("Authorization" to "Bearer $jwtToken")
         )

@@ -1,4 +1,4 @@
-package kotlet.metrics
+package kotlet.prometheus
 
 import io.mockk.Matcher
 import io.mockk.Runs
@@ -10,7 +10,7 @@ import io.prometheus.metrics.core.metrics.Metric
 import io.prometheus.metrics.model.registry.Collector
 import io.prometheus.metrics.model.registry.PrometheusRegistry
 import kotlet.Kotlet
-import kotlet.prometheus.PrometheusMetricsCollector
+import kotlet.metrics.installMetrics
 import kotlin.test.Test
 
 class PrometheusMetricsCollectorUnitTest {

@@ -7,6 +7,7 @@ dependencies {
     compileOnly(libs.jakarta.api)
     compileOnly(libs.prometheus.metrics.core)
 
+    testImplementation(project(":mocks"))
     testImplementation(libs.kotlin.test)
     testImplementation(libs.mockk)
     testImplementation(libs.jakarta.api)
