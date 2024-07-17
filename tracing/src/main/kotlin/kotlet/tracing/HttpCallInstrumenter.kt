@@ -23,14 +23,14 @@ internal fun buildServerInstrumenter(
         .buildServerInstrumenter(textMapGetter)
 }
 
-private class ServletHttpServerAttributesGetter(
+internal class ServletHttpServerAttributesGetter(
     private val sanitizer: HttpCallSanitizer,
 ) : HttpServerAttributesGetter<HttpCall, HttpServletResponse> {
     override fun getHttpRequestMethod(call: HttpCall): String? {
         return call.rawRequest.method
     }
 
-    override fun getHttpRoute(call: HttpCall): String? {
+    override fun getHttpRoute(call: HttpCall): String {
         return call.routePath
     }
 
@@ -51,7 +51,7 @@ private class ServletHttpServerAttributesGetter(
         response: HttpServletResponse,
         name: String
     ): MutableList<String> {
-        return response.getHeaders(name).toMutableList()
+        return sanitizer.getHttpResponseHeader(response, name)
     }
 
     override fun getUrlScheme(call: HttpCall): String? {

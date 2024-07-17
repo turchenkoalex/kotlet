@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletResponse
 import kotlet.HttpCall
 import kotlet.HttpMethod
 import java.io.ByteArrayOutputStream
+import java.util.Collections
+import java.util.Enumeration
 
 /**
  * A mock implementation of [HttpCall].
@@ -16,6 +18,7 @@ class MockHttpCall(
     override val routePath: String,
     headers: Map<String, String>,
     requestData: ByteArray,
+    async: Boolean
 ) : HttpCall {
     private var contentTypeField: String = ""
     private var statusField: Int = 200
@@ -33,25 +36,14 @@ class MockHttpCall(
         get() = responseStream.toByteArray()
 
     init {
-        val attributes = mutableMapOf<String, Any>()
+        rawRequest = createHttpRequestMock(
+            methodName = httpMethod.name,
+            async = async,
+            headers = headers,
+            requestData = requestData
+        )
 
-        rawRequest = mockk {
-            every { inputStream } returns ByteArrayServletInputStream(requestData)
-            every { getHeader(any()) } answers {
-                headers[this.firstArg()]
-            }
-            every { getAttribute(any()) } answers {
-                attributes[this.firstArg()]
-            }
-            every { setAttribute(any(), any()) } answers {
-                attributes[this.firstArg()] = this.secondArg()
-            }
-            every { removeAttribute(any()) } answers {
-                attributes.remove(this.firstArg())
-            }
-            every { isAsyncStarted } returns false
-        }
-
+        val responseHeaders = mutableMapOf<String, String>()
         rawResponse = mockk {
             every { outputStream } returns ByteArrayServletOutputStream(responseStream)
 
@@ -62,6 +54,48 @@ class MockHttpCall(
             // statusField is a private field, so we need to use a setter to set it
             every { status = any() } answers { statusField = this.firstArg() }
             every { status } answers { statusField }
+
+            every { addHeader(any(), any()) } answers {
+                responseHeaders[this.firstArg()] = this.secondArg()
+            }
+            every { getHeader(any()) } answers {
+                responseHeaders[this.firstArg()]
+            }
+            every { getHeaders(any()) } answers {
+                val header = responseHeaders[this.firstArg()] ?: ""
+                header.split(",").map(String::trim)
+            }
         }
+    }
+}
+
+private fun createHttpRequestMock(
+    methodName: String,
+    async: Boolean,
+    headers: Map<String, String>,
+    requestData: ByteArray,
+): HttpServletRequest {
+    val attributes = mutableMapOf<String, Any>()
+
+    return mockk {
+        every { inputStream } returns ByteArrayServletInputStream(requestData)
+        every { getHeader(any()) } answers {
+            headers[this.firstArg()]
+        }
+        every { getHeaders(any()) } answers {
+            val header = headers[this.firstArg()] ?: ""
+            Collections.enumeration(header.split(",").map(String::trim))
+        }
+        every { getAttribute(any()) } answers {
+            attributes[this.firstArg()]
+        }
+        every { setAttribute(any(), any()) } answers {
+            attributes[this.firstArg()] = this.secondArg()
+        }
+        every { removeAttribute(any()) } answers {
+            attributes.remove(this.firstArg())
+        }
+        every { isAsyncStarted } returns async
+        every { method } returns methodName
     }
 }

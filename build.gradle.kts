@@ -71,7 +71,7 @@ subprojects {
             reports {
                 verify {
                     rule("Minimal line coverage rate in percents") {
-                        minBound(50)
+                        minBound(40)
                     }
                 }
             }

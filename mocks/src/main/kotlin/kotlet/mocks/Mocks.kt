@@ -9,13 +9,15 @@ object Mocks {
         method: HttpMethod,
         routePath: String = "/",
         headers: Map<String, String> = emptyMap(),
-        data: ByteArray = ByteArray(0)
+        data: ByteArray = ByteArray(0),
+        async: Boolean = false,
     ): MockHttpCall {
         return MockHttpCall(
             httpMethod = method,
             routePath = routePath,
             headers = headers,
-            requestData = data
+            requestData = data,
+            async = async,
         )
     }
 

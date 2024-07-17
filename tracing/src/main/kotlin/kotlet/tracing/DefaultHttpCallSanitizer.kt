@@ -1,5 +1,6 @@
 package kotlet.tracing
 
+import jakarta.servlet.http.HttpServletResponse
 import kotlet.HttpCall
 
 /**
@@ -9,6 +10,12 @@ import kotlet.HttpCall
 object DefaultHttpCallSanitizer : HttpCallSanitizer {
     override fun getHttpRequestHeader(call: HttpCall, name: String): MutableList<String> {
         return call.rawRequest.getHeaders(name)
+            .toList()
+            .toMutableList()
+    }
+
+    override fun getHttpResponseHeader(response: HttpServletResponse, name: String): MutableList<String> {
+        return response.getHeaders(name)
             .toList()
             .toMutableList()
     }
