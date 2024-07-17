@@ -8,8 +8,8 @@ import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter
 import jakarta.servlet.http.HttpServletResponse
 import kotlet.HttpCall
 import kotlet.HttpMethod
-import kotlet.tests.Interceptors
-import kotlet.tests.Mocks
+import kotlet.mocks.Interceptors
+import kotlet.mocks.Mocks
 import kotlin.test.Test
 import kotlin.test.assertTrue
 

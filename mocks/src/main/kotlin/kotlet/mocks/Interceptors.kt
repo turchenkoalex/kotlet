@@ -1,4 +1,4 @@
-package kotlet.tests
+package kotlet.mocks
 
 import kotlet.Handler
 import kotlet.HttpCall

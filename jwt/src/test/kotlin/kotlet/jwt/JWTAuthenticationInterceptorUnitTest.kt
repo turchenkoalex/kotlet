@@ -4,8 +4,8 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.DecodedJWT
 import kotlet.HttpMethod
-import kotlet.tests.Interceptors
-import kotlet.tests.Mocks
+import kotlet.mocks.Interceptors
+import kotlet.mocks.Mocks
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
