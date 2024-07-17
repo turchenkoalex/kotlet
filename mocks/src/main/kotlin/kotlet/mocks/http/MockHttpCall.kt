@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream
  */
 class MockHttpCall(
     override val httpMethod: HttpMethod,
+    override val routePath: String,
     headers: Map<String, String>,
     requestData: ByteArray,
 ) : HttpCall {
@@ -20,7 +21,6 @@ class MockHttpCall(
     private var statusField: Int = 200
     private val responseStream = ByteArrayOutputStream()
 
-    override val routePath = "/"
     override val parameters: Map<String, String> = emptyMap()
     override val rawRequest: HttpServletRequest
     override val rawResponse: HttpServletResponse
