@@ -5,9 +5,16 @@ group = "com.ecwid"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version libs.versions.kotlin.get() apply false
-    kotlin("plugin.serialization") version libs.versions.kotlin.get() apply false
-    id("io.gitlab.arturbosch.detekt") version libs.versions.detekt.get()
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.kotlinx.serialization) apply false
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.kover)
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 }
 
 // register task before using in subprojects
@@ -15,11 +22,8 @@ val reportMerge by tasks.registering(ReportMergeTask::class) {
     output.set(rootProject.layout.buildDirectory.file("reports/detekt/merge.xml"))
 }
 
+// Detekt configuration
 subprojects {
-    repositories {
-        mavenCentral()
-    }
-
     apply(plugin = "io.gitlab.arturbosch.detekt")
 
     detekt {
@@ -45,5 +49,32 @@ subprojects {
         input.from(
             tasks.withType<Detekt>().map { it.xmlReportFile }
         )
+    }
+}
+
+val coverageExclusions = setOf(
+    "benchmarks",
+    "mocks",
+    "sample",
+)
+
+subprojects {
+    if (this.name !in coverageExclusions) {
+        apply(plugin = "org.jetbrains.kotlinx.kover")
+
+        // register kover for generating merged report from all subprojects
+        rootProject.dependencies {
+            kover(project)
+        }
+
+        kover {
+            reports {
+                verify {
+                    rule("Minimal line coverage rate in percents") {
+                        minBound(40)
+                    }
+                }
+            }
+        }
     }
 }

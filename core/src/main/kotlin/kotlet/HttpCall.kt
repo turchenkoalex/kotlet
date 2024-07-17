@@ -14,7 +14,7 @@ interface HttpCall {
     val httpMethod: HttpMethod
 
     /**
-     * Route path of the request configured in the [routing].
+     * Route path of the request configured in the [Kotlet.routing].
      */
     val routePath: String
 

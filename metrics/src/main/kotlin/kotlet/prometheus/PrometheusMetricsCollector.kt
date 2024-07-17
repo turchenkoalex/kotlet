@@ -7,21 +7,23 @@ import jakarta.servlet.AsyncEvent
 import jakarta.servlet.AsyncListener
 import kotlet.HttpCall
 import kotlet.metrics.MetricsCollector
+import java.time.Clock
 
 private const val START_TIME_ATTRIBUTE = "kotlet.prometheus.started_at"
 
 class PrometheusMetricsCollector(
-    registry: PrometheusRegistry
+    registry: PrometheusRegistry,
+    private val clock: Clock = Clock.systemUTC()
 ) : MetricsCollector {
     override fun startRequest(call: HttpCall) {
-        call.rawRequest.setAttribute(START_TIME_ATTRIBUTE, System.nanoTime())
+        call.rawRequest.setAttribute(START_TIME_ATTRIBUTE, clock.millis())
     }
 
     override fun endRequest(call: HttpCall) {
         if (call.rawRequest.isAsyncStarted) {
-            call.rawRequest.asyncContext.addListener(RequestCounterAsyncListener(call, counter, summary))
+            call.rawRequest.asyncContext.addListener(RequestCounterAsyncListener(call, clock, counter, summary))
         } else {
-            measureRequest(call, counter, summary)
+            measureRequest(call, clock, counter, summary)
         }
     }
 
@@ -45,31 +47,32 @@ class PrometheusMetricsCollector(
 
 private data class RequestCounterAsyncListener(
     private val call: HttpCall,
+    private val clock: Clock,
     private val counter: Counter,
     private val summary: Summary,
 ) : AsyncListener {
     override fun onComplete(event: AsyncEvent) {
-        measureRequest(call, counter, summary)
+        measureRequest(call, clock, counter, summary)
     }
 
     override fun onTimeout(event: AsyncEvent) {
-        measureRequest(call, counter, summary)
+        measureRequest(call, clock, counter, summary)
     }
 
     override fun onError(event: AsyncEvent) {
-        measureRequest(call, counter, summary)
+        measureRequest(call, clock, counter, summary)
     }
 
     override fun onStartAsync(event: AsyncEvent) {
     }
 }
 
-private fun measureRequest(call: HttpCall, counter: Counter, summary: Summary) {
+private fun measureRequest(call: HttpCall, clock: Clock, counter: Counter, summary: Summary) {
     val statusCode = call.statusCode()
     counter.labelValues(call.httpMethod.name, call.routePath, statusCode).inc()
     val startTime = call.rawRequest.getAttribute(START_TIME_ATTRIBUTE) as? Long
     if (startTime != null) {
-        val duration = (System.nanoTime() - startTime) / 1_000_000_000.0
+        val duration = (clock.millis() - startTime) / 1_000.0
         summary.labelValues(call.httpMethod.name, call.routePath, statusCode).observe(duration)
         call.rawRequest.removeAttribute(START_TIME_ATTRIBUTE)
     }
