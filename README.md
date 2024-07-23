@@ -1,4 +1,4 @@
-# Kotlet: A playful blend of Kotlin and Servlet with simple routing
+# Kotlet: A blend of Kotlin and Servlet with simple routing
 
 Welcome to Kotlet! This library enables you to create routing for web applications using Java Servlets and the Kotlin
 programming language. Kotlet is designed for developers who appreciate simplicity and efficiency.
