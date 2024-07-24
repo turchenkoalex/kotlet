@@ -1,5 +1,7 @@
 # JWT Authentication
 
+## Installation
+
 ```kotlin
 implementation("com.ecwid:kotlet-jwt:1.0.0")
 ```
@@ -7,6 +9,8 @@ implementation("com.ecwid:kotlet-jwt:1.0.0")
 > [!IMPORTANT]
 > For using this extension you must add to your
 > dependencies [com.auth0:java-jwt](https://mvnrepository.com/artifact/com.auth0/java-jwt) library.
+
+## Configuration
 
 You can use the `installJWTAuthentication` method to add JWT authentication to your routes. The method takes a
 `com.auth0.jwt.interfaces.JWTVerifier` object as a parameter, which contains the logic for constructing and validating
