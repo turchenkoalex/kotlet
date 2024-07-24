@@ -1,8 +1,12 @@
 # Type-Safe request objects
 
+## Installation
+
 ```kotlin
 implementation("com.ecwid:kotlet-typesafe:1.0.0")
 ```
+
+## Configuration
 
 Few helpful methods for parsing request query parameters: `receivePath` and `receiveQuery`.
 
