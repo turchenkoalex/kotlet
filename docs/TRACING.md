@@ -10,7 +10,7 @@ Use the `installTracing` method to add tracing to your routes. The method takes 
 Kotlet.routing {
     installTracing(GlobalOpenTelemetry.get())
     get("/hello") { call ->
-        call.responseText("Hello, World!")
+        call.respondText("Hello, World!")
     }
 }
 ```

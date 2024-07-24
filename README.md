@@ -19,7 +19,7 @@ intuitive and powerful API that makes the process of creating routes easy and fa
 ```kotlin
 val routing = Kotlet.routing {
     get("/hello") { call ->
-        call.responseText("Hello, World!")
+        call.respondText("Hello, World!")
     }
 
     get("/json/{name}") { call ->
@@ -75,7 +75,7 @@ Define the Kotlet routing in your application, and you're ready to go!
 ```kotlin
 val routing = Kotlet.routing {
     get("/hello") { call ->
-        call.responseText("Hello, World!")
+        call.respondText("Hello, World!")
     }
 }
 ```

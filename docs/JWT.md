@@ -25,7 +25,7 @@ Kotlet.routing {
             call.respondError(401, "Unauthorized")
             return@get
         }
-        call.responseText("Hello, route!")
+        call.respondText("Hello, route!")
     }
 }
 ```
@@ -59,7 +59,7 @@ Kotlet.routing {
             return@get
         }
 
-        call.responseText("Hello, admin!")
+        call.respondText("Hello, admin!")
     }
 }
 ```

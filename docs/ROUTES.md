@@ -20,10 +20,10 @@ Define a route with a static path:
 
 ```kotlin
 get("/hello/world") { call ->
-    call.responseText("Hello, World!")
+    call.respondText("Hello, World!")
 }
 get("/hello/world/method") { call ->
-    call.responseText("Hello, Method!")
+    call.respondText("Hello, Method!")
 }
 ```
 
@@ -36,7 +36,7 @@ get("/first/{userId}/second/{fileId}") { call ->
     // Access via /first/123/second/456
     val userId = call.parameters["userId"] // 123
     val fileId = call.parameters["fileId"] // 456
-    call.responseText("User: $userId, File: $fileId")
+    call.respondText("User: $userId, File: $fileId")
 }
 ```
 
@@ -48,7 +48,7 @@ Define a route with optional parameters:
 get("/first/{userId?}") { call ->
     // Access via /first/123 or /first
     val userId = call.parameters["userId"] // 123 or null
-    call.responseText("User: $userId")
+    call.respondText("User: $userId")
 }
 ```
 
@@ -59,7 +59,7 @@ Define a route with wildcard parameters:
 ```kotlin
 get("/first/*/second/*") { call ->
     // Access via /first/123/second/456
-    call.responseText("Hello from wildcard route")
+    call.respondText("Hello from wildcard route")
 }
 ```
 
@@ -70,7 +70,7 @@ Define a route with a tail path that captures the rest of the path:
 ```kotlin
 get("/first/{...}") { call ->
     // Access via /first/second/third
-    call.responseText("Hello from tail path route")
+    call.respondText("Hello from tail path route")
 }
 ```
 
@@ -82,7 +82,7 @@ Define a route with a combination of static, parameter, wildcard, and tail path 
 get("/first/{userId}/second/*/third/{...}") { call ->
     // Access via /first/123/second/456/third/789/10
     val userId = call.parameters["userId"] // 123
-    call.responseText("User: $userId")
+    call.respondText("User: $userId")
 }
 ```
 

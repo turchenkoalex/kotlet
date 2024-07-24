@@ -19,7 +19,7 @@ val kotletMetrics =
 Kotlet.routing {
     installMetrics(kotletMetrics) // Now all requests of this routing will be measured
     get("/hello") { call ->
-        call.responseText("Hello, World!")
+        call.respondText("Hello, World!")
     }
 }
 ```
