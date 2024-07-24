@@ -1,8 +1,12 @@
 # Tracing
 
+## Installation
+
 ```kotlin
 implementation("com.ecwid:kotlet-tracing:1.0.0")
 ```
+
+## Configuration
 
 Use the `installTracing` method to add tracing to your routes. The method takes a `OpenTelemetry` object as a parameter.
 
