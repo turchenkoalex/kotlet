@@ -1,8 +1,12 @@
 # Cross-Origin Resource Sharing (CORS)
 
+## Installation
+
 ```kotlin
 implementation("com.ecwid:kotlet-cors:1.0.0")
 ```
+
+## Configuration
 
 Configure Cross-Origin Resource Sharing (CORS) for your application using the `cors` method.
 
