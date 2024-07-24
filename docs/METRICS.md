@@ -1,5 +1,7 @@
 # Metrics
 
+## Installation
+
 ```kotlin
 implementation("com.ecwid:kotlet-metrics:1.0.0")
 ```
@@ -8,6 +10,8 @@ implementation("com.ecwid:kotlet-metrics:1.0.0")
 > For using prometheus metrics you must add to your dependencies
 > [io.prometheus:prometheus-metrics-core](https://mvnrepository.com/artifact/io.prometheus/prometheus-metrics-core)
 > library.
+
+## Configuration
 
 You can use the `installMetrics` method to add metrics to your routes. The method takes a `MetricsCollector` object
 as a parameter.
