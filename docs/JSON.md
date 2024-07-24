@@ -1,8 +1,12 @@
 # JSON Responses
 
+## Installation
+
 ```kotlin
 implementation("com.ecwid:kotlet-json:1.0.0")
 ```
+
+## Configuration
 
 Library provides a convenient way to return JSON responses from your routes. You can use the `respondJson` method to
 serialize an object to JSON and send it as the response.
