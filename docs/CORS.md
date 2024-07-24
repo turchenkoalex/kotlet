@@ -1,4 +1,4 @@
-# CORS
+# Cross-Origin Resource Sharing (CORS)
 
 ```kotlin
 implementation("com.ecwid:kotlet-cors:1.0.0")
