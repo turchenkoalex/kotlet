@@ -17,6 +17,7 @@ dependencies {
 
     // Jetty
     implementation(libs.jetty.server)
+    implementation(libs.jetty.server.http2)
     implementation(libs.jetty.ee10.servlet)
 
     // JWT
