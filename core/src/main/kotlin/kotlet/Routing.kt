@@ -4,10 +4,30 @@ import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 
+/**
+ * Routing provides a way to configure routes and global interceptors
+ * @see Kotlet.routing
+ */
 class Routing internal constructor() {
+    /**
+     * Flag that indicates that all routes have been configured and sealed
+     */
     private val sealed = AtomicBoolean(false)
+
+    /**
+     * List of all route handlers
+     */
     private val routeHandlers = CopyOnWriteArrayList<RouteHandler>()
+
+    /**
+     * List of global interceptors
+     */
     private val globalInterceptors = CopyOnWriteArrayList<Interceptor>()
+
+    /**
+     * Stack of interceptors for the injecting into the route
+     * Used in [use] method
+     */
     private val currentInterceptors = LinkedList<Interceptor>()
 
     /**
@@ -78,48 +98,180 @@ class Routing internal constructor() {
         }
     }
 
+    /**
+     * GET method route
+     *
+     * @param path route path
+     * @param handler route handler
+     * @param settingsBlock route settings block
+     *
+     * Example:
+     * ```
+     * Kotlet.routing {
+     *   get("/users") { call ->
+     *     call.respondText("Hello, user!")
+     *   }
+     * }
+     * ```
+     */
     fun get(
         path: String,
         handler: Handler,
         settingsBlock: RouteSettings.RouteSettingsBuilder.() -> Unit = {}
     ) = createRoute(path, HttpMethod.GET, handler, settingsBlock)
 
+    /**
+     * POST method route
+     *
+     * @param path route path
+     * @param handler route handler
+     * @param settingsBlock route settings block
+     *
+     * Example:
+     * ```
+     * Kotlet.routing {
+     *   post("/users") { call ->
+     *     call.status = HttpServletResponse.SC_CREATED
+     *   }
+     * }
+     * ```
+     */
     fun post(
         path: String,
         handler: Handler,
         settingsBlock: RouteSettings.RouteSettingsBuilder.() -> Unit = {}
     ) = createRoute(path, HttpMethod.POST, handler, settingsBlock)
 
+    /**
+     * PUT method route
+     *
+     * @param path route path
+     * @param handler route handler
+     * @param settingsBlock route settings block
+     *
+     * Example:
+     * ```
+     * Kotlet.routing {
+     *   put("/users/{id}") { call ->
+     *     call.status = HttpServletResponse.SC_OK
+     *   }
+     * }
+     * ```
+     */
     fun put(
         path: String,
         handler: Handler,
         settingsBlock: RouteSettings.RouteSettingsBuilder.() -> Unit = {}
     ) = createRoute(path, HttpMethod.PUT, handler, settingsBlock)
 
+    /**
+     * PATCH method route
+     *
+     * @param path route path
+     * @param handler route handler
+     * @param settingsBlock route settings block
+     *
+     * Example:
+     * ```
+     * Kotlet.routing {
+     *   patch("/users/{id}") { call ->
+     *     call.status = HttpServletResponse.SC_CREATED
+     *   }
+     * }
+     * ```
+     */
     fun patch(
         path: String,
         handler: Handler,
         settingsBlock: RouteSettings.RouteSettingsBuilder.() -> Unit = {}
     ) = createRoute(path, HttpMethod.PATCH, handler, settingsBlock)
 
+    /**
+     * DELETE method route
+     *
+     * @param path route path
+     * @param handler route handler
+     * @param settingsBlock route settings block
+     *
+     * Example:
+     * ```
+     * Kotlet.routing {
+     *   delete("/users/{id}") { call ->
+     *     call.status = HttpServletResponse.SC_NO_CONTENT
+     *   }
+     * }
+     * ```
+     */
     fun delete(
         path: String,
         handler: Handler,
         settingsBlock: RouteSettings.RouteSettingsBuilder.() -> Unit = {}
     ) = createRoute(path, HttpMethod.DELETE, handler, settingsBlock)
 
+    /**
+     * HEAD method route
+     *
+     * @param path route path
+     * @param handler route handler
+     * @param settingsBlock route settings block
+     *
+     * Example:
+     * ```
+     * Kotlet.routing {
+     *   head("/users/{id}") { call ->
+     *     call.status = HttpServletResponse.SC_NO_CONTENT
+     *   }
+     * }
+     * ```
+     */
     fun head(
         path: String,
         handler: Handler,
         settingsBlock: RouteSettings.RouteSettingsBuilder.() -> Unit = {}
     ) = createRoute(path, HttpMethod.HEAD, handler, settingsBlock)
 
+    /**
+     * OPTIONS method route
+     *
+     * @param path route path
+     * @param handler route handler
+     * @param settingsBlock route settings block
+     *
+     * Example:
+     * ```
+     * Kotlet.routing {
+     *   options("/users") { call ->
+     *     // CORS processing
+     *     call.rawResponse.setHeader("Access-Control-Allow-Origin", "*")
+     *     call.rawResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+     *     call.rawResponse.setHeader("Access-Control-Allow-Headers", "Content-Type")
+     *     call.status = HttpServletResponse.SC_OK
+     *   }
+     * }
+     * ```
+     */
     fun options(
         path: String,
         handler: Handler,
         settingsBlock: RouteSettings.RouteSettingsBuilder.() -> Unit = {}
     ) = createRoute(path, HttpMethod.OPTIONS, handler, settingsBlock)
 
+    /**
+     * TRACE method route
+     *
+     * @param path route path
+     * @param handler route handler
+     * @param settingsBlock route settings block
+     *
+     * Example:
+     * ```
+     * Kotlet.routing {
+     *   trace("/users") { call ->
+     *     call.status = HttpServletResponse.SC_OK
+     *   }
+     * }
+     * ```
+     */
     fun trace(
         path: String,
         handler: Handler,
