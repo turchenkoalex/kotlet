@@ -47,16 +47,20 @@ fun main() {
             withInterceptor(versionHeader) // Interceptor only for this endpoint, the same as use()
         }
 
-        // requiredScopes is a custom interceptor that checks if the user has the required scopes
-        requiredScopes(Scope.READ_POSTS) {
-            get("/posts", handler = postsService::list)
-            get("/posts/{id}", postsService::get)
-        }
+        // Posts section
+        route("/posts") {
 
-        requiredScopes(Scope.READ_POSTS, Scope.WRITE_POSTS) {
-            post("/posts", postsService::create)
-            put("/posts/{id}", postsService::update)
-            delete("/posts/{id}", postsService::delete)
+            // requiredScopes is a custom interceptor that checks if the user has the required scopes
+            requiredScopes(Scope.READ_POSTS) {
+                get("/", handler = postsService::list)
+                get("/{id}", postsService::get)
+            }
+
+            requiredScopes(Scope.READ_POSTS, Scope.WRITE_POSTS) {
+                post("/", postsService::create)
+                put("/{id}", postsService::update)
+                delete("/{id}", postsService::delete)
+            }
         }
     }
 
