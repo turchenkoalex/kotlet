@@ -237,6 +237,61 @@ internal class AllRoutesMatcherUnitTest {
         }
     }
 
+    @Test
+    fun findRoute_WithRouteBlock() {
+        // simple test – longer static path should always win
+        val routes = routing {
+            route("/a") {
+                route("/b") {
+                    get("/", {})
+                    get("/c", {})
+                }
+            }
+
+            route("/c/d") {
+                get("", {})
+                get("e", {})
+            }
+
+            route("/f") {
+                get("/", {})
+                route("g") {
+                    get("h", {})
+                }
+            }
+        }
+
+        routes.findMatchForShuffledRoutes(mockRequest("/a/b")) { route, params, allRoutes ->
+            assertEquals("/a/b", route.path, "All routes: $allRoutes")
+            assertEquals(0, params.size, "All routes: $allRoutes")
+        }
+
+        routes.findMatchForShuffledRoutes(mockRequest("/a/b/c")) { route, params, allRoutes ->
+            assertEquals("/a/b/c", route.path, "All routes: $allRoutes")
+            assertEquals(0, params.size, "All routes: $allRoutes")
+        }
+
+        routes.findMatchForShuffledRoutes(mockRequest("/c/d")) { route, params, allRoutes ->
+            assertEquals("/c/d", route.path, "All routes: $allRoutes")
+            assertEquals(0, params.size, "All routes: $allRoutes")
+        }
+
+        routes.findMatchForShuffledRoutes(mockRequest("/c/d/e")) { route, params, allRoutes ->
+            assertEquals("/c/d/e", route.path, "All routes: $allRoutes")
+            assertEquals(0, params.size, "All routes: $allRoutes")
+        }
+
+        routes.findMatchForShuffledRoutes(mockRequest("/f")) { route, params, allRoutes ->
+            assertEquals("/f", route.path, "All routes: $allRoutes")
+            assertEquals(0, params.size, "All routes: $allRoutes")
+        }
+
+        routes.findMatchForShuffledRoutes(mockRequest("/f/g/h")) { route, params, allRoutes ->
+            assertEquals("/f/g/h", route.path, "All routes: $allRoutes")
+            assertEquals(0, params.size, "All routes: $allRoutes")
+        }
+    }
+
     private fun Routing.findMatchForShuffledRoutes(
         request: HttpServletRequest,
         testCodeBlock: (route: Route, params: Map<String, String>, allRoutes: List<Route>) -> Unit

@@ -31,6 +31,12 @@ class Routing internal constructor() {
     private val currentInterceptors = LinkedList<Interceptor>()
 
     /**
+     * Stack of paths segments for the injecting into the route
+     * Used in [route] method
+     */
+    private val currentSegments = LinkedList<String>()
+
+    /**
      * Install global interceptors
      *
      * @param interceptors list of interceptors
@@ -278,6 +284,56 @@ class Routing internal constructor() {
         settingsBlock: RouteSettings.RouteSettingsBuilder.() -> Unit = {}
     ) = createRoute(path, HttpMethod.TRACE, handler, settingsBlock)
 
+    /**
+     * All routes configured in [block] will be nested under the specified [path]
+     *
+     * @param path route path
+     * @param block routing block
+     *
+     * Example:
+     * ```
+     * Kotlet.routing {
+     *
+     *  route("/users") {
+     *    get("/") { call ->
+     *      call.respondText("Hello, user!")
+     *    }
+     *
+     *    get("/{id}") { call ->
+     *      val id = call.parameters["id"]
+     *      call.respondText("Hello, user $id!")
+     *    }
+     *  }
+     *
+     *  route("/api") {
+     *    route("/v1") {
+     *      get("/posts") {
+     *        call.respondText("Hello, posts v1!")
+     *      }
+     *    }
+     *
+     *    route("/v2") {
+     *      get("/posts") {
+     *        call.respondText("Hello, posts v2!")
+     *      }
+     *    }
+     *  }
+     */
+    fun route(
+        path: String,
+        block: Routing.() -> Unit
+    ) {
+        if (sealed.get()) {
+            throw RoutingConfigurationException("All routes have been sealed, you can't create another one")
+        }
+
+        currentSegments.add(path)
+        block(this)
+        repeat(currentSegments.size) {
+            currentSegments.removeLast()
+        }
+    }
+
     private fun createRoute(
         path: String,
         method: HttpMethod,
@@ -292,7 +348,9 @@ class Routing internal constructor() {
         routeSettingsBuilder.settingsBlock()
         val settings = routeSettingsBuilder.build()
 
-        routeHandlers += RouteHandler(path, method, handler, settings)
+        val routePath = buildRoutePath(currentSegments, path)
+
+        routeHandlers += RouteHandler(routePath, method, handler, settings)
     }
 
     internal fun getAllRoutes(): List<Route> {
@@ -306,5 +364,26 @@ class Routing internal constructor() {
         }
 
         return routes
+    }
+}
+
+private fun buildRoutePath(segments: List<String>, path: String): String {
+    if (segments.isEmpty()) {
+        return path
+    }
+
+    val segmentsPath = segments.joinToString("", transform = ::normalizePathSegment)
+    if (path == RouteHelpers.ROOT_ROUTE_PATH || path.isEmpty()) {
+        return segmentsPath
+    }
+
+    return segmentsPath + normalizePathSegment(path)
+}
+
+private fun normalizePathSegment(segment: String): String {
+    return if (segment.startsWith(RouteHelpers.ROOT_ROUTE_PATH)) {
+        segment
+    } else {
+        "/$segment"
     }
 }
