@@ -77,6 +77,29 @@ val routing = Kotlet.routing {
     get("/hello") { call ->
         call.respondText("Hello, World!")
     }
+    
+    // API section
+    route("/api") {
+        route("/v1") {
+            get("/users") { call ->
+                call.respondText("List of users at /api/v1/users")
+            }
+        }
+    }
+    
+    // admin/api section
+    route("/admin/api") {
+        // users nested routes section
+        route("/users") {
+            get("/") { call ->
+                call.respondText("List of users at /admin/api/users")
+            }
+
+            post("/") { call ->
+                call.respondText("Create user")
+            }
+        }
+    }
 }
 ```
 
