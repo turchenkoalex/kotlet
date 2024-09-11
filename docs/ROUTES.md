@@ -89,3 +89,59 @@ get("/first/{userId}/second/*/third/{...}") { call ->
 Kotlet's routing methods provide a flexible way to define HTTP routes with various types of path parameters. Whether
 using static paths, dynamic parameters, optional segments, wildcards, or complex combinations, Kotlet makes it easy to
 handle different routing scenarios in your application.
+
+## Route Blocks
+
+Kotlet supports route blocks for grouping related routes together. Use the `route` method to define a block of routes
+under a common path prefix:
+
+```kotlin
+route("/api") {
+    get("/users") { call ->
+        call.respondText("List of users")
+    }
+    get("/users/{userId}") { call ->
+        val userId = call.parameters["userId"]
+        call.respondText("User: $userId")
+    }
+}
+```
+
+Route blocks allow you to organize your routes into logical sections, making it easier to manage and maintain your
+application's routing configuration.
+
+### Nested Routes
+
+Kotlet supports nested routes for creating hierarchical route structures. Use the `route` method to define nested
+routes within a parent route block:
+
+```kotlin
+route("/admin") {
+    route("/users") {
+        get("/") { call ->
+            call.respondText("List of users")
+        }
+        post("/") { call ->
+            call.respondText("Create user")
+        }
+    }
+
+    route("/roles") {
+        get("/") { call ->
+            call.respondText("List of roles")
+        }
+        post("/") { call ->
+            call.respondText("Create role")
+        }
+    }
+}
+```
+
+Nested routes allow you to create a tree-like structure of routes, making it easy to organize and manage complex routing
+configurations in your application.
+
+## Conclusion
+
+Kotlet provides a powerful and flexible routing system that allows you to define HTTP routes with ease. Whether you're
+creating simple static routes, dynamic routes with parameters, or complex nested routes, Kotlet's routing methods and
+features make it easy to build robust and scalable web applications.
