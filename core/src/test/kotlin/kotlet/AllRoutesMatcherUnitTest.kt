@@ -244,19 +244,19 @@ internal class AllRoutesMatcherUnitTest {
             route("/a") {
                 route("/b") {
                     get("/", {})
-                    get("/c", {})
+                    put("/c", {})
                 }
             }
 
             route("/c/d") {
-                get("", {})
-                get("e", {})
+                patch("", {})
+                head("e", {})
             }
 
             route("/f") {
-                get("/", {})
+                trace("/", {})
                 route("g") {
-                    get("h", {})
+                    delete("h", {})
                 }
             }
         }
@@ -313,7 +313,6 @@ internal class AllRoutesMatcherUnitTest {
 
     private fun mockRequest(path: String): HttpServletRequest {
         val request = mockk<HttpServletRequest>()
-        every { request.method } returns "GET"
         every { request.requestURI } returns path
         return request
     }
