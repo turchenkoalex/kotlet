@@ -12,21 +12,30 @@ Configure Cross-Origin Resource Sharing (CORS) for your application using the `c
 
 ```kotlin
 Kotlet.routing {
-    installCORS(CORS.allowAll) // for development
+    // allow all for development purposes
+    installCORS(CORS.allowAll) 
 
     // allow only from one origin https://example.com
     installCORS(CORS.allowOrigin("https://example.com"))
 
     // or implement your own logic
     val myCustomCorsRules = object : CorsRules {
-        override fun CorsRules(call: HttpCall): CorsHeaders {
-            return CorsHeaders(
+        override fun getResponse(call: HttpCall): CorsResponse {
+            return CorsResponse.headers(
                 allowOrigin = "https://example.com",
-                allowMethods = listOf(HttpMethod.GET, HttpMethod.POST),
-                allowHeaders = listOf("Content-Type")
+                allowMethods = listOf("GET", "POST"),
+                allowHeaders = listOf("Content-Type", "Authorization")
             )
         }
     }
     installCORS(myCustomCorsRules)
+    
+    // or respond with error
+    val myCustomCorsRulesWithError = object : CorsRules {
+        override fun getResponse(call: HttpCall): CorsResponse {
+            return CorsResponse.error(HttpStatusCode.Forbidden)
+        }
+    }
+    installCORS(myCustomCorsRulesWithError)
 }
 ```

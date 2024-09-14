@@ -3,10 +3,10 @@ package kotlet.cors
 import kotlet.HttpCall
 
 /**
- * Always return the provided headers.
+ * Always return the provided response.
  */
-class ConstantCorsRules(private val headers: CorsHeaders) : CorsRules {
-    override fun getHeaders(call: HttpCall): CorsHeaders {
-        return headers
+class ConstantCorsRules(private val response: CorsResponse) : CorsRules {
+    override fun getResponse(call: HttpCall): CorsResponse {
+        return response
     }
 }

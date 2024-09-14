@@ -18,11 +18,18 @@ internal data class CorsInterceptor(
             return next(call)
         }
 
-        val headers = rules.getHeaders(call)
-        call.rawResponse.setHeader("Access-Control-Allow-Origin", headers.allowOrigin)
-        call.rawResponse.setHeader("Access-Control-Allow-Methods", headers.allowMethods)
-        call.rawResponse.setHeader("Access-Control-Allow-Headers", headers.allowHeaders)
-        call.status = HttpServletResponse.SC_OK
+        when (val response = rules.getResponse(call)) {
+            is CorsResponse.Headers -> {
+                call.rawResponse.setHeader("Access-Control-Allow-Origin", response.allowOrigin)
+                call.rawResponse.setHeader("Access-Control-Allow-Methods", response.allowMethods)
+                call.rawResponse.setHeader("Access-Control-Allow-Headers", response.allowHeaders)
+                call.status = HttpServletResponse.SC_OK
+            }
+            is CorsResponse.Error -> {
+                call.status = response.statusCode
+                call.respondText(response.message)
+            }
+        }
 
         // This is a preflight request, so we don't need to continue
         // Abort the call chain
