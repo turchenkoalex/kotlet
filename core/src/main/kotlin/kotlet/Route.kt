@@ -1,11 +1,6 @@
 package kotlet
 
 /**
- * Handler for HTTP calls.
- */
-typealias Handler = (call: HttpCall) -> Unit
-
-/**
  * Route configuration.
  * Contains a route path and a list of handlers for different HTTP methods.
  */
@@ -43,66 +38,5 @@ internal data class Route(
             ?: throw MethodNotFoundException()
 
         routeHandler(httpCall)
-    }
-
-    companion object {
-        fun createRoute(globalInterceptors: List<Interceptor>, handlers: List<RouteHandler>): Route {
-            if (handlers.isEmpty()) {
-                throw RoutingConfigurationException("Route must have at least one handler")
-            }
-
-            val path = handlers.first().path
-            if (handlers.any { it.path != path }) {
-                throw RoutingConfigurationException("All handlers must have the same path")
-            }
-
-            return Route(
-                path = path,
-                globalInterceptors = globalInterceptors,
-                handlers = handlers.associate {
-                    it.method to Interceptor.createRecursiveHandler(
-                        it.settings.interceptors,
-                        it.handler
-                    )
-                }
-            )
-        }
-    }
-}
-
-/**
- * Settings for a route handler attached to a method.
- */
-internal data class RouteHandler(
-    val path: String,
-    val method: HttpMethod,
-    val handler: Handler,
-    val settings: RouteSettings
-)
-
-/**
- * Settings for a route.
- */
-class RouteSettings(
-    internal val interceptors: List<Interceptor>,
-) {
-    class RouteSettingsBuilder(
-        interceptors: List<Interceptor>
-    ) {
-        private val interceptors = interceptors.toMutableList()
-
-        /**
-         * Add an interceptor to the route.
-         */
-        fun withInterceptor(interceptor: Interceptor): RouteSettingsBuilder {
-            interceptors.add(interceptor)
-            return this
-        }
-
-        internal fun build(): RouteSettings {
-            return RouteSettings(
-                interceptors = interceptors,
-            )
-        }
     }
 }

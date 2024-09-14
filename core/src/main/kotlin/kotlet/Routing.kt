@@ -40,7 +40,7 @@ class Routing internal constructor() {
      * Install global interceptors
      *
      * @param interceptors list of interceptors
-     * @param direction installation direction
+     * @param order installation order (optional, default is [InstallOrder.LAST])
      * @throws RoutingConfigurationException if routing is sealed
      *
      * Example:
@@ -55,18 +55,18 @@ class Routing internal constructor() {
      */
     fun install(
         vararg interceptors: Interceptor,
-        direction: InstallDirection = InstallDirection.LAST
+        order: InstallOrder = InstallOrder.LAST,
     ) {
         if (sealed.get()) {
             throw RoutingConfigurationException("All routes have been sealed, you can't install global interceptors")
         }
 
-        when (direction) {
-            InstallDirection.FIRST -> {
-                interceptors.forEach(globalInterceptors::addFirst)
+        when (order) {
+            InstallOrder.FIRST -> {
+                interceptors.reversed().forEach(globalInterceptors::addFirst)
             }
 
-            InstallDirection.LAST -> {
+            InstallOrder.LAST -> {
                 globalInterceptors.addAll(interceptors)
             }
         }
@@ -359,12 +359,30 @@ class Routing internal constructor() {
 
         val globalInterceptors = globalInterceptors.toList()
 
-        val routes = routeHandlers.groupBy(RouteHandler::path).map { (_, handlers) ->
-            Route.createRoute(globalInterceptors, handlers)
+        val routes = routeHandlers.groupBy(RouteHandler::path).map { (path, handlers) ->
+            RouteHandler.createRoute(
+                path = path,
+                globalInterceptors = globalInterceptors,
+                handlers = handlers,
+            )
         }
 
         return routes
     }
+
+    /**
+     * Get all registered routes
+     */
+    val registeredRoutes: List<RegisteredRoute>
+        get() {
+            return routeHandlers.map { route ->
+                RegisteredRoute(
+                    path = route.path,
+                    method = route.method,
+                    attributes = route.settings.attributes,
+                )
+            }
+        }
 }
 
 private fun buildRoutePath(segments: List<String>, path: String): String {

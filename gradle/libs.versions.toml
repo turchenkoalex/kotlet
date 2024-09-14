@@ -30,6 +30,7 @@ auth0-jwt = { group = "com.auth0", name = "java-jwt", version.ref = "auth0-jwt" 
 # Kotlin
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 
 # Prometheus metrics
 prometheus-metrics-core = { group = "io.prometheus", name = "prometheus-metrics-core", version.ref = "prometheus" }

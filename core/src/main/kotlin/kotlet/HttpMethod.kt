@@ -39,11 +39,6 @@ enum class HttpMethod {
     DELETE,
 
     /**
-     * The CONNECT method establishes a tunnel to the server identified by the target resource.
-     */
-    CONNECT,
-
-    /**
      * The OPTIONS method describes the communication options for the target resource.
      */
     OPTIONS,
