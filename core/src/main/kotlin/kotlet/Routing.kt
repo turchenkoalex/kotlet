@@ -40,7 +40,7 @@ class Routing internal constructor() {
      * Install global interceptors
      *
      * @param interceptors list of interceptors
-     * @param direction installation direction
+     * @param order installation order (optional, default is [InstallOrder.LAST])
      * @throws RoutingConfigurationException if routing is sealed
      *
      * Example:
@@ -55,18 +55,18 @@ class Routing internal constructor() {
      */
     fun install(
         vararg interceptors: Interceptor,
-        direction: InstallDirection = InstallDirection.LAST
+        order: InstallOrder = InstallOrder.LAST,
     ) {
         if (sealed.get()) {
             throw RoutingConfigurationException("All routes have been sealed, you can't install global interceptors")
         }
 
-        when (direction) {
-            InstallDirection.FIRST -> {
-                interceptors.forEach(globalInterceptors::addFirst)
+        when (order) {
+            InstallOrder.FIRST -> {
+                interceptors.reversed().forEach(globalInterceptors::addFirst)
             }
 
-            InstallDirection.LAST -> {
+            InstallOrder.LAST -> {
                 globalInterceptors.addAll(interceptors)
             }
         }

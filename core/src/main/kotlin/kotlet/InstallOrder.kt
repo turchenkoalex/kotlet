@@ -1,9 +1,14 @@
 package kotlet
 
 /**
- * Interceptor installation direction
+ * Interceptor installation order
+ *
+ * Interceptors can be installed at the beginning or end of the interceptor list.
+ * The order in which interceptors are called is determined by the order in which they are installed
+ *
+ * @see Interceptor
  */
-enum class InstallDirection {
+enum class InstallOrder {
     /**
      * Install interceptors at the beginning of the interceptor list
      * The first interceptor will be the first to be called on the request

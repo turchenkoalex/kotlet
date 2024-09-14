@@ -5,7 +5,7 @@ import io.mockk.mockk
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class RoutingUnitTest {
+class InterceptorsRoutingUnitTest {
     @Test
     fun `install global interceptors last`() {
         val operations = mutableListOf<String>()
@@ -67,8 +67,15 @@ class RoutingUnitTest {
             }
         }
 
+        val global3 = object : Interceptor {
+            override fun beforeCall(call: HttpCall): HttpCall {
+                operations.add("global3")
+                return call
+            }
+        }
+
         routing.install(global1)
-        routing.install(global2, direction = InstallDirection.FIRST)
+        routing.install(global2, global3, order = InstallOrder.FIRST)
 
         val route = routing.getAllRoutes().single()
 
@@ -77,7 +84,7 @@ class RoutingUnitTest {
         }
         route.handler(call)
 
-        assertEquals(listOf("global2", "global1", "handler"), operations)
+        assertEquals(listOf("global2", "global3", "global1", "handler"), operations)
     }
 
     @Test
