@@ -1,7 +1,8 @@
 package kotlet.attributes
 
-import org.junit.jupiter.api.Assertions.*
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class MutableRouteAttributesUnitTest {
     @Test
