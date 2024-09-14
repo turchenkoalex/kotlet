@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
-    implementation(kotlin("reflect"))
     implementation(project(":core"))
+    implementation(libs.kotlin.reflect)
     compileOnly(libs.jakarta.api)
 
     testImplementation(libs.kotlin.test)
