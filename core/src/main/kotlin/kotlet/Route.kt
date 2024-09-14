@@ -1,11 +1,6 @@
 package kotlet
 
 /**
- * Handler for HTTP calls.
- */
-typealias Handler = (call: HttpCall) -> Unit
-
-/**
  * Route configuration.
  * Contains a route path and a list of handlers for different HTTP methods.
  */
