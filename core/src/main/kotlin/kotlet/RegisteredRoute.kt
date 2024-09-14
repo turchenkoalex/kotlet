@@ -5,6 +5,7 @@ import kotlet.attributes.RouteAttributes
 /**
  * Represents a registered route in [kotlet.Routing].
  */
+@ConsistentCopyVisibility
 data class RegisteredRoute internal constructor(
     /**
      * The path of the route.
