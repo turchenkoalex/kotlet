@@ -5,8 +5,8 @@ import kotlet.HttpCall
 /**
  * Rules for CORS.
  *
- * Implementations of this interface define the headers for CORS response.
+ * Implementations of this interface define the CORS response.
  */
 interface CorsRules {
-    fun getHeaders(call: HttpCall): CorsHeaders
+    fun getResponse(call: HttpCall): CorsResponse
 }

@@ -16,7 +16,7 @@ object CORS {
      * CORS rules that allows all origins, all methods and all headers
      */
     val allowAll: CorsRules = run {
-        val headers = CorsHeaders(
+        val headers = CorsResponse.headers(
             allowOrigin = ALLOW_ALL_ORIGINS,
             allowMethods = ALLOW_ALL_METHODS,
             allowHeaders = DEFAULT_ALLOWED_HEADERS,
@@ -28,7 +28,7 @@ object CORS {
      * Create a new CORS rules that allows requests from the given origins
      */
     fun allowOrigin(origin: String): CorsRules {
-        val headers = CorsHeaders(
+        val headers = CorsResponse.headers(
             allowOrigin = origin,
             allowMethods = ALLOW_ALL_METHODS,
             allowHeaders = DEFAULT_ALLOWED_HEADERS,
