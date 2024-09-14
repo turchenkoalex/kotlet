@@ -359,12 +359,30 @@ class Routing internal constructor() {
 
         val globalInterceptors = globalInterceptors.toList()
 
-        val routes = routeHandlers.groupBy(RouteHandler::path).map { (_, handlers) ->
-            Route.createRoute(globalInterceptors, handlers)
+        val routes = routeHandlers.groupBy(RouteHandler::path).map { (path, handlers) ->
+            RouteHandler.createRoute(
+                path = path,
+                globalInterceptors = globalInterceptors,
+                handlers = handlers,
+            )
         }
 
         return routes
     }
+
+    /**
+     * Get all registered routes
+     */
+    val registeredRoutes: List<RegisteredRoute>
+        get() {
+            return routeHandlers.map { route ->
+                RegisteredRoute(
+                    path = route.path,
+                    method = route.method,
+                    attributes = route.settings.attributes,
+                )
+            }
+        }
 }
 
 private fun buildRoutePath(segments: List<String>, path: String): String {
