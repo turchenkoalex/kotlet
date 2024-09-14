@@ -37,7 +37,7 @@ class RouteSettings(
          */
         fun <T: Any> withAttribute(key: RouteAttribute<T>, value: T) {
             if (attributes[key] != null) {
-                throw IllegalStateException("Attribute $key already present in the route settings")
+                error("Attribute $key already present in the route settings")
             }
             attributes[key] = value
         }
