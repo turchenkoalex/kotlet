@@ -2,7 +2,7 @@
 auth0-jwt = "4.4.0"
 detekt = "1.23.7"
 jakarta = "6.1.0"
-jetty = "12.0.13"
+jetty = "12.0.14"
 kotlin = "2.0.20"
 kotlinx-serialization = "1.7.3"
 kover = "0.8.3"
