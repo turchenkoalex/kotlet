@@ -28,6 +28,9 @@ internal data class RouteHandler(
                         it.settings.interceptors,
                         it.handler
                     )
+                },
+                attributes = handlers.associate {
+                    it.method to it.settings.attributes
                 }
             )
         }

@@ -13,7 +13,7 @@ internal class OneRouteMatcherUnitTest {
 
     @Test
     fun testStaticMatch() {
-        val route = Route("/first/second", emptyList(), emptyMap())
+        val route = Route("/first/second", emptyMap(), emptyList(), emptyMap())
         val selectors = RouteHelpers.prepareSelectorsList(route)
 
         val matcher = OneRouteMatcher(route, selectors)
@@ -35,7 +35,7 @@ internal class OneRouteMatcherUnitTest {
 
     @Test
     fun testRouteParamMatch() {
-        val route = Route("/first/{userId}/second/{fileId}", emptyList(), emptyMap())
+        val route = Route("/first/{userId}/second/{fileId}", emptyMap(), emptyList(), emptyMap())
         val selectors = RouteHelpers.prepareSelectorsList(route)
 
         val matcher = OneRouteMatcher(route, selectors)
@@ -57,7 +57,7 @@ internal class OneRouteMatcherUnitTest {
 
     @Test
     fun testOptionalRouteParamMatch() {
-        val route = Route("/first/{userId}/second/{fileId?}", emptyList(), emptyMap())
+        val route = Route("/first/{userId}/second/{fileId?}", emptyMap(), emptyList(), emptyMap())
         val selectors = RouteHelpers.prepareSelectorsList(route)
 
         val matcher = OneRouteMatcher(route, selectors)
@@ -84,7 +84,7 @@ internal class OneRouteMatcherUnitTest {
 
     @Test
     fun testWildcardMatch_MiddlePosition() {
-        val route = Route("/first/*/second", emptyList(), emptyMap())
+        val route = Route("/first/*/second", emptyMap(), emptyList(), emptyMap())
         val selectors = RouteHelpers.prepareSelectorsList(route)
 
         val matcher = OneRouteMatcher(route, selectors)
@@ -106,7 +106,7 @@ internal class OneRouteMatcherUnitTest {
 
     @Test
     fun testWildcardMatch_TailPosition() {
-        val route = Route("/first/*", emptyList(), emptyMap())
+        val route = Route("/first/*", emptyMap(), emptyList(), emptyMap())
         val selectors = RouteHelpers.prepareSelectorsList(route)
 
         val matcher = OneRouteMatcher(route, selectors)
@@ -128,7 +128,7 @@ internal class OneRouteMatcherUnitTest {
 
     @Test
     fun testTailMatch() {
-        val route = Route("/first/{...}", emptyList(), emptyMap())
+        val route = Route("/first/{...}", emptyMap(), emptyList(), emptyMap())
         val selectors = RouteHelpers.prepareSelectorsList(route)
 
         val matcher = OneRouteMatcher(route, selectors)

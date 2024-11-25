@@ -18,5 +18,14 @@ interface RouteAttributes {
      * Gets the attribute value for the specified key.
      */
     operator fun <T : Any> get(key: RouteAttribute<T>): T?
+}
 
+/**
+ * Returns an empty [RouteAttributes] instance.
+ */
+fun emptyRouteAttributes(): RouteAttributes = EmptyRouteAttributes
+
+private object EmptyRouteAttributes : RouteAttributes {
+    override fun <T : Any> containsKey(key: RouteAttribute<T>): Boolean = false
+    override fun <T : Any> get(key: RouteAttribute<T>): T? = null
 }

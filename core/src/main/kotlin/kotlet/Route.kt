@@ -1,5 +1,7 @@
 package kotlet
 
+import kotlet.attributes.RouteAttributes
+
 /**
  * Route configuration.
  * Contains a route path and a list of handlers for different HTTP methods.
@@ -9,6 +11,11 @@ internal data class Route(
      * Route path.
      */
     val path: String,
+
+    /**
+     * Route attributes.
+     */
+    val attributes: Map<HttpMethod, RouteAttributes>,
 
     /**
      * Link to the global interceptors.

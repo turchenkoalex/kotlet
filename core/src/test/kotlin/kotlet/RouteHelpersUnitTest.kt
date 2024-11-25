@@ -14,7 +14,7 @@ internal class RouteHelpersUnitTest {
 
     @Test
     fun testStaticPath() {
-        val route = Route("/first/second", emptyList(), emptyMap())
+        val route = Route("/first/second", emptyMap(), emptyList(), emptyMap())
         val selectors = RouteHelpers.prepareSelectorsList(route)
 
         assertEquals(2, selectors.size)
@@ -32,7 +32,7 @@ internal class RouteHelpersUnitTest {
 
     @Test
     fun testWildcardPath() {
-        val route = Route("/first/*/second/*", emptyList(), emptyMap())
+        val route = Route("/first/*/second/*", emptyMap(), emptyList(), emptyMap())
         val selectors = RouteHelpers.prepareSelectorsList(route)
 
         assertEquals(4, selectors.size)
@@ -58,7 +58,7 @@ internal class RouteHelpersUnitTest {
 
     @Test
     fun testParametrizedPath() {
-        val route = Route("/first/{userId}/second", emptyList(), emptyMap())
+        val route = Route("/first/{userId}/second", emptyMap(), emptyList(), emptyMap())
         val selectors = RouteHelpers.prepareSelectorsList(route)
 
         assertEquals(3, selectors.size)
@@ -81,7 +81,7 @@ internal class RouteHelpersUnitTest {
 
     @Test
     fun testOptionalParametrizedPath() {
-        val route = Route("/first/second/{userId?}", emptyList(), emptyMap())
+        val route = Route("/first/second/{userId?}", emptyMap(), emptyList(), emptyMap())
         val selectors = RouteHelpers.prepareSelectorsList(route)
 
         assertEquals(3, selectors.size)
@@ -104,7 +104,7 @@ internal class RouteHelpersUnitTest {
 
     @Test
     fun testTailPath() {
-        val route = Route("/first/{...}", emptyList(), emptyMap())
+        val route = Route("/first/{...}", emptyMap(), emptyList(), emptyMap())
         val selectors = RouteHelpers.prepareSelectorsList(route)
 
         assertEquals(2, selectors.size)
@@ -121,7 +121,7 @@ internal class RouteHelpersUnitTest {
 
     @Test
     fun testComplexPathWithTail() {
-        val route = Route("/first/{id}/second/*/{...}", emptyList(), emptyMap())
+        val route = Route("/first/{id}/second/*/{...}", emptyMap(), emptyList(), emptyMap())
         val selectors = RouteHelpers.prepareSelectorsList(route)
 
         assertEquals(5, selectors.size)
@@ -152,7 +152,7 @@ internal class RouteHelpersUnitTest {
 
     @Test
     fun testComplexPathWithOptional() {
-        val route = Route("/first/{id}/second/*/{otherId?}", emptyList(), emptyMap())
+        val route = Route("/first/{id}/second/*/{otherId?}", emptyMap(), emptyList(), emptyMap())
         val selectors = RouteHelpers.prepareSelectorsList(route)
 
         assertEquals(5, selectors.size)
@@ -186,35 +186,35 @@ internal class RouteHelpersUnitTest {
     fun testCheckSelectors() {
         // check double Tails
         assertFailsWith(IllegalArgumentException::class) {
-            val route = Route("/first/{...}/{...}", emptyList(), emptyMap())
+            val route = Route("/first/{...}/{...}", emptyMap(), emptyList(), emptyMap())
             val selectors = RouteHelpers.prepareSelectorsList(route)
             RouteHelpers.checkSelectorsList(route.path, selectors)
         }
 
         // check double optionals
         assertFailsWith(IllegalArgumentException::class) {
-            val route = Route("/first/{a?}/{b?}", emptyList(), emptyMap())
+            val route = Route("/first/{a?}/{b?}", emptyMap(), emptyList(), emptyMap())
             val selectors = RouteHelpers.prepareSelectorsList(route)
             RouteHelpers.checkSelectorsList(route.path, selectors)
         }
 
         // check Tail in the last position
         assertFailsWith(IllegalArgumentException::class) {
-            val route = Route("/first/{...}/second", emptyList(), emptyMap())
+            val route = Route("/first/{...}/second", emptyMap(), emptyList(), emptyMap())
             val selectors = RouteHelpers.prepareSelectorsList(route)
             RouteHelpers.checkSelectorsList(route.path, selectors)
         }
 
         // check optional in the last position
         assertFailsWith(IllegalArgumentException::class) {
-            val route = Route("/first/{a?}/second", emptyList(), emptyMap())
+            val route = Route("/first/{a?}/second", emptyMap(), emptyList(), emptyMap())
             val selectors = RouteHelpers.prepareSelectorsList(route)
             RouteHelpers.checkSelectorsList(route.path, selectors)
         }
 
         // check repeated param names
         assertFailsWith(IllegalArgumentException::class) {
-            val route = Route("/first/{id}/second/{id}", emptyList(), emptyMap())
+            val route = Route("/first/{id}/second/{id}", emptyMap(), emptyList(), emptyMap())
             val selectors = RouteHelpers.prepareSelectorsList(route)
             RouteHelpers.checkSelectorsList(route.path, selectors)
         }

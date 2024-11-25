@@ -3,6 +3,7 @@ package kotlet
 import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import kotlet.attributes.emptyRouteAttributes
 
 /**
  * Servlet that handles all requests based on the provided routings.
@@ -22,12 +23,15 @@ internal class RoutingServlet(
             val httpMethod = HttpMethod.parse(request.method)
                 ?: return errorsHandler.methodNotFound(request, response)
 
+            val attributes = route.attributes[httpMethod] ?: emptyRouteAttributes()
+
             val httpCall = HttpCallImpl(
                 httpMethod = httpMethod,
                 routePath = route.path,
                 rawRequest = request,
                 rawResponse = response,
-                parameters = parameters
+                parameters = parameters,
+                attributes = attributes,
             )
 
             route.handler(httpCall)
