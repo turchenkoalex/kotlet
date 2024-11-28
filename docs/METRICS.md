@@ -58,6 +58,12 @@ Kotlet.routing {
 
 ## Metrics scrape endpoint
 
+> [!IMPORTANT]
+> For using scrape metrics endpoint you must add to your dependencies
+> [prometheus-metrics-exporter-servlet-jakarta](https://mvnrepository.com/artifact/io.prometheus/prometheus-metrics-exporter-servlet-jakarta)
+> library.
+
+
 To expose metrics for Prometheus, you can use the `installMetricsScrape` method. Add it to your kotlet router like this:
 
 ```kotlin
