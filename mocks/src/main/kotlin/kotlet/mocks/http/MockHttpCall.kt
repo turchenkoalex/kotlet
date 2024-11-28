@@ -37,8 +37,11 @@ class MockHttpCall(
     val responseData: ByteArray
         get() = responseStream.toByteArray()
 
+    val responseHeaders: MutableMap<String, String> = mutableMapOf()
+
     init {
         rawRequest = createHttpRequestMock(
+            path = routePath,
             methodName = httpMethod.name,
             async = async,
             headers = headers,
@@ -48,6 +51,9 @@ class MockHttpCall(
         val responseHeaders = mutableMapOf<String, String>()
         rawResponse = mockk {
             every { outputStream } returns ByteArrayServletOutputStream(responseStream)
+            every { setHeader(any(), any()) } answers {
+                responseHeaders[this.firstArg()] = this.secondArg()
+            }
 
             // contentTypeField is a private field, so we need to use a setter to set it
             every { contentType = any() } answers { contentTypeField = this.firstArg() }
@@ -72,6 +78,7 @@ class MockHttpCall(
 }
 
 private fun createHttpRequestMock(
+    path: String,
     methodName: String,
     async: Boolean,
     headers: Map<String, String>,
@@ -80,6 +87,8 @@ private fun createHttpRequestMock(
     val attributes = mutableMapOf<String, Any>()
 
     return mockk {
+        every { requestURI } returns path
+        every { queryString } returns ""
         every { inputStream } returns ByteArrayServletInputStream(requestData)
         every { getHeader(any()) } answers {
             headers[this.firstArg()]
