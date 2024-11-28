@@ -3,6 +3,8 @@ package kotlet
 import io.mockk.mockk
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import kotlet.attributes.RouteAttributes
+import kotlet.attributes.emptyRouteAttributes
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.State
@@ -13,6 +15,7 @@ private val EMPTY_CALL = object : HttpCall {
     override val rawRequest: HttpServletRequest = mockk()
     override val rawResponse: HttpServletResponse = mockk()
     override val parameters: Map<String, String> = emptyMap()
+    override val attributes: RouteAttributes = emptyRouteAttributes()
 }
 
 object SimpleInterceptor : Interceptor {

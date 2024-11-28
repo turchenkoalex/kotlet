@@ -2,6 +2,7 @@ package kotlet
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import kotlet.attributes.RouteAttributes
 import java.io.InputStream
 
 /**
@@ -32,6 +33,11 @@ interface HttpCall {
      * Parameters extracted from the route path.
      */
     val parameters: Map<String, String>
+
+    /**
+     * Attributes of the route.
+     */
+    val attributes: RouteAttributes
 
     /**
      * HTTP status code of the response.
@@ -89,5 +95,6 @@ internal data class HttpCallImpl(
     override val routePath: String,
     override val rawRequest: HttpServletRequest,
     override val rawResponse: HttpServletResponse,
-    override val parameters: Map<String, String>
+    override val parameters: Map<String, String>,
+    override val attributes: RouteAttributes,
 ) : HttpCall

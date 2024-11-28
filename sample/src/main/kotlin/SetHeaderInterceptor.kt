@@ -3,7 +3,7 @@ import kotlet.HttpCall
 import kotlet.Interceptor
 
 /**
- * Example of simple interceptor
+ * Example of simple interceptor that sets a header to the response
  */
 data class SetHeaderInterceptor(
     private val headerName: String,

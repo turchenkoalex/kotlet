@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import kotlet.HttpCall
 import kotlet.HttpMethod
+import kotlet.attributes.RouteAttributes
+import kotlet.attributes.emptyRouteAttributes
 import java.io.ByteArrayOutputStream
 import java.util.Collections
 import java.util.Enumeration
@@ -27,7 +29,7 @@ class MockHttpCall(
     override val parameters: Map<String, String> = emptyMap()
     override val rawRequest: HttpServletRequest
     override val rawResponse: HttpServletResponse
-
+    override val attributes: RouteAttributes = emptyRouteAttributes()
 
     /**
      * The response data as a [ByteArray].
