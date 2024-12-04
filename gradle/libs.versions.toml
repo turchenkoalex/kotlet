@@ -11,6 +11,7 @@ opentelemetry = "1.45.0"
 opentelemetry-instrumentation-api = "2.10.0"
 opentelemetry-semconv = "1.28.0-alpha"
 prometheus = "1.3.4"
+swagger = "2.2.26"
 
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
@@ -47,6 +48,9 @@ opentelemetry-semconv = { group = "io.opentelemetry.semconv", name = "openteleme
 jetty-ee10-servlet = { group = "org.eclipse.jetty.ee10", name = "jetty-ee10-servlet", version.ref = "jetty" }
 jetty-server = { group = "org.eclipse.jetty", name = "jetty-server", version.ref = "jetty" }
 jetty-server-http2 = { group = "org.eclipse.jetty.http2", name = "jetty-http2-server", version.ref = "jetty" }
+
+# Swagger
+swagger-core = { group = "io.swagger.core.v3", name = "swagger-core", version.ref = "swagger" }
 
 # Testing
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
