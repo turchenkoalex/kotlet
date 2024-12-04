@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/metrics" />
             <option value="$PROJECT_DIR$/mocks" />
             <option value="$PROJECT_DIR$/sample" />
+            <option value="$PROJECT_DIR$/swagger-ui" />
             <option value="$PROJECT_DIR$/tracing" />
             <option value="$PROJECT_DIR$/typesafe" />
           </set>
