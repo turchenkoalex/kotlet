@@ -14,6 +14,7 @@ include(
     "mocks",
     "openapi",
     "sample",
+    "swagger-ui",
     "tracing",
     "typesafe",
 )

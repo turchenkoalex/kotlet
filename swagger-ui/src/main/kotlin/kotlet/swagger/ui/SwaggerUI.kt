@@ -1,4 +1,4 @@
-package swagger.ui
+package kotlet.swagger.ui
 
 import kotlet.Handler
 import kotlet.HttpCall

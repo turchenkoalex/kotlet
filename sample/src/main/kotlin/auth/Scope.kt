@@ -5,7 +5,7 @@ import java.util.*
 enum class Scope {
     READ_POSTS,
     WRITE_POSTS,
-    PUBLISH_POSTS;
+    DELETE_POSTS;
 
     companion object {
         private val MAP = entries.associateBy { it.name.uppercase() }

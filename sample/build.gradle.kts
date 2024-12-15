@@ -24,6 +24,11 @@ dependencies {
     implementation(project(":jwt"))
     implementation(libs.auth0.jwt)
 
+    // OpenAPI
+    implementation(project(":openapi"))
+    implementation(project(":swagger-ui"))
+    implementation(libs.swagger.core)
+
     // Prometheus metrics
     implementation(project(":metrics"))
     implementation(libs.prometheus.metrics.core)

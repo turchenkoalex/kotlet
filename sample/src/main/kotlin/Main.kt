@@ -1,22 +1,27 @@
 import auth.Auth
-import auth.Scope
 import auth.User
-import auth.requiredScopes
-import io.prometheus.metrics.exporter.servlet.jakarta.PrometheusMetricsServlet
 import io.prometheus.metrics.model.registry.PrometheusRegistry
-import jakarta.servlet.http.HttpServlet
+import io.swagger.v3.oas.models.Components
+import io.swagger.v3.oas.models.security.SecurityRequirement
+import io.swagger.v3.oas.models.security.SecurityScheme
+import io.swagger.v3.oas.models.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jetty.JettyServer
 import kotlet.ErrorsHandler
-import kotlet.HttpCall
 import kotlet.Kotlet
+import kotlet.Routing
 import kotlet.cors.CORS
 import kotlet.cors.installCORS
 import kotlet.jwt.installJWTAuthentication
 import kotlet.metrics.installMetrics
+import kotlet.metrics.installMetricsScrape
+import kotlet.openapi.info
+import kotlet.openapi.installOpenAPI
 import kotlet.prometheus.PrometheusMetricsCollector
 import kotlet.tracing.installTracing
+import posts.PostsService
+import kotlet.swagger.ui.installSwaggerUI
 import tracing.AppTracing
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
@@ -29,7 +34,7 @@ fun main() {
     val registry = PrometheusRegistry.defaultRegistry
     val kotletMetrics = PrometheusMetricsCollector(registry)
 
-    // Routing
+    // Application routing
     val routing = Kotlet.routing {
 
         // Global interceptors, order matters
@@ -37,52 +42,89 @@ fun main() {
         installTracing(tracing.openTelemetry)
         installCORS(CORS.allowAll)
         installJWTAuthentication(Auth.createVerifier(), identityBuilder = User::fromJWT)
+        install(versionHeader)
 
-        // Version header interceptor installed only for /sync and /async endpoints
-        use(versionHeader) {
-            get("/sync", ::syncOK)
-        }
-
-        get("/async", ::asyncOK) {
-            withInterceptor(versionHeader) // Interceptor only for this endpoint, the same as use()
-        }
-
-        // Posts section
+        // posts.Posts section
         route("/posts") {
-
-            // requiredScopes is a custom interceptor that checks if the user has the required scopes
-            requiredScopes(Scope.READ_POSTS) {
-                get("/", handler = postsService::list)
-                get("/{id}", postsService::get)
-            }
-
-            requiredScopes(Scope.READ_POSTS, Scope.WRITE_POSTS) {
-                post("/", postsService::create)
-                put("/{id}", postsService::update)
-                delete("/{id}", postsService::delete)
-            }
+            // Install routes for the posts service in the /posts path
+            postsService.installRoutes(this)
         }
     }
 
+    // This is an auxiliary routing that exposes the OpenAPI endpoint and Swagger UI
+    val auxRouting = buildAuxRouting(routing)
+
     val kotlet = Kotlet.servlet(
-        routings = listOf(routing),
+        routings = listOf(routing, auxRouting),
         errorsHandler = CustomErrorsHandler,
     )
     val port = 8080
     val servlets = mapOf(
-        "/plain" to PlainHttpServlet(),
-        "/metrics" to PrometheusMetricsServlet(registry),
         "/*" to kotlet, // must be last
     )
     val server = JettyServer(port, servlets)
 
     println("Server started")
-    println(" HTTP: http://localhost:$port/posts")
+    println("  Available routes:")
+
+    (routing.registeredRoutes).forEach { route ->
+        println("    ${route.method} http://localhost:$port${route.path}")
+    }
 
     server.start()
     awaitShutdown {
         println("Shutdown server")
         tracing.stop()
+    }
+}
+
+private fun buildAuxRouting(appRouting: Routing): Routing {
+    return Kotlet.routing {
+        installMetricsScrape {
+            path = "/metrics"
+        }
+
+        installOpenAPI {
+            path = "/swagger/openapi.json"
+            this.documentedRoutings = listOf(appRouting)
+            prettyPrint = true
+            openAPI {
+                info {
+                    title = "Sample API"
+                    version = "1.0"
+                }
+
+                addTagsItem(
+                    Tag().apply {
+                        name = "posts"
+                        description = "Posts operations"
+                    }
+                )
+
+                components(
+                    Components().apply {
+                        securitySchemes = mapOf(
+                            "bearerAuth" to SecurityScheme().apply {
+                                type = SecurityScheme.Type.HTTP
+                                scheme = "bearer"
+                                bearerFormat = "JWT"
+                            }
+                        )
+                    }
+                )
+
+                addSecurityItem(
+                    SecurityRequirement().apply {
+                        addList("bearerAuth", emptyList())
+                    }
+                )
+            }
+        }
+
+        installSwaggerUI {
+            path = "/swagger"
+            openAPIPath = "/swagger/openapi.json"
+        }
     }
 }
 
@@ -109,23 +151,5 @@ private object CustomErrorsHandler : ErrorsHandler {
     override fun internalServerError(request: HttpServletRequest, response: HttpServletResponse, e: Throwable) {
         response.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR
         e.printStackTrace()
-    }
-}
-
-private class PlainHttpServlet : HttpServlet() {
-    override fun service(req: HttpServletRequest, resp: HttpServletResponse) {
-        resp.writer.write("Hello, world!")
-    }
-}
-
-private fun syncOK(httpCall: HttpCall) {
-    httpCall.respondText("OK")
-}
-
-private fun asyncOK(httpCall: HttpCall) {
-    val ctx = httpCall.rawRequest.startAsync(httpCall.rawRequest, httpCall.rawResponse)
-    ctx.start {
-        httpCall.respondText("OK")
-        ctx.complete()
     }
 }
