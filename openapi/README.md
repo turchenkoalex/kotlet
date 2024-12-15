@@ -47,4 +47,4 @@ Example:
     )
 ```
 
-This feature works better with the [`kotlet-swagger-ui`](../swagger-ui) library. You can use it to visualize the OpenAPI documentation.
+This feature works better with the [`kotlet-swagger-ui`](../swagger-ui/README.md) library. You can use it to visualize the OpenAPI documentation.

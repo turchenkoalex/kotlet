@@ -127,6 +127,8 @@ The following extensions are available:
 - [Metrics](metrics/README.md)
 - [Tracing](tracing/README.md)
 - [Type Safe](typesafe/README.md)
+- [OpenAPI](openapi/README.md)
+- [Swagger UI](swagger-ui/README.md)
 
 ### Interceptors
 
