@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse
 import jetty.JettyServer
 import kotlet.ErrorsHandler
 import kotlet.Kotlet
+import kotlet.Routing
 import kotlet.cors.CORS
 import kotlet.cors.installCORS
 import kotlet.jwt.installJWTAuthentication
@@ -51,14 +52,41 @@ fun main() {
     }
 
     // This is an auxiliary routing that exposes the OpenAPI endpoint and Swagger UI
-    val auxRouting = Kotlet.routing {
+    val auxRouting = buildAuxRouting(routing)
+
+    val kotlet = Kotlet.servlet(
+        routings = listOf(routing, auxRouting),
+        errorsHandler = CustomErrorsHandler,
+    )
+    val port = 8080
+    val servlets = mapOf(
+        "/*" to kotlet, // must be last
+    )
+    val server = JettyServer(port, servlets)
+
+    println("Server started")
+    println("  Available routes:")
+
+    (routing.registeredRoutes).forEach { route ->
+        println("    ${route.method} http://localhost:$port${route.path}")
+    }
+
+    server.start()
+    awaitShutdown {
+        println("Shutdown server")
+        tracing.stop()
+    }
+}
+
+private fun buildAuxRouting(appRouting: Routing): Routing {
+    return Kotlet.routing {
         installMetricsScrape {
             path = "/metrics"
         }
 
         installOpenAPI {
             path = "/swagger/openapi.json"
-            this.documentedRoutings = listOf(routing)
+            this.documentedRoutings = listOf(appRouting)
             prettyPrint = true
             openAPI {
                 info {
@@ -97,29 +125,6 @@ fun main() {
             path = "/swagger"
             openAPIPath = "/swagger/openapi.json"
         }
-    }
-
-    val kotlet = Kotlet.servlet(
-        routings = listOf(routing, auxRouting),
-        errorsHandler = CustomErrorsHandler,
-    )
-    val port = 8080
-    val servlets = mapOf(
-        "/*" to kotlet, // must be last
-    )
-    val server = JettyServer(port, servlets)
-
-    println("Server started")
-    println("  Available routes:")
-
-    (routing.registeredRoutes + auxRouting.registeredRoutes).forEach { route ->
-        println("    ${route.method} http://localhost:$port${route.path}")
-    }
-
-    server.start()
-    awaitShutdown {
-        println("Shutdown server")
-        tracing.stop()
     }
 }
 

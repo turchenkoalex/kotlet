@@ -79,7 +79,9 @@ class PostsService {
                 openapi {
                     summary("Update post by ID")
                     tags("posts")
-                    parameters<PostIdQuery>()
+                    parameters {
+                        path<Int>("id")
+                    }
                     jsonRequest<UpdatePostRequest>()
                 }
             }
