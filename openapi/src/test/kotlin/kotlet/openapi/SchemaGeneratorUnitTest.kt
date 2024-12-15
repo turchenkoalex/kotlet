@@ -4,6 +4,7 @@ import io.swagger.v3.oas.models.media.ArraySchema
 import io.swagger.v3.oas.models.media.BooleanSchema
 import io.swagger.v3.oas.models.media.ByteArraySchema
 import io.swagger.v3.oas.models.media.IntegerSchema
+import io.swagger.v3.oas.models.media.MapSchema
 import io.swagger.v3.oas.models.media.NumberSchema
 import io.swagger.v3.oas.models.media.ObjectSchema
 import io.swagger.v3.oas.models.media.StringSchema
@@ -65,7 +66,7 @@ class SchemaGeneratorUnitTest {
     fun objTest() {
         assertSchemaType<ObjectSchema>(clazz = ObjTest::class) {
             assertTrue(it.properties["list"] is ArraySchema)
-            assertTrue(it.properties["map"] is ObjectSchema)
+            assertTrue(it.properties["map"] is MapSchema)
         }
     }
 
