@@ -23,7 +23,7 @@ internal fun generateSchema(clazz: KClass<*>): Schema<*> {
 /**
  * This is a simplified version of schema generation.
  */
-@Suppress("CyclomaticComplexMethod")
+@Suppress("CyclomaticComplexMethod", "LongMethod")
 private fun generateTypedSchema(
     type: KType
 ): Schema<*> {
@@ -106,7 +106,7 @@ private fun isBoolean(type: KType) = (type.classifier == Boolean::class)
 private fun isDouble(type: KType) = (type.classifier == Double::class)
 private fun isFloat(type: KType) = (type.classifier == Float::class)
 private fun isChar(type: KType) = (type.classifier == Char::class)
-private fun isEnum(type: KType) = (type.classifier is KClass<*> && (type.classifier as KClass<*>).isSubclassOf(Enum::class))
-private fun isCollection(type: KType) = (type.classifier is KClass<*> && (type.classifier as KClass<*>).isSubclassOf(Collection::class))
+private fun isEnum(type: KType) = (type.classifier as? KClass<*>)?.isSubclassOf(Enum::class) == true
+private fun isCollection(type: KType) = (type.classifier as? KClass<*>)?.isSubclassOf(Collection::class) == true
 private fun isMap(type: KType) = (type.classifier == Map::class)
 private fun isByteArray(type: KType) = (type.classifier == ByteArray::class)
