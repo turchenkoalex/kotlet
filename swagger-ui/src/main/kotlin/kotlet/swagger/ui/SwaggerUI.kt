@@ -9,7 +9,7 @@ import kotlet.Routing
  *
  * @param configure Configuration of the OpenAPI endpoint
  */
-fun Routing.installSwaggerUI(configure: SwaggerUIConfigBuilder.() -> Unit) {
+fun Routing.installSwaggerUIEndpoint(configure: SwaggerUIConfigBuilder.() -> Unit) {
     val builder = SwaggerUIConfigBuilder()
     builder.configure()
     val config = builder.build()

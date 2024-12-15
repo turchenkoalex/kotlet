@@ -21,7 +21,7 @@ import kotlet.openapi.installOpenAPI
 import kotlet.prometheus.PrometheusMetricsCollector
 import kotlet.tracing.installTracing
 import posts.PostsService
-import kotlet.swagger.ui.installSwaggerUI
+import kotlet.swagger.ui.installSwaggerUIEndpoint
 import tracing.AppTracing
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
@@ -121,7 +121,7 @@ private fun buildAuxRouting(appRouting: Routing): Routing {
             }
         }
 
-        installSwaggerUI {
+        installSwaggerUIEndpoint {
             path = "/swagger"
             openAPIPath = "/swagger/openapi.json"
         }

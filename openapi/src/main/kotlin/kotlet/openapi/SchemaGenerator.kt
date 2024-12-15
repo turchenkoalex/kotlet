@@ -12,36 +12,20 @@ import io.swagger.v3.oas.models.media.StringSchema
 import java.math.BigDecimal
 import kotlin.collections.set
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.reflect.full.createType
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 
 internal fun generateSchema(clazz: KClass<*>): Schema<*> {
-    if (clazz.javaPrimitiveType != null) {
-        return generateTypedSchema(
-            type = clazz,
-            nullable = false,
-        )
-    }
-
-    val schema = ObjectSchema()
-    schema.description = clazz.qualifiedName
-    schema.properties = mutableMapOf<String, Schema<*>>()
-    clazz.memberProperties.forEach { property ->
-        schema.properties[property.name] = generateTypedSchema(
-            type = property.returnType.classifier as KClass<*>,
-            nullable = property.returnType.isMarkedNullable,
-        )
-    }
-    return schema
+    return generateTypedSchema(type = clazz.createType())
 }
-
 /**
  * This is a simplified version of schema generation.
  */
-@Suppress("CyclomaticComplexMethod")
+@Suppress("CyclomaticComplexMethod", "LongMethod")
 private fun generateTypedSchema(
-    type: KClass<*>,
-    nullable: Boolean,
+    type: KType
 ): Schema<*> {
     val schema = when {
         isString(type) -> StringSchema()
@@ -63,47 +47,66 @@ private fun generateTypedSchema(
         isChar(type) -> StringSchema().apply { maxLength = 1 }
         isEnum(type) -> {
             StringSchema().apply {
-                this.enum = type.java.enumConstants.map { it.toString() }
+                this.enum = (type.classifier as KClass<*>).java.enumConstants.map { it.toString() }
             }
         }
         isByteArray(type) -> ByteArraySchema()
         isCollection(type) -> {
-            val valueType = type.typeParameters.firstOrNull() as? KClass<*>
+            val valueType = type.arguments.firstOrNull()?.type
             ArraySchema().apply {
                 if (valueType != null) {
-                    items = generateSchema(valueType)
+                    items = generateTypedSchema(valueType)
                 }
             }
         }
         isMap(type) -> {
-            val valueType = type.typeParameters.firstOrNull() as? KClass<*>
+            val valueType = type.arguments.getOrNull(1)?.type
             MapSchema().apply {
                 if (valueType != null) {
-                    additionalProperties = generateSchema(valueType)
+                    additionalProperties = generateTypedSchema(valueType)
                 }
             }
         }
 
-        else -> generateSchema(type)
+        else -> {
+            val schema = ObjectSchema()
+            schema.description = (type.classifier as KClass<*>).qualifiedName
+            schema.properties = mutableMapOf<String, Schema<*>>()
+
+            (type.classifier as KClass<*>).memberProperties.forEach { property ->
+                val propertyType = property.returnType
+                val classifier = propertyType.classifier
+                if (classifier is KClass<*>) {
+                    schema.properties[property.name] = generateTypedSchema(type = propertyType)
+                } else {
+                    // if classifier is not KClass, we don't know how to handle it
+                    schema.properties[property.name] = Schema<Any>().apply {
+                        description = "Unknown type for property '${property.name}'"
+                    }
+                }
+            }
+
+            schema
+        }
     }
 
-    if (nullable) {
+    if (type.isMarkedNullable) {
         schema.nullable = true
     }
 
     return schema
 }
 
-private fun isString(type: KClass<*>) = (type == String::class)
-private fun isInt(type: KClass<*>) = (type == Int::class)
-private fun isLong(type: KClass<*>) = (type == Long::class)
-private fun isShort(type: KClass<*>) = (type == Short::class)
-private fun isByte(type: KClass<*>) = (type == Byte::class)
-private fun isBoolean(type: KClass<*>) = (type == Boolean::class)
-private fun isDouble(type: KClass<*>) = (type == Double::class)
-private fun isFloat(type: KClass<*>) = (type == Float::class)
-private fun isChar(type: KClass<*>) = (type == Char::class)
-private fun isEnum(type: KClass<*>) = (type.isSubclassOf(Enum::class))
-private fun isCollection(type: KClass<*>) = (type.isSubclassOf(Collection::class))
-private fun isMap(type: KClass<*>) = (type == Map::class)
-private fun isByteArray(type: KClass<*>) = (type == ByteArray::class)
+private fun isString(type: KType) = (type.classifier == String::class)
+private fun isInt(type: KType) = (type.classifier == Int::class)
+private fun isLong(type: KType) = (type.classifier == Long::class)
+private fun isShort(type: KType) = (type.classifier == Short::class)
+private fun isByte(type: KType) = (type.classifier == Byte::class)
+private fun isBoolean(type: KType) = (type.classifier == Boolean::class)
+private fun isDouble(type: KType) = (type.classifier == Double::class)
+private fun isFloat(type: KType) = (type.classifier == Float::class)
+private fun isChar(type: KType) = (type.classifier == Char::class)
+private fun isEnum(type: KType) = (type.classifier as? KClass<*>)?.isSubclassOf(Enum::class) == true
+private fun isCollection(type: KType) = (type.classifier as? KClass<*>)?.isSubclassOf(Collection::class) == true
+private fun isMap(type: KType) = (type.classifier == Map::class)
+private fun isByteArray(type: KType) = (type.classifier == ByteArray::class)
