@@ -10,7 +10,7 @@ class SwaggerUIUnitTest {
     @Test
     fun `swagger resources test`() {
         val router = Kotlet.routing {
-            installSwaggerUI {
+            installSwaggerUIEndpoint {
                 path = "/myswagger"
                 openAPIPath = "/openapi"
             }

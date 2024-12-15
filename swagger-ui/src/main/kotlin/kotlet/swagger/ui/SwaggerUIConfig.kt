@@ -15,7 +15,7 @@ class SwaggerUIConfigBuilder internal constructor() {
     /**
      * Path to the Swagger UI endpoint
      */
-    var path: String = "/kotlet/ui"
+    var path: String = "/swagger/ui"
 
     /**
      * Path to the OpenAPI endpoint
