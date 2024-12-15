@@ -86,7 +86,7 @@ private fun buildAuxRouting(appRouting: Routing): Routing {
 
         installOpenAPI {
             path = "/swagger/openapi.json"
-            this.documentedRoutings = listOf(appRouting)
+            documentedRoutings = listOf(appRouting)
             prettyPrint = true
             openAPI {
                 info {

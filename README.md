@@ -121,12 +121,14 @@ Kotlet provides a set of extensions that can be used to enhance the functionalit
 are designed to be lightweight and easy to use. You can add them to your project as needed to extend.
 
 The following extensions are available:
-- [CORS](docs/CORS.md)
-- [JSON](docs/JSON.md)
-- [JWT](docs/JWT.md)
-- [Metrics](docs/METRICS.md)
-- [Tracing](docs/TRACING.md)
-- [Type Safe](docs/TYPESAFE.md)
+- [CORS](cors/README.md)
+- [JSON](json/README.md)
+- [JWT](jwt/README.md)
+- [Metrics](metrics/README.md)
+- [Tracing](tracing/README.md)
+- [Type Safe](typesafe/README.md)
+- [OpenAPI](openapi/README.md)
+- [Swagger UI](swagger-ui/README.md)
 
 ### Interceptors
 
