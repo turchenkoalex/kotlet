@@ -1,4 +1,4 @@
-package swagger.ui
+package kotlet.swagger.ui
 
 /**
  * Configuration for the Swagger UI endpoint
@@ -15,7 +15,7 @@ class SwaggerUIConfigBuilder internal constructor() {
     /**
      * Path to the Swagger UI endpoint
      */
-    var path: String = "/swagger/ui"
+    var path: String = "/kotlet/ui"
 
     /**
      * Path to the OpenAPI endpoint

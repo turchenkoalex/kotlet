@@ -21,7 +21,7 @@ import kotlet.openapi.installOpenAPI
 import kotlet.prometheus.PrometheusMetricsCollector
 import kotlet.tracing.installTracing
 import posts.PostsService
-import swagger.ui.installSwaggerUI
+import kotlet.swagger.ui.installSwaggerUI
 import tracing.AppTracing
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
