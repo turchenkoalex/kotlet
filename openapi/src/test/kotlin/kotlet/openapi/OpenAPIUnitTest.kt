@@ -80,7 +80,20 @@ class OpenAPIUnitTest {
                               "type" : "object",
                               "properties" : {
                                 "comments" : {
-                                  "type" : "object"
+                                  "type" : "object",
+                                  "additionalProperties" : {
+                                    "type" : "object",
+                                    "properties" : {
+                                      "id" : {
+                                        "type" : "integer",
+                                        "format" : "int32"
+                                      },
+                                      "text" : {
+                                        "type" : "string"
+                                      }
+                                    },
+                                    "description" : "kotlet.openapi.Comment"
+                                  }
                                 },
                                 "content" : {
                                   "type" : "string",
