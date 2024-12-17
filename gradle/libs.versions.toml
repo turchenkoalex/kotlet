@@ -10,7 +10,7 @@ mockk = "1.13.13"
 opentelemetry = "1.45.0"
 opentelemetry-instrumentation-api = "2.10.0"
 opentelemetry-semconv = "1.28.0-alpha"
-prometheus = "1.3.4"
+prometheus = "1.3.5"
 swagger = "2.2.26"
 
 [plugins]
