@@ -1,14 +1,21 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
+import org.jreleaser.gradle.plugin.tasks.JReleaserFullReleaseTask
+import org.jreleaser.model.Active
+import org.jreleaser.model.Signing
 
 group = "io.github.turchenkoalex"
-version = "1.0-SNAPSHOT"
 
 plugins {
+    `java-library`
+    `maven-publish`
+    signing
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlinx.serialization) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.kover)
+    alias(libs.plugins.jreleaser)
+    alias(libs.plugins.nebula.release)
 }
 
 allprojects {
@@ -78,3 +85,136 @@ subprojects {
         }
     }
 }
+
+val publishProjects = setOf(
+    "core",
+    "cors",
+)
+
+subprojects {
+    if (this.name in publishProjects) {
+        apply(plugin = "java-library")
+        apply(plugin = "maven-publish")
+        apply(plugin = "signing")
+        apply(plugin = "org.jreleaser")
+        version = sanitizeVersion()
+
+        java {
+            withJavadocJar()
+            withSourcesJar()
+        }
+
+        publishing {
+            publications {
+                create<MavenPublication>("mavenJava") {
+                    from(components["java"])
+
+                    groupId = "io.github.turchenkoalex"
+                    artifactId = "kotlet-${project.name}"
+
+                    versionMapping {
+                        usage("java-api") {
+                            fromResolutionOf("runtimeClasspath")
+                        }
+                        usage("java-runtime") {
+                            fromResolutionResult()
+                        }
+                    }
+
+                    pom {
+                        name.set("kotlet-${project.name}")
+                        description.set("Kotlet ${project.name} library")
+                        url.set("https://github.com/turchenkoalex/kotlet")
+                        licenses {
+                            license {
+                                name.set("Apache License, Version 2.0")
+                                url.set("https://opensource.org/licenses/Apache-2.0")
+                            }
+                        }
+                        developers {
+                            developer {
+                                id.set("turchenkoalex")
+                                name.set("Aleksandr Turchenko")
+                            }
+                        }
+                        scm {
+                            connection.set("scm:git:git://github.com/turchenkoalex/kotlet.git")
+                            developerConnection.set("scm:git:ssh://github.com/turchenkoalex/kotlet.git")
+                            url.set("https://github.com/turchenkoalex/kotlet")
+                        }
+                    }
+                }
+            }
+
+            repositories {
+                maven {
+                    setUrl(layout.buildDirectory.dir("staging-deploy"))
+                }
+            }
+        }
+
+        jreleaser {
+            gitRootSearch = true
+
+            signing {
+                active = Active.ALWAYS
+                armored = true
+                mode = Signing.Mode.MEMORY
+            }
+
+            deploy {
+                maven {
+                    mavenCentral {
+                        create("sonatype") {
+                            active = Active.ALWAYS
+                            url = "https://central.sonatype.com/api/v1/publisher"
+                            javadocJar = true
+                            sourceJar = true
+                            stagingRepository(layout.buildDirectory.dir("staging-deploy").get().asFile.absolutePath)
+                        }
+                    }
+                }
+            }
+        }
+
+        val jreleaserDirTask = tasks.register("jreleaserDir") {
+            doFirst {
+                mkdir(layout.buildDirectory.dir("jreleaser").get().asFile)
+            }
+        }
+
+        tasks.withType<JReleaserFullReleaseTask> {
+            dependsOn(jreleaserDirTask)
+        }
+    }
+}
+
+tasks.release {
+    finalizedBy("jreleaserFullRelease")
+}
+
+// We want to change SNAPSHOT versions format from:
+// 		<major>.<minor>.<patch>-dev.#+<branchname>.<hash> (local branch)
+// 		<major>.<minor>.<patch>-dev.#+<hash> (github pull request)
+// to:
+// 		<major>.<minor>.<patch>-dev+<branchname>-SNAPSHOT
+fun Project.sanitizeVersion(): String {
+    val version = version.toString()
+    return if (project.isSnapshotVersion()) {
+        val githubHeadRef = System.getenv("GITHUB_HEAD_REF")
+        if (githubHeadRef != null) {
+            // github pull request
+            version
+                .replace(Regex("-dev\\.\\d+\\+[a-f0-9]+$"), "-dev+$githubHeadRef-SNAPSHOT")
+        } else {
+            // local branch
+            version
+                .replace(Regex("-dev\\.\\d+\\+"), "-dev+")
+                .replace(Regex("\\.[a-f0-9]+$"), "-SNAPSHOT")
+        }
+    } else {
+        version
+    }
+}
+
+fun Project.isSnapshotVersion() = version.toString().contains("-dev.")

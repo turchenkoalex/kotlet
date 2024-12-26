@@ -3,10 +3,12 @@ auth0-jwt = "4.4.0"
 detekt = "1.23.7"
 jakarta = "6.1.0"
 jetty = "12.0.16"
+jreleaser = "1.15.0"
 kotlin = "2.1.0"
 kotlinx-serialization = "1.8.0"
 kover = "0.9.1"
 mockk = "1.13.16"
+nebula = "19.0.10"
 opentelemetry = "1.46.0"
 opentelemetry-instrumentation-api = "2.11.0"
 opentelemetry-semconv = "1.29.0-alpha"
@@ -16,9 +18,11 @@ swagger = "2.2.27"
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 jmh = { id = "me.champeau.jmh", version = "0.7.2" }
+jreleaser = { id ="org.jreleaser", version.ref = "jreleaser" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+nebula-release = { id = "com.netflix.nebula.release", version.ref = "nebula" }
 
 [libraries]
 
