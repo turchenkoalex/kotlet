@@ -158,6 +158,12 @@ subprojects {
         jreleaser {
             gitRootSearch = true
 
+            release {
+                github {
+                    enabled = false
+                }
+            }
+
             signing {
                 active = Active.ALWAYS
                 armored = true
