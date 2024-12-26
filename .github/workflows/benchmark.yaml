@@ -1,9 +1,12 @@
 name: benchmark
+
 on:
+  push:
+    branches:
+      - main
   pull_request:
-    path-ignore:
-      - 'docs/**'
-      - 'README.md'
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -33,7 +36,7 @@ jobs:
       - name: Build and Run JMH benchmarks
         run: ./gradlew :benchmarks:jmh
       - name: JMH Benchmark Action
-        uses: kitlangton/jmh-benchmark-action@ea96a79ecacbec56b6bb17aafb90275bfbf26ebb
+        uses: kitlangton/jmh-benchmark-action@main
         with:
           jmh-output-path: benchmarks/build/reports/jmh/results.json
           github-token: ${{ secrets.GITHUB_TOKEN }}

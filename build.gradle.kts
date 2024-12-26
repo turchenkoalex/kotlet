@@ -1,14 +1,17 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
+import java.net.URI
 
 group = "io.github.turchenkoalex"
-version = "1.0-SNAPSHOT"
 
 plugins {
+    `java-library`
+    `maven-publish`
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlinx.serialization) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.kover)
+    alias(libs.plugins.nebula.release)
 }
 
 allprojects {
@@ -52,6 +55,7 @@ subprojects {
     }
 }
 
+// Coverage configuration
 val coverageExclusions = setOf(
     "benchmarks",
     "mocks",
@@ -59,22 +63,110 @@ val coverageExclusions = setOf(
 )
 
 subprojects {
-    if (this.name !in coverageExclusions) {
-        apply(plugin = "org.jetbrains.kotlinx.kover")
+    if (this.name in coverageExclusions) {
+        return@subprojects
+    }
 
-        // register kover for generating merged report from all subprojects
-        rootProject.dependencies {
-            kover(project)
-        }
+    apply(plugin = "org.jetbrains.kotlinx.kover")
 
-        kover {
-            reports {
-                verify {
-                    rule("Minimal line coverage rate in percents") {
-                        minBound(40)
-                    }
+    // register kover for generating merged report from all subprojects
+    rootProject.dependencies {
+        kover(project)
+    }
+
+    kover {
+        reports {
+            verify {
+                rule("Minimal line coverage rate in percents") {
+                    minBound(40)
                 }
             }
         }
     }
+}
+
+// Publishing configuration
+val publishPackages = setOf(
+    "core",
+    "cors",
+    "json",
+    "jwt",
+    "metrics",
+    "openapi",
+    "swagger-ui",
+    "tracing",
+    "typesafe",
+)
+
+subprojects {
+    if (this.name !in publishPackages) {
+        return@subprojects
+    }
+
+    apply(plugin = "java-library")
+    apply(plugin = "maven-publish")
+
+    version = sanitizeVersion()
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    configure<PublishingExtension> {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = URI("https://maven.pkg.github.com/turchenkoalex/kotlet")
+                credentials {
+                    username = ProjectEnvs.githubActor
+                    password = ProjectEnvs.githubToken
+                }
+            }
+        }
+
+        publications {
+            register<MavenPublication>("gpr") {
+                version = sanitizeVersion()
+                from(components["java"])
+            }
+        }
+    }
+}
+
+// We want to change SNAPSHOT versions format from:
+// 		<major>.<minor>.<patch>-dev.#+<branchname>.<hash> (local branch)
+// 		<major>.<minor>.<patch>-dev.#+<hash> (github pull request)
+// to:
+// 		<major>.<minor>.<patch>-dev+<branchname>-SNAPSHOT
+fun Project.sanitizeVersion(): String {
+    val version = version.toString()
+    return if (project.isSnapshotVersion()) {
+        val githubHeadRef = ProjectEnvs.githubHeadRef
+        if (githubHeadRef != null) {
+            // github pull request
+            version
+                .replace(Regex("-dev\\.\\d+\\+[a-f0-9]+$"), "-dev+$githubHeadRef-SNAPSHOT")
+        } else {
+            // local branch
+            version
+                .replace(Regex("-dev\\.\\d+\\+"), "-dev+")
+                .replace(Regex("\\.[a-f0-9]+$"), "-SNAPSHOT")
+        }
+    } else {
+        version
+    }
+}
+
+fun Project.isSnapshotVersion() = version.toString().contains("-dev")
+
+object ProjectEnvs {
+    val githubActor: String?
+        get() = System.getenv("GITHUB_ACTOR")
+
+    val githubToken: String?
+        get() = System.getenv("GITHUB_TOKEN")
+
+    val githubHeadRef: String?
+        get() = System.getenv("GITHUB_HEAD_REF")
 }
