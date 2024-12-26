@@ -1,0 +1,80 @@
+# This workflow will build a package using Gradle and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java#publishing-using-gradle
+
+name: Gradle Publish
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - README.md
+      - '**/README.md'
+      - 'docs/**'
+      - .github/**
+      - codecov.yml
+
+concurrency:
+  group: ${{ github.workflow }}-push-to-main
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  packages: write
+  pull-requests: write
+
+env:
+  JDK_VERSION: 21
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+jobs:
+  build:
+
+    runs-on: ubuntu-24.04-arm
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: 'true'
+          fetch-depth: '0'
+
+      - name: Set up Git user
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Set up JDK ${{ env.JDK_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '${{ env.JDK_VERSION }}'
+          cache: 'gradle'
+
+      # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
+      # the publishing section of your build.gradle
+      - name: Publish release package to central.sonatype.com
+        run: ./gradlew final closeAndReleaseSonatypeStagingRepository
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          GPG_SIGNING_PASSWORD: ${{ secrets.GPG_SIGNING_PASSWORD }}
+
+      - name: Update README files
+        shell: bash
+        run: |
+          NEW_VERSION=$(git describe --tags --abbrev=0 | sed 's/v//')
+          find . -name "README.md" -exec sed -Ei "s|io.github.turchenkoalex:kotlet-([a-zA-Z0-9_-]+):[0-9.]+|io.github.turchenkoalex:kotlet-\1:${NEW_VERSION}|g" {} +;
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update README dependencies to new version"
+          branch: update-readme
+          title: "Update README versions"
+          body: "This PR updates dependencies in README.md to new version."
+          base: main

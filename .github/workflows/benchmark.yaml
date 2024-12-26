@@ -1,0 +1,43 @@
+name: benchmark
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - README.md
+      - '**/README.md'
+      - 'docs/**'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  JDK_VERSION: 21
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+concurrency:
+  group: ${{ github.workflow }}-push-to-main
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and Run Tests
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Set up JDK ${{ env.JDK_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '${{ env.JDK_VERSION }}'
+          cache: 'gradle'
+      - name: Build and Run JMH benchmarks
+        run: ./gradlew :benchmarks:jmh
+      - name: JMH Benchmark Action
+        uses: kitlangton/jmh-benchmark-action@main
+        with:
+          jmh-output-path: benchmarks/build/reports/jmh/results.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
