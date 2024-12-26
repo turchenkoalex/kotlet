@@ -91,7 +91,7 @@ val publishProjects = setOf(
     "cors",
 )
 
-val releaseTask = tasks.release
+val fullRelease = tasks.register("fullRelease")
 
 subprojects {
     if (this.name in publishProjects) {
@@ -185,15 +185,18 @@ subprojects {
             }
         }
 
-        val fullRelease = tasks.withType<JReleaserFullReleaseTask> {
+        val jreleaserTask = tasks.withType<JReleaserFullReleaseTask> {
             dependsOn(jreleaserDirTask)
         }
 
-        releaseTask {
-            dependsOn(fullRelease)
-            finalizedBy(fullRelease)
+        fullRelease {
+            dependsOn(jreleaserTask)
         }
     }
+}
+
+tasks.release {
+    finalizedBy(fullRelease)
 }
 
 // We want to change SNAPSHOT versions format from:
