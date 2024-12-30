@@ -9,6 +9,7 @@ kotlinx-serialization = "1.8.0"
 kover = "0.9.1"
 mockk = "1.13.16"
 nebula = "19.0.10"
+nexus = "1.3.0"
 opentelemetry = "1.46.0"
 opentelemetry-instrumentation-api = "2.11.0"
 opentelemetry-semconv = "1.29.0-alpha"
@@ -23,6 +24,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 nebula-release = { id = "com.netflix.nebula.release", version.ref = "nebula" }
+nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus" }
 
 [libraries]
 
