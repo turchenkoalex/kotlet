@@ -103,6 +103,10 @@ tasks.withType<PublishToMavenRepository> {
     }
 }
 
+val snapshotAllTask = tasks.register("snapshotAll") {
+    group = "publishing"
+}
+
 subprojects {
     if (this.name in publishProjects) {
         apply(plugin = "java-library")
@@ -169,6 +173,10 @@ subprojects {
             useInMemoryPgpKeys(settingsProvider.gpgSigningKey, settingsProvider.gpgSigningPassword)
             sign(publishing.publications["mavenJava"])
         }
+
+        snapshotAllTask.configure {
+            dependsOn(tasks.getByName("publishToSonatype"))
+        }
     }
 }
 
@@ -191,7 +199,7 @@ tasks.register("printDevSnapshotReleaseNote") {
             sanitizedVersion = project.sanitizeVersion()
         )
     }
-    dependsOn(tasks.getByName("devSnapshot"))
+    dependsOn(snapshotAllTask)
 }
 
 
