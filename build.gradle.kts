@@ -1,8 +1,5 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
-import org.jreleaser.gradle.plugin.tasks.JReleaserFullReleaseTask
-import org.jreleaser.model.Active
-import org.jreleaser.model.Signing
 
 group = "io.github.turchenkoalex"
 
@@ -14,8 +11,8 @@ plugins {
     alias(libs.plugins.kotlinx.serialization) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.kover)
-    alias(libs.plugins.jreleaser)
     alias(libs.plugins.nebula.release)
+    alias(libs.plugins.nexus.publish)
 }
 
 allprojects {
@@ -91,14 +88,26 @@ val publishProjects = setOf(
     "cors",
 )
 
-val fullRelease = tasks.register("fullRelease")
+val settingsProvider = SettingsProvider()
+
+tasks.withType<Sign> {
+    doFirst {
+        settingsProvider.validateGPGSecrets()
+    }
+    dependsOn(tasks.getByName("build"))
+}
+
+tasks.withType<PublishToMavenRepository> {
+    doFirst {
+        settingsProvider.validateSonatypeCredentials()
+    }
+}
 
 subprojects {
     if (this.name in publishProjects) {
         apply(plugin = "java-library")
         apply(plugin = "maven-publish")
         apply(plugin = "signing")
-        apply(plugin = "org.jreleaser")
         version = sanitizeVersion()
 
         java {
@@ -113,6 +122,7 @@ subprojects {
 
                     groupId = "io.github.turchenkoalex"
                     artifactId = "kotlet-${project.name}"
+                    version = sanitizeVersion()
 
                     versionMapping {
                         usage("java-api") {
@@ -155,54 +165,47 @@ subprojects {
             }
         }
 
-        jreleaser {
-            gitRootSearch = true
-
-            release {
-                github {
-                    enabled = false
-                }
-            }
-
-            signing {
-                active = Active.ALWAYS
-                armored = true
-                mode = Signing.Mode.MEMORY
-            }
-
-            deploy {
-                maven {
-                    mavenCentral {
-                        create("sonatype") {
-                            active = Active.ALWAYS
-                            url = "https://central.sonatype.com/api/v1/publisher"
-                            javadocJar = true
-                            sourceJar = true
-                            stagingRepository(layout.buildDirectory.dir("staging-deploy").get().asFile.absolutePath)
-                        }
-                    }
-                }
-            }
-        }
-
-        val jreleaserDirTask = tasks.register("jreleaserDir") {
-            doFirst {
-                mkdir(layout.buildDirectory.dir("jreleaser").get().asFile)
-            }
-        }
-
-        val jreleaserTask = tasks.withType<JReleaserFullReleaseTask> {
-            dependsOn(jreleaserDirTask)
-        }
-
-        fullRelease {
-            dependsOn(jreleaserTask)
+        signing {
+            useInMemoryPgpKeys(settingsProvider.gpgSigningKey, settingsProvider.gpgSigningPassword)
+            sign(publishing.publications["mavenJava"])
         }
     }
 }
 
-tasks.release {
-    finalizedBy(fullRelease)
+tasks.register("printFinalReleaseNote") {
+    doLast {
+        printFinalReleaseNote(
+            groupId = "io.github.turchenkoalex",
+            artifactId = "kotlet",
+            sanitizedVersion = project.sanitizeVersion()
+        )
+    }
+    dependsOn(tasks.getByName("final"))
+}
+
+tasks.register("printDevSnapshotReleaseNote") {
+    doLast {
+        printDevSnapshotReleaseNote(
+            groupId = "io.github.turchenkoalex",
+            artifactId = "kotlet",
+            sanitizedVersion = project.sanitizeVersion()
+        )
+    }
+    dependsOn(tasks.getByName("devSnapshot"))
+}
+
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            useStaging.set(!project.isSnapshotVersion())
+            packageGroup.set("io.github.turchenkoalex")
+            username.set(settingsProvider.sonatypeUsername)
+            password.set(settingsProvider.sonatypePassword)
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
 }
 
 // We want to change SNAPSHOT versions format from:
@@ -213,7 +216,7 @@ tasks.release {
 fun Project.sanitizeVersion(): String {
     val version = version.toString()
     return if (project.isSnapshotVersion()) {
-        val githubHeadRef = System.getenv("GITHUB_HEAD_REF")
+        val githubHeadRef = settingsProvider.githubHeadRef
         if (githubHeadRef != null) {
             // github pull request
             version
@@ -230,3 +233,80 @@ fun Project.sanitizeVersion(): String {
 }
 
 fun Project.isSnapshotVersion() = version.toString().contains("-dev.")
+
+fun printFinalReleaseNote(groupId: String, artifactId: String, sanitizedVersion: String) {
+    println()
+    println("========================================================")
+    println()
+    println("New RELEASE artifact version were published:")
+    println("	groupId: $groupId")
+    println("	artifactId: $artifactId")
+    println("	version: $sanitizedVersion")
+    println()
+    println("Discover on Maven Central:")
+    println("	https://repo1.maven.org/maven2/${groupId.replace('.', '/')}/$artifactId/")
+    println()
+    println("Edit or delete artifacts on OSS Nexus Repository Manager:")
+    println("	https://oss.sonatype.org/#nexus-search;gav~$groupId~~~~")
+    println()
+    println("Control staging repositories on OSS Nexus Repository Manager:")
+    println("	https://oss.sonatype.org/#stagingRepositories")
+    println()
+    println("========================================================")
+    println()
+}
+
+fun printDevSnapshotReleaseNote(groupId: String, artifactId: String, sanitizedVersion: String) {
+    println()
+    println("========================================================")
+    println()
+    println("New developer SNAPSHOT artifact version were published:")
+    println("	groupId: $groupId")
+    println("	artifactId: $artifactId")
+    println("	version: $sanitizedVersion")
+    println()
+    println("Discover on Maven Central:")
+    println("	https://s01.oss.sonatype.org/content/repositories/snapshots/${groupId.replace('.', '/')}/$artifactId/")
+    println()
+    println("Edit or delete artifacts on OSS Nexus Repository Manager:")
+    println("	https://s01.oss.sonatype.org/#nexus-search;gav~$groupId~~~~")
+    println()
+    println("========================================================")
+    println()
+}
+
+class SettingsProvider {
+
+    val gpgSigningKey: String?
+        get() = System.getenv(GPG_SIGNING_KEY_PROPERTY)
+
+    val gpgSigningPassword: String?
+        get() = System.getenv(GPG_SIGNING_PASSWORD_PROPERTY)
+
+    val sonatypeUsername: String?
+        get() = System.getenv(SONATYPE_USERNAME_PROPERTY)
+
+    val sonatypePassword: String?
+        get() = System.getenv(SONATYPE_PASSWORD_PROPERTY)
+
+    val githubHeadRef: String?
+        get() = System.getenv(GITHUB_HEAD_REF_PROPERTY)
+
+    fun validateGPGSecrets() = require(
+        value = !gpgSigningKey.isNullOrBlank() && !gpgSigningPassword.isNullOrBlank(),
+        lazyMessage = { "Both $GPG_SIGNING_KEY_PROPERTY and $GPG_SIGNING_PASSWORD_PROPERTY environment variables must not be empty" }
+    )
+
+    fun validateSonatypeCredentials() = require(
+        value = !sonatypeUsername.isNullOrBlank() && !sonatypePassword.isNullOrBlank(),
+        lazyMessage = { "Both $SONATYPE_USERNAME_PROPERTY and $SONATYPE_PASSWORD_PROPERTY environment variables must not be empty" }
+    )
+
+    private companion object {
+        private const val GPG_SIGNING_KEY_PROPERTY = "GPG_SIGNING_KEY"
+        private const val GPG_SIGNING_PASSWORD_PROPERTY = "GPG_SIGNING_PASSWORD"
+        private const val SONATYPE_USERNAME_PROPERTY = "SONATYPE_USERNAME"
+        private const val SONATYPE_PASSWORD_PROPERTY = "SONATYPE_PASSWORD"
+        private const val GITHUB_HEAD_REF_PROPERTY = "GITHUB_HEAD_REF"
+    }
+}
