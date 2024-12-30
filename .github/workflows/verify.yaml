@@ -48,6 +48,15 @@ jobs:
           min-coverage-changed-files: 60
       - name: Coverage verify
         run: ./gradlew koverVerify
+      - name: Publish Maven Central
+        if: success()
+        env:
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          GPG_SIGNING_PASSWORD: ${{ secrets.GPG_SIGNING_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        run: ./gradlew snapshotAll printDevSnapshotReleaseNote
   detekt:
     name: Detekt
     runs-on: ubuntu-latest
