@@ -15,7 +15,7 @@ swagger = "2.2.28"
 
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-jmh = { id = "me.champeau.jmh", version = "0.7.2" }
+jmh = { id = "me.champeau.jmh", version = "0.7.3" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
