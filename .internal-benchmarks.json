@@ -1,0 +1,1 @@
+{"benchmarks":[{"time":"2025-03-17T18:04:59.849","benchmarkRuns":[{"benchmark":"kotlet.InterceptorBenchmark.testInterceptedHandler","mode":"thrpt","primaryMetric":{"score":1.1770300134820431E8,"scoreUnit":"ops/s"}},{"benchmark":"kotlet.InterceptorBenchmark.testRecursive","mode":"thrpt","primaryMetric":{"score":1.7697506631534252E7,"scoreUnit":"ops/s"}}]}]}
