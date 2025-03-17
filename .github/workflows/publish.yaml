@@ -25,21 +25,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+
       - name: Set up JDK ${{ env.JDK_VERSION }}
         uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
           java-version: '${{ env.JDK_VERSION }}'
-
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-tags: true
-          fetch-depth: '1'
-          clean: 'true'
+          cache: 'gradle'
 
       - name: Build with Gradle
-        run: gradle build
+        run: gradle build -Prelease.useLastTag=true
 
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
