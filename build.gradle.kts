@@ -20,6 +20,23 @@ allprojects {
     repositories {
         mavenCentral()
     }
+
+    // Unit tests settings
+    tasks.withType<Test> {
+        // enable parallel tests execution
+        systemProperties["junit.jupiter.execution.parallel.enabled"] = true
+        systemProperties["junit.jupiter.execution.parallel.mode.default"] = "concurrent"
+
+        // JUnit settings
+        useJUnitPlatform {
+            enableAssertions = true
+            testLogging {
+                exceptionFormat = TestExceptionFormat.FULL
+                events = setOf(TestLogEvent.FAILED, TestLogEvent.SKIPPED)
+                showStandardStreams = false
+            }
+        }
+    }
 }
 
 // register task before using in subprojects
@@ -115,23 +132,6 @@ subprojects {
         withSourcesJar()
     }
 
-    // Unit tests settings
-    tasks.withType<Test> {
-        // enable parallel tests execution
-        systemProperties["junit.jupiter.execution.parallel.enabled"] = true
-        systemProperties["junit.jupiter.execution.parallel.mode.default"] = "concurrent"
-
-        // JUnit settings
-        useJUnitPlatform {
-            enableAssertions = true
-            testLogging {
-                exceptionFormat = TestExceptionFormat.FULL
-                events = setOf(TestLogEvent.FAILED, TestLogEvent.SKIPPED)
-                showStandardStreams = false
-            }
-        }
-    }
-
     configure<PublishingExtension> {
         repositories {
             maven {
@@ -147,6 +147,8 @@ subprojects {
         publications {
             register<MavenPublication>("gpr") {
                 version = sanitizeVersion()
+                groupId = "io.github.turchenkoalex"
+                artifactId = "kotlet-${project.name}"
                 from(components["java"])
             }
         }
