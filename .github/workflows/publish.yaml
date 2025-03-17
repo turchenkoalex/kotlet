@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-tags: true
       - name: Set up JDK ${{ env.JDK_VERSION }}
         uses: actions/setup-java@v4
         with:
