@@ -162,7 +162,7 @@ fun Project.sanitizeVersion(): String {
     val version = version.toString()
     return if (project.isSnapshotVersion()) {
         val githubHeadRef = ProjectEnvs.githubHeadRef
-        if (githubHeadRef != null) {
+        if (!githubHeadRef.isNullOrEmpty()) {
             // github pull request
             version
                 .replace(Regex("-dev\\.\\d+\\+[a-f0-9]+$"), "-dev+$githubHeadRef-SNAPSHOT")
