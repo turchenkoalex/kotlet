@@ -1,5 +1,6 @@
 package kotlet.json
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -9,6 +10,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.util.concurrent.ConcurrentHashMap
 
+@OptIn(ExperimentalSerializationApi::class)
 object Serializer {
     private val kotlinSerializersCache = ConcurrentHashMap<Class<*>, KSerializer<*>>()
 
