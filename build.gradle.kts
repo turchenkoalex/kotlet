@@ -1,5 +1,7 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import java.net.URI
 
 group = "io.github.turchenkoalex"
@@ -111,6 +113,23 @@ subprojects {
     java {
         withJavadocJar()
         withSourcesJar()
+    }
+
+    // Unit tests settings
+    tasks.withType<Test> {
+        // enable parallel tests execution
+        systemProperties["junit.jupiter.execution.parallel.enabled"] = true
+        systemProperties["junit.jupiter.execution.parallel.mode.default"] = "concurrent"
+
+        // JUnit settings
+        useJUnitPlatform {
+            enableAssertions = true
+            testLogging {
+                exceptionFormat = TestExceptionFormat.FULL
+                events = setOf(TestLogEvent.FAILED, TestLogEvent.SKIPPED)
+                showStandardStreams = false
+            }
+        }
     }
 
     configure<PublishingExtension> {

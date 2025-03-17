@@ -4,9 +4,8 @@
 name: Gradle Publish
 
 on:
-  push:
-    tags:
-      - 'v*'  # Invoke this workflow on all tags that start with 'v'
+  release:
+    types: [created]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
