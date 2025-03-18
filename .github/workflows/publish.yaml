@@ -9,8 +9,8 @@ on:
       - main
     paths-ignore:
       - README.md
+      - '**/README.md'
       - 'docs/**'
-
 
 concurrency:
   group: ${{ github.workflow }}-push-to-main
@@ -19,6 +19,7 @@ concurrency:
 permissions:
   contents: write
   packages: write
+  pull-requests: write
 
 env:
   JDK_VERSION: 21
@@ -56,17 +57,18 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
       - name: Update README files
         shell: bash
         run: |
           NEW_VERSION=$(git describe --tags --abbrev=0 | sed 's/v//')
           find . -name "README.md" -exec sed -Ei "s|io.github.turchenkoalex:kotlet-([a-zA-Z0-9_-]+):[0-9.]+|io.github.turchenkoalex:kotlet-\1:${NEW_VERSION}|g" {} +;
 
-      - name: Push changes
-        uses: EndBug/add-and-commit@v9
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
         with:
-          committer_name: "${{ github.actor }}"
-          committer_email: "${{ github.actor }}@users.noreply.github.com"
-          add: .
-          message: 'Update version in README files'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update README dependencies to new version"
+          branch: update-readme
+          title: "Update README versions"
+          body: "This PR updates dependencies in README.md to new version."
+          base: main
