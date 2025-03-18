@@ -146,13 +146,46 @@ subprojects {
 
         publications {
             register<MavenPublication>("gpr") {
+                from(components["java"])
+
                 version = sanitizeVersion()
                 groupId = "io.github.turchenkoalex"
                 artifactId = "kotlet-${project.name}"
-                from(components["java"])
+
+                pom {
+                    name.set("kotlet-${project.name}")
+                    description.set("Kotlet ${project.name} module")
+                    url.set("https://github.com/turchenkoalex/kotlet")
+
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id.set("turchenkoalex")
+                            name.set("Aleksandr Turchenko")
+                        }
+
+                        scm {
+                            connection.set("scm:git:git://github.com/turchenkoalex/kotlet.git")
+                            url.set("https://github.com/turchenkoalex/kotlet")
+                            developerConnection.set("scm:git:ssh://github.com:turchenkoalex/kotlet.git")
+                        }
+                    }
+                }
+
             }
         }
     }
+
+
+    rootProject.tasks["final"].dependsOn(tasks.getByName("publish"))
+
+    rootProject.tasks["devSnapshot"].dependsOn(tasks.getByName("publish"))
 }
 
 // We want to change SNAPSHOT versions format from:
@@ -190,4 +223,39 @@ object ProjectEnvs {
 
     val githubHeadRef: String?
         get() = System.getenv("GITHUB_HEAD_REF")
+}
+
+tasks.register("printFinalReleaseNote") {
+    doLast {
+        printReleaseNote(
+            groupId = "io.github.turchenkoalex",
+            artifactId = project.name,
+            sanitizedVersion = project.sanitizeVersion()
+        )
+    }
+    dependsOn(tasks.getByName("final"))
+}
+
+tasks.register("printDevSnapshotReleaseNote") {
+    doLast {
+        printReleaseNote(
+            groupId = "io.github.turchenkoalex",
+            artifactId = project.name,
+            sanitizedVersion = project.sanitizeVersion()
+        )
+    }
+    dependsOn(tasks.getByName("devSnapshot"))
+}
+
+fun printReleaseNote(groupId: String, artifactId: String, sanitizedVersion: String) {
+    println()
+    println("========================================================")
+    println()
+    println("New RELEASE artifact version were published:")
+    println("	groupId: $groupId")
+    println("	artifactId: $artifactId")
+    println("	version: $sanitizedVersion")
+    println()
+    println("========================================================")
+    println()
 }
