@@ -4,8 +4,9 @@
 name: Gradle Publish
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -37,13 +38,10 @@ jobs:
           java-version: '${{ env.JDK_VERSION }}'
           cache: 'gradle'
 
-      - name: Build with Gradle
-        run: gradle build -Prelease.useLastTag=true
-
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
       - name: Publish client to GitHub Packages
-        run: gradle publish -Prelease.useLastTag=true
+        run: gradle final
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
