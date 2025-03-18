@@ -1,7 +1,7 @@
 name: verify
 on:
   pull_request:
-    path-ignore:
+    paths-ignore:
       - 'docs/**'
       - 'README.md'
 
@@ -16,7 +16,7 @@ concurrency:
 jobs:
   test:
     name: Build and Run Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
       checks: write
@@ -27,7 +27,7 @@ jobs:
       - name: Set up JDK ${{ env.JDK_VERSION }}
         uses: actions/setup-java@v4
         with:
-          distribution: 'adopt'
+          distribution: 'corretto'
           java-version: '${{ env.JDK_VERSION }}'
           cache: 'gradle'
       - name: Build and Run Tests

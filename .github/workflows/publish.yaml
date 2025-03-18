@@ -7,9 +7,13 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - README.md
+      - 'docs/**'
+
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-push-to-main
   cancel-in-progress: true
 
 permissions:
@@ -23,25 +27,28 @@ env:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-tags: true
+
+      - name: Set up Git user
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
 
       - name: Set up JDK ${{ env.JDK_VERSION }}
         uses: actions/setup-java@v4
         with:
-          distribution: 'adopt'
+          distribution: 'corretto'
           java-version: '${{ env.JDK_VERSION }}'
           cache: 'gradle'
 
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
       - name: Publish client to GitHub Packages
-        run: gradle final
+        run: gradle final printFinalReleaseNote
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
