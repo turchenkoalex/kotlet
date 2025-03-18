@@ -78,7 +78,7 @@ subprojects {
 val coverageExclusions = setOf(
     "benchmarks",
     "mocks",
-    "sample",
+    "samples",
 )
 
 subprojects {
