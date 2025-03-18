@@ -13,7 +13,7 @@ include(
     "metrics",
     "mocks",
     "openapi",
-    "sample",
+    "samples",
     "swagger-ui",
     "tracing",
     "typesafe",
