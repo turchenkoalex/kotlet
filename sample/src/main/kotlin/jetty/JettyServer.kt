@@ -1,5 +1,8 @@
 package jetty
 
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import kotlet.ErrorsHandler
 import kotlet.Kotlet
 import kotlet.Routing
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler
@@ -48,7 +51,7 @@ private class JettyServer(
         val http2 = HTTP2CServerConnectionFactory()
 
         val servlets = mapOf(
-            "/*" to Kotlet.servlet(listOf(routing))
+            "/*" to Kotlet.servlet(listOf(routing), CustomErrorsHandler)
         )
 
         val servletHandler =
@@ -106,4 +109,19 @@ private fun awaitShutdown(onShutdown: () -> Unit) {
 
     Runtime.getRuntime().addShutdownHook(hook)
     latch.await()
+}
+
+/**
+ * Custom error handler that logs the exception and returns a 500 status code.
+ */
+private object CustomErrorsHandler : ErrorsHandler {
+    override fun routeNotFound(request: HttpServletRequest, response: HttpServletResponse) {
+        response.status = HttpServletResponse.SC_NOT_FOUND
+        response.writer.write("Not found")
+    }
+
+    override fun internalServerError(request: HttpServletRequest, response: HttpServletResponse, e: Throwable) {
+        response.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+        e.printStackTrace()
+    }
 }
