@@ -5,13 +5,6 @@ import kotlet.Kotlet
 import kotlet.respondJson
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class Example(
-    val id: Long,
-    val name: String,
-    val age: Int
-)
-
 fun main() {
     val routing = Kotlet.routing {
         get("/", { call ->
@@ -33,3 +26,10 @@ fun main() {
         }
     )
 }
+
+@Serializable
+private data class Example(
+    val id: Long,
+    val name: String,
+    val age: Int
+)

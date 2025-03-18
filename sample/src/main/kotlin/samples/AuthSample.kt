@@ -7,23 +7,6 @@ import kotlet.HttpCall
 import kotlet.Interceptor
 import kotlet.Kotlet
 
-/**
- * This interceptor checks if the request contains a password parameter.
- */
-private class AuthInterceptor() : Interceptor {
-    override fun aroundCall(call: HttpCall, next: Handler) {
-        val pass = call.rawRequest.getParameter("password")
-
-        if (pass != "P@SSW0RD") {
-            call.status = HttpServletResponse.SC_UNAUTHORIZED
-            call.respondText("Unauthorized")
-            return
-        }
-
-        next(call)
-    }
-}
-
 fun main() {
     val routing = Kotlet.routing {
 
@@ -46,4 +29,21 @@ fun main() {
             println("Server is shutting down")
         }
     )
+}
+
+/**
+ * This interceptor checks if the request contains a password parameter.
+ */
+private class AuthInterceptor : Interceptor {
+    override fun aroundCall(call: HttpCall, next: Handler) {
+        val pass = call.rawRequest.getParameter("password")
+
+        if (pass != "P@SSW0RD") {
+            call.status = HttpServletResponse.SC_UNAUTHORIZED
+            call.respondText("Unauthorized")
+            return
+        }
+
+        next(call)
+    }
 }
