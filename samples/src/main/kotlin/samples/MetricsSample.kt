@@ -18,8 +18,10 @@ fun main() {
 
         get("/", { call ->
             call.rawResponse.contentType = "text/html"
-            call.respondText("Open <a href=\"http://localhost:8080/prometheus\">http://localhost:8080/prometheus</a> " +
-                "to see the metrics")
+            call.respondText(
+                "Open <a href=\"http://localhost:8080/prometheus\">http://localhost:8080/prometheus</a> " +
+                    "to see the metrics"
+            )
         })
     }
 
