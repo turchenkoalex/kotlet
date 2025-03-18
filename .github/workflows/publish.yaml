@@ -52,3 +52,16 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update README files
+        uses: MathieuSoysal/file-updater-for-release@v1.0.3
+        with:
+          files: README.md cors/README.md json/README.md jwt/README.md metrics/README.md openapi/README.md swagger-ui/README.md tracing/README.md typesafe/README.md
+
+      - name: Push changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          committer_name: "${{ github.actor }}"
+          committer_email: "${{ github.actor }}@users.noreply.github.com"
+          add: .
+          message: 'Update version in README files'
