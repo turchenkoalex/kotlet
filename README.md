@@ -57,7 +57,7 @@ Add the following dependency to your `build.gradle.kts` file:
 
 ```kotlin
 dependencies {
-    implementation("io.github.turchenkoalex:kotlet-core:1.0.0")
+    implementation("io.github.turchenkoalex:kotlet-core:0.1.0")
 }
 ```
 
@@ -68,7 +68,7 @@ Or to `pom.xml` if you use Maven:
 <dependency>
     <groupId>io.github.turchenkoalex</groupId>
     <artifactId>kotlet-core</artifactId>
-    <version>1.0.0</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
