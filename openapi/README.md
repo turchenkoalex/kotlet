@@ -3,7 +3,7 @@
 ## Installation
 
 ```kotlin
-implementation("io.github.turchenkoalex:kotlet-openapi:0.4.0")
+implementation("io.github.turchenkoalex:kotlet-openapi:0.6.0")
 ```
 
 ## Configuration
