@@ -26,7 +26,6 @@ fun main() {
     }
 
     startJettyServer(
-        port = 8080,
         routing = routing,
         onShutdown = {
             println("Server is shutting down")
