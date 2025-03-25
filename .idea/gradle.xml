@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/benchmarks" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/cors" />
+            <option value="$PROJECT_DIR$/jetty" />
             <option value="$PROJECT_DIR$/json" />
             <option value="$PROJECT_DIR$/jwt" />
             <option value="$PROJECT_DIR$/metrics" />

@@ -77,6 +77,7 @@ subprojects {
 // Coverage configuration
 val coverageExclusions = setOf(
     "benchmarks",
+    "jetty",
     "mocks",
     "samples",
 )
@@ -108,6 +109,7 @@ subprojects {
 val publishPackages = setOf(
     "core",
     "cors",
+    "jetty",
     "json",
     "jwt",
     "metrics",

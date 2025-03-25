@@ -8,6 +8,7 @@ include(
     "benchmarks",
     "core",
     "cors",
+    "jetty",
     "json",
     "jwt",
     "metrics",
