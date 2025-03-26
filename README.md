@@ -124,6 +124,7 @@ are designed to be lightweight and easy to use. You can add them to your project
 
 The following extensions are available:
 - [CORS](cors/README.md)
+- [Jetty](jetty/README.md)
 - [JSON](json/README.md)
 - [JWT](jwt/README.md)
 - [Metrics](metrics/README.md)
