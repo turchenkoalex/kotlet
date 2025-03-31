@@ -11,8 +11,8 @@ import org.eclipse.jetty.server.HttpConnectionFactory
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
 import org.eclipse.jetty.server.handler.gzip.GzipHandler
+import org.eclipse.jetty.util.thread.QueuedThreadPool
 import org.eclipse.jetty.util.thread.ThreadPool
-import org.eclipse.jetty.util.thread.VirtualThreadPool
 
 class JettyBuilder internal constructor() {
     private val httpConfiguration = HttpConfiguration().apply {
@@ -23,9 +23,11 @@ class JettyBuilder internal constructor() {
 
     var port: Int = 80
 
-    var threadPool: ThreadPool = VirtualThreadPool()
+    var threadPool: ThreadPool = QueuedThreadPool()
 
     var errorsHandler: ErrorsHandler? = null
+
+    var gzipEnabled: Boolean = true
 
     internal fun build(routing: List<Routing>): Server {
         val servlet = Kotlet.servlet(routing, errorsHandler)
@@ -39,7 +41,11 @@ class JettyBuilder internal constructor() {
         val http2 = HTTP2CServerConnectionFactory()
 
         return Server(threadPool).apply {
-            handler = GzipHandler(servletHandler)
+            handler = if (gzipEnabled) {
+                GzipHandler(servletHandler)
+            } else {
+                servletHandler
+            }
 
             // HTTP
             addConnector(
