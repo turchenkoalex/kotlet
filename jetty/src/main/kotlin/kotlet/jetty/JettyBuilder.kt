@@ -27,6 +27,8 @@ class JettyBuilder internal constructor() {
 
     var errorsHandler: ErrorsHandler? = null
 
+    var gzipEnabled: Boolean = true
+
     internal fun build(routing: List<Routing>): Server {
         val servlet = Kotlet.servlet(routing, errorsHandler)
 
@@ -39,7 +41,11 @@ class JettyBuilder internal constructor() {
         val http2 = HTTP2CServerConnectionFactory()
 
         return Server(threadPool).apply {
-            handler = GzipHandler(servletHandler)
+            handler = if (gzipEnabled) {
+                GzipHandler(servletHandler)
+            } else {
+                servletHandler
+            }
 
             // HTTP
             addConnector(
