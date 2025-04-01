@@ -70,7 +70,7 @@ Add the following dependency to your `build.gradle.kts` file:
 
 ```kotlin
 dependencies {
-    implementation("io.github.turchenkoalex:kotlet-core:0.8.0")
+    implementation("io.github.turchenkoalex:kotlet-core:0.9.0")
 }
 ```
 
