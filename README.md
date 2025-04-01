@@ -74,17 +74,6 @@ dependencies {
 }
 ```
 
-Or to `pom.xml` if you use Maven:
-
-```xml
-
-<dependency>
-    <groupId>io.github.turchenkoalex</groupId>
-    <artifactId>kotlet-core</artifactId>
-    <version>0.1.0</version>
-</dependency>
-```
-
 Define the Kotlet routing in your application, and you're ready to go!
 
 ```kotlin
