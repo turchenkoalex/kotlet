@@ -61,7 +61,7 @@ class PrometheusMetricsCollectorUnitTest {
         assertEquals(1.0, point.value)
         assertEquals(3, point.labels.size())
         assertEquals("GET", point.labels.get("method"))
-        assertEquals("/", point.labels.get("path"))
+        assertEquals("/", point.labels.get("route_path"))
         assertEquals("200", point.labels.get("status"))
     }
 
@@ -98,7 +98,7 @@ class PrometheusMetricsCollectorUnitTest {
         assertEquals(0.99, point.quantiles.get(3).quantile)
         assertEquals(5.0, point.quantiles.get(3).value)
         assertEquals("POST", point.labels.get("method"))
-        assertEquals("/test", point.labels.get("path"))
+        assertEquals("/test", point.labels.get("route_path"))
         assertEquals("400", point.labels.get("status"))
     }
 

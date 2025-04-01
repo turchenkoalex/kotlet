@@ -45,15 +45,15 @@ class MetricsScrapeUnitTest {
         val expected = """
             # HELP kotlet_http_requests_total Total number of HTTP requests
             # TYPE kotlet_http_requests_total counter
-            kotlet_http_requests_total{method="GET",path="/",status="200"} 1.0
+            kotlet_http_requests_total{method="GET",route_path="/",status="200"} 1.0
             # HELP kotlet_http_requests_duration_seconds Duration of HTTP requests in seconds
             # TYPE kotlet_http_requests_duration_seconds summary
-            kotlet_http_requests_duration_seconds{method="GET",path="/",status="200",quantile="0.5"} 0.0
-            kotlet_http_requests_duration_seconds{method="GET",path="/",status="200",quantile="0.9"} 0.0
-            kotlet_http_requests_duration_seconds{method="GET",path="/",status="200",quantile="0.95"} 0.0
-            kotlet_http_requests_duration_seconds{method="GET",path="/",status="200",quantile="0.99"} 0.0
-            kotlet_http_requests_duration_seconds_count{method="GET",path="/",status="200"} 1
-            kotlet_http_requests_duration_seconds_sum{method="GET",path="/",status="200"} 0.0
+            kotlet_http_requests_duration_seconds{method="GET",route_path="/",status="200",quantile="0.5"} 0.0
+            kotlet_http_requests_duration_seconds{method="GET",route_path="/",status="200",quantile="0.9"} 0.0
+            kotlet_http_requests_duration_seconds{method="GET",route_path="/",status="200",quantile="0.95"} 0.0
+            kotlet_http_requests_duration_seconds{method="GET",route_path="/",status="200",quantile="0.99"} 0.0
+            kotlet_http_requests_duration_seconds_count{method="GET",route_path="/",status="200"} 1
+            kotlet_http_requests_duration_seconds_sum{method="GET",route_path="/",status="200"} 0.0
 
             """.trimIndent()
 
