@@ -3,7 +3,7 @@
 ## Installation
 
 ```kotlin
-implementation("io.github.turchenkoalex:kotlet-cors:0.8.0")
+implementation("io.github.turchenkoalex:kotlet-cors:0.9.0")
 ```
 
 ## Configuration
