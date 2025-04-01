@@ -30,7 +30,7 @@ class PrometheusMetricsCollector(
     private val counter = Counter.builder()
         .name("kotlet_http_requests_total")
         .help("Total number of HTTP requests")
-        .labelNames("method", "path", "status")
+        .labelNames("method", "route_path", "status")
         .register(registry)
 
     private val summary = Summary.builder()
@@ -41,7 +41,7 @@ class PrometheusMetricsCollector(
         .quantile(0.9, 0.01)
         .quantile(0.95, 0.005)
         .quantile(0.99, 0.001)
-        .labelNames("method", "path", "status")
+        .labelNames("method", "route_path", "status")
         .register(registry)
 }
 
