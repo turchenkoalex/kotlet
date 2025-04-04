@@ -9,11 +9,13 @@ group = "io.github.turchenkoalex"
 plugins {
     `java-library`
     `maven-publish`
+    signing
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlinx.serialization) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.kover)
     alias(libs.plugins.nebula.release)
+    alias(libs.plugins.nexus.publish)
 }
 
 allprojects {
@@ -126,6 +128,7 @@ subprojects {
 
     apply(plugin = "java-library")
     apply(plugin = "maven-publish")
+    apply(plugin = "signing")
 
     version = sanitizeVersion()
 
@@ -184,10 +187,27 @@ subprojects {
         }
     }
 
+    signing {
+        useInMemoryPgpKeys(ProjectEnvs.gpgSigningKey, ProjectEnvs.gpgSigningPassword)
+        sign(publishing.publications["gpr"])
+    }
 
-    rootProject.tasks["final"].dependsOn(tasks.getByName("publish"))
+    tasks.withType<Sign> {
+        dependsOn(tasks["build"])
+    }
+}
 
-    rootProject.tasks["devSnapshot"].dependsOn(tasks.getByName("publish"))
+nexusPublishing {
+    repositories {
+        sonatype {
+            useStaging.set(!project.isSnapshotVersion())
+            packageGroup.set("io.github.turchenkoalex")
+            username.set(ProjectEnvs.sonatypeUsername)
+            password.set(ProjectEnvs.sonatypePassword)
+            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+        }
+    }
 }
 
 // We want to change SNAPSHOT versions format from:
@@ -213,20 +233,30 @@ object ProjectEnvs {
 
     val githubToken: String?
         get() = System.getenv("GITHUB_TOKEN")
+
+    val sonatypeUsername: String?
+        get() = System.getenv("SONATYPE_USERNAME")
+
+    val sonatypePassword: String?
+        get() = System.getenv("SONATYPE_PASSWORD")
+
+    val gpgSigningKey: String?
+        get() = System.getenv("GPG_SIGNING_KEY")
+
+    val gpgSigningPassword: String?
+        get() = System.getenv("GPG_SIGNING_PASSWORD")
 }
 
 tasks.register("printFinalReleaseNote") {
     doLast {
         printReleaseNote()
     }
-    dependsOn(tasks.getByName("final"))
 }
 
 tasks.register("printDevSnapshotReleaseNote") {
     doLast {
         printReleaseNote()
     }
-    dependsOn(tasks.getByName("devSnapshot"))
 }
 
 fun printReleaseNote() {
