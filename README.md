@@ -1,7 +1,7 @@
 # Kotlet: A blend of Kotlin and Servlet with simple routing
 
 ![GitHub Tag](https://img.shields.io/github/v/tag/turchenkoalex/kotlet?sort=semver&label=version&color=green)
-[![](https://jitpack.io/v/turchenkoalex/kotlet.svg)](https://jitpack.io/#turchenkoalex/kotlet)
+![Maven Central Version](https://img.shields.io/maven-central/v/io.github.turchenkoalex/kotlet-core)
 
 Welcome to Kotlet! This library enables you to create routing for web applications using Java Servlets and the Kotlin
 programming language. Kotlet is designed for developers who appreciate simplicity and efficiency.
@@ -53,18 +53,6 @@ available for creating routes:
 For more information, see the [Routing Methods](docs/ROUTES.md) documentation.
 
 ## Installation
-
-Add it in your `settings.gradle.kts` at the end of repositories:
-
-```
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        mavenCentral()
-        maven { url = uri("https://jitpack.io") }
-    }
-}
-```
 
 Add the following dependency to your `build.gradle.kts` file:
 
