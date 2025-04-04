@@ -52,11 +52,11 @@ jobs:
         run: ./gradlew koverVerify --parallel
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
-      - name: Publish client to GitHub Packages
-        run: ./gradlew devSnapshot printDevSnapshotReleaseNote
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Publish client to GitHub Packages
+#        run: ./gradlew devSnapshot printDevSnapshotReleaseNote
+#        env:
+#          GITHUB_ACTOR: ${{ github.actor }}
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   detekt:
     name: Detekt
     runs-on: ubuntu-latest

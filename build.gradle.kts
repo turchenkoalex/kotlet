@@ -195,6 +195,15 @@ subprojects {
     tasks.withType<Sign> {
         dependsOn(tasks["build"])
     }
+
+    tasks {
+        // All checks were already made by workflow "On pull request" => no checks here
+        if (gradle.startParameter.taskNames.contains("final")) {
+            named("build").get().apply {
+                dependsOn.removeIf { it == "check" }
+            }
+        }
+    }
 }
 
 nexusPublishing {
