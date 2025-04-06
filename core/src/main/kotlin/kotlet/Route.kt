@@ -30,7 +30,7 @@ data class Route(
     /**
      * Handler with all global interceptors applied.
      */
-    val handler = Interceptor.createRecursiveHandler(globalInterceptors, ::handleCall)
+    internal val handler = Interceptor.createRecursiveHandler(globalInterceptors, ::handleCall)
 
     /**
      * Handle the HTTP call.

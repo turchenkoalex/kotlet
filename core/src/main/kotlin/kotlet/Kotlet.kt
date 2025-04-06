@@ -2,6 +2,10 @@ package kotlet
 
 import jakarta.servlet.http.HttpServlet
 
+/**
+ * Kotlet: A blend of Kotlin and Servlet with simple routing.
+ * It provides a simple and intuitive API for creating HTTP restful services.
+ */
 object Kotlet {
     /**
      * Creates a new [HttpServlet] that will handle all requests based on the provided routings.

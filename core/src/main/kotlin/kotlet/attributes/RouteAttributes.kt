@@ -25,6 +25,9 @@ interface RouteAttributes {
  */
 fun emptyRouteAttributes(): RouteAttributes = EmptyRouteAttributes
 
+/**
+ * Immutable empty [RouteAttributes] instance.
+ */
 private object EmptyRouteAttributes : RouteAttributes {
     override fun <T : Any> containsKey(key: RouteAttribute<T>): Boolean = false
     override fun <T : Any> get(key: RouteAttribute<T>): T? = null

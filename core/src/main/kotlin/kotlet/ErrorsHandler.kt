@@ -38,6 +38,9 @@ interface ErrorsHandler {
     }
 
     companion object {
+        /**
+         * Default implementation of [ErrorsHandler].
+         */
         internal val DEFAULT = object : ErrorsHandler {}
     }
 }
