@@ -3,7 +3,7 @@
 ## Installation
 
 ```kotlin
-implementation("io.github.turchenkoalex:kotlet-typesafe:0.12.0")
+implementation("io.github.turchenkoalex:kotlet-typesafe:0.15.0")
 ```
 
 ## Configuration

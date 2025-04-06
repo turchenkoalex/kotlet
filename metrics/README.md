@@ -3,7 +3,7 @@
 ## Installation
 
 ```kotlin
-implementation("io.github.turchenkoalex:kotlet-metrics:0.12.0")
+implementation("io.github.turchenkoalex:kotlet-metrics:0.15.0")
 ```
 
 > [!IMPORTANT]
