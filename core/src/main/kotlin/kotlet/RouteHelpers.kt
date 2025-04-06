@@ -9,7 +9,7 @@ import kotlet.selector.StaticSegmentSelector
 import kotlet.selector.TailSegmentSelector
 import kotlet.selector.WildcardSegmentSelector
 
-object RouteHelpers {
+internal object RouteHelpers {
 
     internal const val ROOT_ROUTE_PATH = "/"
 
@@ -23,7 +23,7 @@ object RouteHelpers {
         return path.split('/').filter { it.isNotBlank() }
     }
 
-    internal fun prepareSelectorsList(route: Route): List<Selector> {
+    fun prepareSelectorsList(route: Route): List<Selector> {
         return prepareSelectorsList(route.path)
     }
 

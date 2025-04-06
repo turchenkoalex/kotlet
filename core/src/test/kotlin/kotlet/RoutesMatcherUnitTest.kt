@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.fail
 
-internal class AllRoutesMatcherUnitTest {
+internal class RoutesMatcherUnitTest {
 
     @Test
     fun findRoute_Static() {
@@ -303,8 +303,8 @@ internal class AllRoutesMatcherUnitTest {
         // P.S. There is no magic behind 15. The number should be big enough, but not bigger. So – 15 :)
         (1..15).forEach { _ ->
             val shuffledRoutes = getAllRoutes().shuffled()
-            val allRoutesMatcher = AllRoutesMatcher(shuffledRoutes)
-            val (route, params) = allRoutesMatcher.findRoute(request)
+            val routesMatcher = RoutesMatcher(shuffledRoutes)
+            val (route, params) = routesMatcher.findRoute(request)
                 ?: fail("Route for '${request.requestURI}' not found. Known routes: $shuffledRoutes")
 
             testCodeBlock(route, params, shuffledRoutes)

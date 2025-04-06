@@ -2,13 +2,20 @@ package kotlet.selector
 
 import jakarta.servlet.http.HttpServletRequest
 
-interface Selector {
+/**
+ * Selector is an interface that defines a method for evaluating a request against a specific path segment.
+ */
+internal interface Selector {
 
     fun evaluate(request: HttpServletRequest, pathSegments: List<String>, segmentIndex: Int): EvaluationResult
 
 }
 
-sealed class EvaluationResult {
+/**
+ * EvaluationResult is a sealed class that represents the result of evaluating a request against a path segment.
+ * It can be either a success or a failure.
+ */
+internal sealed class EvaluationResult {
 
     data class Success(
         val segmentIncrement: Int, val parameters: Map<String, String> = emptyMap()
