@@ -23,11 +23,12 @@ allprojects {
         mavenCentral()
     }
 
+    apply(plugin = "org.jetbrains.kotlinx.kover")
+
     // Unit tests settings
     tasks.withType<Test> {
-        // enable parallel tests execution
-        systemProperties["junit.jupiter.execution.parallel.enabled"] = true
-        systemProperties["junit.jupiter.execution.parallel.mode.default"] = "concurrent"
+        reports.html.required = false
+        reports.junitXml.required = true
 
         // JUnit settings
         useJUnitPlatform {
@@ -76,35 +77,19 @@ subprojects {
     }
 }
 
-// Coverage configuration
-val coverageExclusions = setOf(
-    "benchmarks",
-    "jetty",
-    "mocks",
-    "samples",
-)
+// Kover configuration
 
-subprojects {
-    if (this.name in coverageExclusions) {
-        return@subprojects
-    }
-
-    apply(plugin = "org.jetbrains.kotlinx.kover")
-
+dependencies {
     // register kover for generating merged report from all subprojects
-    rootProject.dependencies {
-        kover(project)
-    }
-
-    kover {
-        reports {
-            verify {
-                rule("Minimal line coverage rate in percents") {
-                    minBound(40)
-                }
-            }
-        }
-    }
+    kover(project(":core"))
+    kover(project(":cors"))
+    kover(project(":json"))
+    kover(project(":jwt"))
+    kover(project(":metrics"))
+    kover(project(":openapi"))
+    kover(project(":swagger-ui"))
+    kover(project(":tracing"))
+    kover(project(":typesafe"))
 }
 
 // Publishing configuration

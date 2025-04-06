@@ -1,0 +1,48 @@
+name: coverage
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - README.md
+      - '**/README.md'
+      - 'docs/**'
+
+env:
+  JDK_VERSION: 21
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+concurrency:
+  group: ${{ github.workflow }}-push-to-main
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Coverage
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      pull-requests: write
+      packages: write
+      # required for all workflows
+      security-events: write
+      checks: write
+      # only required for workflows in private repositories
+      actions: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Set up JDK ${{ env.JDK_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '${{ env.JDK_VERSION }}'
+          cache: 'gradle'
+      - name: Build and Run Tests
+        run: ./gradlew test koverXmlReport --parallel
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          os: linux-arm64
