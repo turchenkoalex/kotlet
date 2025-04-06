@@ -56,4 +56,19 @@ class MutableRouteAttributesUnitTest {
 
         assertEquals(1002, attributes[intAttributeKey])
     }
+
+    @Test
+    fun `attributes toString`() {
+        val attributes = MutableRouteAttributes()
+        val intAttributeKey = RouteAttribute.of<Int>("intA")
+        val longAttributeKey = RouteAttribute.of<Long>("longB")
+        val stringAttributeKey = RouteAttribute.of<String>("stringC")
+
+        attributes[intAttributeKey] = 1001
+        attributes[longAttributeKey] = 1001L
+        attributes[stringAttributeKey] = "test_attribute"
+
+        val expectedString = "RouteAttributes([intA, longB, stringC])"
+        assertEquals(expectedString, attributes.toString())
+    }
 }

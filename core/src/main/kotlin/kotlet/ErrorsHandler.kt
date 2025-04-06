@@ -33,7 +33,7 @@ interface ErrorsHandler {
      * If an internal server error occurs, the [RoutingServlet] will call the [internalServerError] method.
      * By default, it will send a 500 error with the message "Internal server error".
      */
-    fun internalServerError(request: HttpServletRequest, response: HttpServletResponse, e: Throwable) {
+    fun internalServerError(request: HttpServletRequest, response: HttpServletResponse, e: Exception) {
         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error")
     }
 
@@ -41,6 +41,10 @@ interface ErrorsHandler {
         /**
          * Default implementation of [ErrorsHandler].
          */
-        internal val DEFAULT = object : ErrorsHandler {}
+        internal val DEFAULT = object : ErrorsHandler {
+            override fun toString(): String {
+                return "DefaultErrorsHandler"
+            }
+        }
     }
 }

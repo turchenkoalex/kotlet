@@ -23,7 +23,7 @@ class RouteAttribute<T: Any> internal constructor(
     }
 
     override fun toString(): String {
-        return "RouteAttribute(name='$name')"
+        return name
     }
 
 }
