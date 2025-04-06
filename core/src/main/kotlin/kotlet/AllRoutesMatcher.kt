@@ -13,7 +13,10 @@ import java.util.logging.Logger
 
 private val log = Logger.getLogger(AllRoutesMatcher::class.java.simpleName)
 
-internal class AllRoutesMatcher(routes: List<Route>) {
+/**
+ * Routes matcher for all given routes.
+ */
+internal class AllRoutesMatcher(routes: List<Route>): RoutesMatcher {
 
     /**
      * All routes but root router '/' (defined below)
@@ -49,7 +52,10 @@ internal class AllRoutesMatcher(routes: List<Route>) {
             .sortedWith(oneRouteMatcherComparator)
     }
 
-    fun findRoute(request: HttpServletRequest): Pair<Route, Map<String, String>>? {
+    /**
+     * Finds a route for the given request.
+     */
+    override fun findRoute(request: HttpServletRequest): Pair<Route, Map<String, String>>? {
         val matchedRoute = matchers.firstNotNullOfOrNull { routeMatcher ->
             when (val matchResult = routeMatcher.match(request)) {
                 RouteMatchResult.Failure -> null
