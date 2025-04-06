@@ -23,8 +23,6 @@ allprojects {
         mavenCentral()
     }
 
-    apply(plugin = "org.jetbrains.kotlinx.kover")
-
     // Unit tests settings
     tasks.withType<Test> {
         reports.html.required = false
@@ -77,22 +75,7 @@ subprojects {
     }
 }
 
-// Kover configuration
-
-dependencies {
-    // register kover for generating merged report from all subprojects
-    kover(project(":core"))
-    kover(project(":cors"))
-    kover(project(":json"))
-    kover(project(":jwt"))
-    kover(project(":metrics"))
-    kover(project(":openapi"))
-    kover(project(":swagger-ui"))
-    kover(project(":tracing"))
-    kover(project(":typesafe"))
-}
-
-// Publishing configuration
+// The main packages
 val publishPackages = setOf(
     "core",
     "cors",
@@ -106,6 +89,23 @@ val publishPackages = setOf(
     "typesafe",
 )
 
+// Kover configuration
+dependencies {
+    // register kover for generating merged report from main subprojects
+    publishPackages.forEach {
+        kover(project(":$it"))
+    }
+}
+
+subprojects {
+    if (this.name !in publishPackages) {
+        return@subprojects
+    }
+
+    apply(plugin = "org.jetbrains.kotlinx.kover")
+}
+
+// Publishing configuration
 subprojects {
     if (this.name !in publishPackages) {
         return@subprojects

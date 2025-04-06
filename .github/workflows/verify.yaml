@@ -61,12 +61,3 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           os: linux-arm64
-      - name: Publish Kover Report
-        uses: madrapps/jacoco-report@v1.7.1
-        if: success() || failure() # always run even if the previous step fails
-        with:
-          paths: |
-            ${{ github.workspace }}/build/reports/kover/report.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 50
-          min-coverage-changed-files: 60

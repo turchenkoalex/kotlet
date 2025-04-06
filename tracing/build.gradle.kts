@@ -14,11 +14,3 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.jakarta.api)
 }
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-kotlin {
-    jvmToolchain(21)
-}

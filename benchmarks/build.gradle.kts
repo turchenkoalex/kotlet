@@ -29,10 +29,6 @@ jmh {
     warmupIterations = 3
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
 kotlin {
     jvmToolchain(21)
 }
