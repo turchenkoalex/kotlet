@@ -15,11 +15,3 @@ dependencies {
     testImplementation(libs.prometheus.metrics.core)
     testImplementation(libs.prometheus.metrics.exporter.servlet.jakarta)
 }
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-kotlin {
-    jvmToolchain(21)
-}
