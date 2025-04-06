@@ -44,7 +44,7 @@ private object CustomErrorsHandler : ErrorsHandler {
         response.writer.write("Not found")
     }
 
-    override fun internalServerError(request: HttpServletRequest, response: HttpServletResponse, e: Throwable) {
+    override fun internalServerError(request: HttpServletRequest, response: HttpServletResponse, e: Exception) {
         response.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR
         e.printStackTrace()
     }

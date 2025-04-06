@@ -22,10 +22,10 @@ object Kotlet {
         errorsHandler: ErrorsHandler? = null,
     ): HttpServlet {
         val allRoutes = routings.map(Routing::getAllRoutes).flatten()
-        val routesMatcher = RoutesMatcher(allRoutes)
+        val allRoutesMatcher = AllRoutesMatcher(allRoutes)
 
         return RoutingServlet(
-            routesMatcher = routesMatcher,
+            allRoutesMatcher = allRoutesMatcher,
             errorsHandler = errorsHandler ?: ErrorsHandler.DEFAULT
         )
     }

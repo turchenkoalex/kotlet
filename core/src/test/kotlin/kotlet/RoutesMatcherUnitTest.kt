@@ -292,6 +292,20 @@ internal class RoutesMatcherUnitTest {
         }
     }
 
+    @Test
+    fun `toString test`() {
+        val routes = routing {
+            get("/a/b/c", {})
+            get("/a/b", {})
+            post("/a/b", {})
+        }
+
+        val matcher = AllRoutesMatcher(routes.getAllRoutes())
+
+        val expected = "RoutesMatcher(routes=[[GET] => /a/b/c, [GET, POST] => /a/b])"
+        assertEquals(expected, matcher.toString())
+    }
+
     private fun Routing.findMatchForShuffledRoutes(
         request: HttpServletRequest,
         testCodeBlock: (route: Route, params: Map<String, String>, allRoutes: List<Route>) -> Unit
@@ -303,8 +317,8 @@ internal class RoutesMatcherUnitTest {
         // P.S. There is no magic behind 15. The number should be big enough, but not bigger. So – 15 :)
         (1..15).forEach { _ ->
             val shuffledRoutes = getAllRoutes().shuffled()
-            val routesMatcher = RoutesMatcher(shuffledRoutes)
-            val (route, params) = routesMatcher.findRoute(request)
+            val allRoutesMatcher = AllRoutesMatcher(shuffledRoutes)
+            val (route, params) = allRoutesMatcher.findRoute(request)
                 ?: fail("Route for '${request.requestURI}' not found. Known routes: $shuffledRoutes")
 
             testCodeBlock(route, params, shuffledRoutes)

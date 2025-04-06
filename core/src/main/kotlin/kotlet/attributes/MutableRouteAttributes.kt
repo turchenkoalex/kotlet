@@ -23,4 +23,9 @@ internal class MutableRouteAttributes : RouteAttributes {
     operator fun <T : Any> set(key: RouteAttribute<T>, value: Any) {
         map[key] = value
     }
+
+    override fun toString(): String {
+        val items = map.keys.joinToString(", ", prefix = "[", postfix = "]")
+        return "RouteAttributes($items)"
+    }
 }

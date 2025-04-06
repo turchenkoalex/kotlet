@@ -1,12 +1,13 @@
 package kotlet
 
 import kotlet.attributes.RouteAttributes
+import java.util.EnumSet
 
 /**
  * Route configuration.
  * Contains a route path and a list of handlers for different HTTP methods.
  */
-data class Route(
+internal data class Route(
     /**
      * Route path.
      */
@@ -28,9 +29,18 @@ data class Route(
     private val handlers: Map<HttpMethod, Handler>,
 ) {
     /**
+     * List of HTTP methods that are allowed for this route.
+     */
+    val allowedHttpMethods: Set<HttpMethod> = if (handlers.isEmpty()) {
+        emptySet()
+    } else {
+        EnumSet.copyOf(handlers.keys)
+    }
+
+    /**
      * Handler with all global interceptors applied.
      */
-    internal val handler = Interceptor.createRecursiveHandler(globalInterceptors, ::handleCall)
+    val handler = Interceptor.createRecursiveHandler(globalInterceptors, ::handleCall)
 
     /**
      * Handle the HTTP call.

@@ -17,6 +17,6 @@ class RouteAttributeUnitTest {
     fun `toString returns name`() {
         val attr = RouteAttribute.of<Int>("int")
 
-        assertEquals("RouteAttribute(name='int')", attr.toString())
+        assertEquals("int", attr.toString())
     }
 }

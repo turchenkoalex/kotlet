@@ -11,12 +11,12 @@ import kotlet.selector.WildcardSegmentSelector
 import java.util.logging.Level
 import java.util.logging.Logger
 
-private val log = Logger.getLogger(RoutesMatcher::class.java.simpleName)
+private val log = Logger.getLogger(AllRoutesMatcher::class.java.simpleName)
 
 /**
  * Routes matcher for all given routes.
  */
-class RoutesMatcher(routes: List<Route>) {
+internal class AllRoutesMatcher(routes: List<Route>) {
 
     /**
      * All routes but root router '/' (defined below)
@@ -73,6 +73,14 @@ class RoutesMatcher(routes: List<Route>) {
         } else {
             matchedRoute
         }
+    }
+
+    override fun toString(): String {
+        val matchers = matchers.joinToString(", ", prefix = "[", postfix = "]") {
+            "${it.route.allowedHttpMethods} => ${it.route.path}"
+        }
+
+        return "RoutesMatcher(routes=$matchers)"
     }
 }
 
