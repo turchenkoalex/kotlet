@@ -2,6 +2,7 @@
 
 ![GitHub Tag](https://img.shields.io/github/v/tag/turchenkoalex/kotlet?sort=semver&label=version&color=green)
 ![Maven Central Version](https://img.shields.io/maven-central/v/io.github.turchenkoalex/kotlet-core)
+[![codecov](https://codecov.io/gh/turchenkoalex/kotlet/graph/badge.svg?token=F21ZD8IPEJ)](https://codecov.io/gh/turchenkoalex/kotlet)
 
 Welcome to Kotlet! This library enables you to create routing for web applications using Java Servlets and the Kotlin
 programming language. Kotlet is designed for developers who appreciate simplicity and efficiency.
