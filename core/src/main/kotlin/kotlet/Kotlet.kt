@@ -18,7 +18,7 @@ object Kotlet {
         errorsHandler: ErrorsHandler? = null,
     ): HttpServlet {
         val allRoutes = routings.map(Routing::getAllRoutes).flatten()
-        val routesMatcher = RoutesMatcher.build(allRoutes)
+        val routesMatcher = RoutesMatcher(allRoutes)
 
         return RoutingServlet(
             routesMatcher = routesMatcher,
