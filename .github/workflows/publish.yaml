@@ -11,6 +11,8 @@ on:
       - README.md
       - '**/README.md'
       - 'docs/**'
+      - .github/**
+      - codecov.yml
 
 concurrency:
   group: ${{ github.workflow }}-push-to-main
