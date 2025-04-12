@@ -10,6 +10,7 @@ import kotlet.attributes.MutableRouteAttributes
  * @param interceptors Interceptors to be executed for the route.
  * @param attributes Attributes for the route.
  */
+@Suppress("unused")
 class RouteSettings(
     internal val interceptors: List<Interceptor>,
     internal val attributes: RouteAttributes,
