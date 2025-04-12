@@ -15,7 +15,7 @@ class Routing internal constructor() {
     /**
      * List of all route handlers
      */
-    private val routeHandlers = ArrayList<RouteHandler>()
+    private val routeHandlers = mutableListOf<RouteHandler>()
 
     /**
      * List of global interceptors
