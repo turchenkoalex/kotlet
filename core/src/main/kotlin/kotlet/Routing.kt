@@ -1,8 +1,6 @@
 package kotlet
 
 import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Routing provides a way to configure routes and global interceptors
@@ -12,29 +10,29 @@ class Routing internal constructor() {
     /**
      * Flag that indicates that all routes have been configured and sealed
      */
-    private val sealed = AtomicBoolean(false)
+    private var sealed = false
 
     /**
      * List of all route handlers
      */
-    private val routeHandlers = CopyOnWriteArrayList<RouteHandler>()
+    private val routeHandlers = ArrayList<RouteHandler>()
 
     /**
      * List of global interceptors
      */
-    private val globalInterceptors = CopyOnWriteArrayList<Interceptor>()
+    private val globalInterceptors = mutableListOf<Interceptor>()
 
     /**
      * Stack of interceptors for the injecting into the route
      * Used in [use] method
      */
-    private val currentInterceptors = LinkedList<Interceptor>()
+    private val currentInterceptors = ArrayDeque<Interceptor>()
 
     /**
      * Stack of paths segments for the injecting into the route
      * Used in [route] method
      */
-    private val currentSegments = LinkedList<String>()
+    private val currentSegments = ArrayDeque<String>()
 
     /**
      * Install global interceptors
@@ -57,7 +55,7 @@ class Routing internal constructor() {
         vararg interceptors: Interceptor,
         order: InstallOrder = InstallOrder.LAST,
     ) {
-        if (sealed.get()) {
+        if (sealed) {
             throw RoutingConfigurationException("All routes have been sealed, you can't install global interceptors")
         }
 
@@ -93,7 +91,7 @@ class Routing internal constructor() {
      * ```
      */
     fun use(vararg interceptors: Interceptor, block: Routing.() -> Unit) {
-        if (sealed.get()) {
+        if (sealed) {
             throw RoutingConfigurationException("All routes have been sealed, you can't create another one")
         }
 
@@ -323,7 +321,7 @@ class Routing internal constructor() {
         path: String,
         block: Routing.() -> Unit
     ) {
-        if (sealed.get()) {
+        if (sealed) {
             throw RoutingConfigurationException("All routes have been sealed, you can't create another one")
         }
 
@@ -338,7 +336,7 @@ class Routing internal constructor() {
         handler: Handler,
         settingsBlock: RouteSettings.RouteSettingsBuilder.() -> Unit
     ) {
-        if (sealed.get()) {
+        if (sealed) {
             throw RoutingConfigurationException("All routes have been sealed, you can't create another one")
         }
 
@@ -353,7 +351,7 @@ class Routing internal constructor() {
 
     internal fun getAllRoutes(): List<Route> {
         // seal all settings and return a copy of the list
-        sealed.set(true)
+        sealed = true
 
         val globalInterceptors = globalInterceptors.toList()
 
@@ -383,7 +381,7 @@ class Routing internal constructor() {
         }
 }
 
-private fun buildRoutePath(segments: List<String>, path: String): String {
+private fun buildRoutePath(segments: Collection<String>, path: String): String {
     if (segments.isEmpty()) {
         return path
     }

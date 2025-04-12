@@ -15,7 +15,7 @@ class RouteSettings(
     internal val attributes: RouteAttributes,
 ) {
     class RouteSettingsBuilder(
-        interceptors: List<Interceptor>
+        interceptors: Collection<Interceptor>
     ) {
         private val interceptors = interceptors.toMutableList()
         private val attributes = MutableRouteAttributes()
