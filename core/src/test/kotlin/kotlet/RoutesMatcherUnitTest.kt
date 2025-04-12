@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest
 import kotlet.Kotlet.routing
 import org.junit.jupiter.api.Assertions.assertThrows
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.fail
@@ -339,6 +340,23 @@ internal class RoutesMatcherUnitTest {
         }
 
         assertEquals("Route /foo has more than one handler for the same HTTP method: [GET]", error.message)
+    }
+
+    @Test
+    fun `only one root route allowed`() {
+        val routing1 = routing {
+            get { }
+        }
+
+        val routing2 = routing {
+            post { }
+        }
+
+        val error = assertThrows(RoutingConfigurationException::class.java) {
+            AllRoutesMatcher(routing1.getAllRoutes() + routing2.getAllRoutes())
+        }
+
+        assertContains(error.message!!, "There are more than one root router defined")
     }
 
     @Test
