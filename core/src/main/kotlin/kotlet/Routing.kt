@@ -329,9 +329,7 @@ class Routing internal constructor() {
 
         currentSegments.add(path)
         block(this)
-        repeat(currentSegments.size) {
-            currentSegments.removeLast()
-        }
+        currentSegments.removeLast()
     }
 
     private fun createRoute(
