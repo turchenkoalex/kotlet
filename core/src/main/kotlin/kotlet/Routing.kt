@@ -346,6 +346,10 @@ class Routing internal constructor() {
 
         val routePath = buildRoutePath(currentSegments, path)
 
+        if (routeHandlers.any { it.path == path && it.method == method }) {
+            throw RoutingConfigurationException("Route $path has more than one handler for the same HTTP method: [$method]")
+        }
+
         routeHandlers += RouteHandler(routePath, method, handler, settings)
     }
 

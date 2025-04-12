@@ -104,6 +104,23 @@ internal object RouteHelpers {
         if (allRootRoutes.size > 1) {
             throw RoutingConfigurationException("There are more than one root router defined: $allRootRoutes")
         }
+
+        // Check for duplicated routes with the same HTTP method
+        allRoutes
+            .groupBy { it.route.path } // group by it path
+            .map { it.value }
+            .filter { it.size > 1 } // and check only those with more than one
+            .forEach { matchers ->
+                val alreadyRegisteredMethods = mutableSetOf<HttpMethod>()
+
+                matchers.forEach { matcher ->
+                    val duplicatedMethods = matcher.route.allowedHttpMethods intersect alreadyRegisteredMethods
+                    if (duplicatedMethods.isNotEmpty()) {
+                        throw RoutingConfigurationException("Route ${matcher.route.path} has more than one handler for the same HTTP method: $duplicatedMethods")
+                    }
+                    alreadyRegisteredMethods.addAll(matcher.route.allowedHttpMethods)
+                }
+            }
     }
 
     internal fun matchRequestRouteSelectors(

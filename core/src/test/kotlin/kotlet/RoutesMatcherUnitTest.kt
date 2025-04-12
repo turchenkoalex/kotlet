@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import jakarta.servlet.http.HttpServletRequest
 import kotlet.Kotlet.routing
+import org.junit.jupiter.api.Assertions.assertThrows
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -319,6 +320,35 @@ internal class RoutesMatcherUnitTest {
 
         val expected = "RoutesMatcher(routes=[[GET] => /a/b/c, [GET, POST] => /a/b])"
         assertEquals(expected, matcher.toString())
+    }
+
+    @Test
+    fun `fails when duplicates found in different routing`() {
+        val routing1 = routing {
+            get("/foo", { })
+        }
+
+        val routing2 = routing {
+            get("/foo", { })
+        }
+
+        val error = assertThrows(RoutingConfigurationException::class.java) {
+            AllRoutesMatcher(routing1.getAllRoutes() + routing2.getAllRoutes())
+        }
+
+        assertEquals("Route /foo has more than one handler for the same HTTP method: [GET]", error.message)
+    }
+
+    @Test
+    fun `fails when duplicates found in one route`() {
+        val error = assertThrows(RoutingConfigurationException::class.java) {
+            routing {
+                get("/foo", { })
+                get("/foo", { })
+            }
+        }
+
+        assertEquals("Route /foo has more than one handler for the same HTTP method: [GET]", error.message)
     }
 
     private fun Routing.findMatchForShuffledRoutes(
