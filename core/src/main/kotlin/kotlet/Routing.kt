@@ -96,9 +96,12 @@ class Routing internal constructor() {
         }
 
         currentInterceptors.addAll(interceptors)
-        block(this)
-        repeat(interceptors.size) {
-            currentInterceptors.removeLast()
+        try {
+            block(this)
+        } finally {
+            repeat(interceptors.size) {
+                currentInterceptors.removeLast()
+            }
         }
     }
 
@@ -326,8 +329,11 @@ class Routing internal constructor() {
         }
 
         currentSegments.add(path)
-        block(this)
-        currentSegments.removeLast()
+        try {
+            block(this)
+        } finally {
+            currentSegments.removeLast()
+        }
     }
 
     private fun createRoute(
