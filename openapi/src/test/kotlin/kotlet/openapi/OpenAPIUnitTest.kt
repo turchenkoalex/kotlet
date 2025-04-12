@@ -141,9 +141,7 @@ class OpenAPIUnitTest {
             }
         }
 
-        val kotlet = Kotlet.servlet(
-            routings = listOf(routing, openAPIRouting),
-        )
+        val kotlet = Kotlet.servlet(routing, openAPIRouting)
 
         val call = Mocks.httpCall(
             method = HttpMethod.GET,
