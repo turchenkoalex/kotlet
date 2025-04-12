@@ -33,7 +33,7 @@ val routing = Kotlet.routing {
 }
 
 // create HttpServlet with our routing
-val kotlet = Kotlet.servlet(listOf(routing))
+val kotlet = Kotlet.servlet(routing)
 
 // add servlet to your server for example Jetty
 server.addServlet(ServletHolder(kotlet), "/*")
@@ -82,11 +82,10 @@ val routing = Kotlet.routing {
     route("/admin") {
         // users nested routes section
         route("/api/users") {
-            get("/") { call ->
+            get { call ->
                 call.respondText("List of users at /admin/api/users")
             }
-
-            post("/") { call ->
+            post { call ->
                 call.respondText("Create user")
             }
         }
@@ -97,7 +96,7 @@ val routing = Kotlet.routing {
 Create `HttpServlet` with the routing and add it to your server
 
 ```kotlin
-val kotlet = Kotlet.servlet(listOf(routing))
+val kotlet = Kotlet.servlet(routing)
 // add servlet to your server for example Jetty
 server.addServlet(ServletHolder(kotlet), "/*")
 ```

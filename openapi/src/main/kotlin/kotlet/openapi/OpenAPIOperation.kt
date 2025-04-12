@@ -7,13 +7,13 @@ import io.swagger.v3.oas.models.parameters.Parameter
 import io.swagger.v3.oas.models.parameters.RequestBody
 import io.swagger.v3.oas.models.responses.ApiResponse
 import io.swagger.v3.oas.models.responses.ApiResponses
-import kotlet.RouteSettings
+import kotlet.RouteOptions
 import kotlet.attributes.RouteAttribute
 import kotlet.attributes.RouteAttributes
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 
-fun RouteSettings.RouteSettingsBuilder.openapi(configure: Operation.() -> Unit) {
+fun RouteOptions.RouteOptionsBuilder.openapi(configure: Operation.() -> Unit) {
     val operation = Operation()
     operation.configure()
     withAttribute(OPEN_API_OPERATION_KEY, OpenAPIOperation(operation))

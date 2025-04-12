@@ -4,7 +4,9 @@ import io.mockk.every
 import io.mockk.mockk
 import jakarta.servlet.http.HttpServletRequest
 import kotlet.Kotlet.routing
+import org.junit.jupiter.api.Assertions.assertThrows
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.fail
@@ -15,8 +17,8 @@ internal class RoutesMatcherUnitTest {
     fun findRoute_Static() {
         // simple test – longer static path should always win
         val routes = routing {
-            get("/a/b/c", {})
-            get("/a/b", {})
+            get("/a/b/c") {}
+            get("/a/b") {}
         }
 
         routes.findMatchForShuffledRoutes(mockRequest("/a/b")) { route, params, allRoutes ->
@@ -34,8 +36,8 @@ internal class RoutesMatcherUnitTest {
     fun findRoute_StaticAndWildcard() {
         // static path should always win if match is ideal
         val routes = routing {
-            get("/a/*/c", {})
-            get("/a/b/c", {})
+            get("/a/*/c") {}
+            get("/a/b/c") {}
         }
 
         routes.findMatchForShuffledRoutes(mockRequest("/a/b/c")) { route, params, allRoutes ->
@@ -52,8 +54,8 @@ internal class RoutesMatcherUnitTest {
     fun findRoute_StaticAndParam() {
         // static path should always win if match is ideal
         val routes = routing {
-            get("/a/{id}/c", {})
-            get("/a/b/c", {})
+            get("/a/{id}/c") {}
+            get("/a/b/c") {}
         }
 
         routes.findMatchForShuffledRoutes(mockRequest("/a/b/c")) { route, params, allRoutes ->
@@ -71,9 +73,9 @@ internal class RoutesMatcherUnitTest {
     fun findRoute_StaticAndParamAndWildcard() {
         // static path should always win if match is ideal, next – parametrized, next – wildcard
         val routes = routing {
-            get("/a/*/c", {})
-            get("/a/{id}/c", {})
-            get("/a/b/c", {})
+            get("/a/*/c") {}
+            get("/a/{id}/c") {}
+            get("/a/b/c") {}
         }
 
         routes.findMatchForShuffledRoutes(mockRequest("/a/b/c")) { route, params, allRoutes ->
@@ -91,8 +93,8 @@ internal class RoutesMatcherUnitTest {
     fun findRoute_StaticAndTail() {
         // static path should always win if match is ideal
         val routes = routing {
-            get("/a/b/{...}", {})
-            get("/a/b/c", {})
+            get("/a/b/{...}") {}
+            get("/a/b/c") {}
         }
 
         routes.findMatchForShuffledRoutes(mockRequest("/a/b/c")) { route, params, allRoutes ->
@@ -113,8 +115,8 @@ internal class RoutesMatcherUnitTest {
     fun findRoute_WildcardAndTail() {
         // wildcard should win if there are only 3 segments
         val routes = routing {
-            get("/a/b/{...}", {})
-            get("/a/b/*", {})
+            get("/a/b/{...}") {}
+            get("/a/b/*") {}
         }
 
         routes.findMatchForShuffledRoutes(mockRequest("/a/b/c")) { route, params, allRoutes ->
@@ -135,8 +137,8 @@ internal class RoutesMatcherUnitTest {
     fun findRoute_ParamAndOptionalParam() {
         // required param should win if there are only 3 segments
         val routes = routing {
-            get("/a/b/{id}", {})
-            get("/a/b/{id?}", {})
+            get("/a/b/{id}") {}
+            get("/a/b/{id?}") {}
         }
 
         routes.findMatchForShuffledRoutes(mockRequest("/a/b/c")) { route, params, allRoutes ->
@@ -155,8 +157,8 @@ internal class RoutesMatcherUnitTest {
     fun findRoute_TwoTails() {
         // longer tail should win
         val routes = routing {
-            get("/a/b/{...}", {})
-            get("/a/b/c/{...}", {})
+            get("/a/b/{...}") {}
+            get("/a/b/c/{...}") {}
         }
 
         routes.findMatchForShuffledRoutes(mockRequest("/a/b/c")) { route, params, allRoutes ->
@@ -179,8 +181,8 @@ internal class RoutesMatcherUnitTest {
     fun findRoute_RootRouteAsDefault_RootInstalled() {
         // longer tail should win
         val routes = routing {
-            get("/", {})
-            get("/a", {})
+            get {}
+            get("/a") {}
         }
 
         routes.findMatchForShuffledRoutes(mockRequest("/a")) { route, params, allRoutes ->
@@ -208,7 +210,7 @@ internal class RoutesMatcherUnitTest {
     fun findRoute_RootRouteAsDefault_RootNotInstalled() {
         // longer tail should win
         val routes = routing {
-            get("/a", {})
+            get("/a") {}
         }
 
         routes.findMatchForShuffledRoutes(mockRequest("/a")) { route, params, allRoutes ->
@@ -243,25 +245,25 @@ internal class RoutesMatcherUnitTest {
         val routes = routing {
             route("/a") {
                 route("/b") {
-                    get("/", {})
-                    put("/c", {})
+                    get {}
+                    put("/c") {}
                 }
 
                 route("/e") {
-                    get("/", {})
-                    post("/h", {})
+                    get {}
+                    post("/h") {}
                 }
             }
 
             route("/c/d") {
-                patch("", {})
-                head("e", {})
+                patch {}
+                head("e") {}
             }
 
             route("/f") {
-                trace("/", {})
+                trace {}
                 route("g") {
-                    delete("h", {})
+                    delete("h") {}
                 }
             }
         }
@@ -310,15 +312,63 @@ internal class RoutesMatcherUnitTest {
     @Test
     fun `toString test`() {
         val routes = routing {
-            get("/a/b/c", {})
-            get("/a/b", {})
-            post("/a/b", {})
+            route("/a/b") {
+                get {}
+                post {}
+            }
+            get("/a/b/c") {}
         }
 
         val matcher = AllRoutesMatcher(routes.getAllRoutes())
 
         val expected = "RoutesMatcher(routes=[[GET] => /a/b/c, [GET, POST] => /a/b])"
         assertEquals(expected, matcher.toString())
+    }
+
+    @Test
+    fun `fails when duplicates found in different routing`() {
+        val routing1 = routing {
+            get("/foo") { }
+        }
+
+        val routing2 = routing {
+            get("/foo") { }
+        }
+
+        val error = assertThrows(RoutingConfigurationException::class.java) {
+            AllRoutesMatcher(routing1.getAllRoutes() + routing2.getAllRoutes())
+        }
+
+        assertEquals("Route /foo has more than one handler for the same HTTP method: [GET]", error.message)
+    }
+
+    @Test
+    fun `only one root route allowed`() {
+        val routing1 = routing {
+            get { }
+        }
+
+        val routing2 = routing {
+            post { }
+        }
+
+        val error = assertThrows(RoutingConfigurationException::class.java) {
+            AllRoutesMatcher(routing1.getAllRoutes() + routing2.getAllRoutes())
+        }
+
+        assertContains(error.message!!, "There are more than one root router defined")
+    }
+
+    @Test
+    fun `fails when duplicates found in one route`() {
+        val error = assertThrows(RoutingConfigurationException::class.java) {
+            routing {
+                get("/foo") { }
+                get("/foo", routeOptions { }) { }
+            }
+        }
+
+        assertEquals("Route /foo has more than one handler for the same HTTP method: [GET]", error.message)
     }
 
     private fun Routing.findMatchForShuffledRoutes(

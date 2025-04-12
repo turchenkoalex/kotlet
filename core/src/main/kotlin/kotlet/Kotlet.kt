@@ -12,6 +12,26 @@ object Kotlet {
      */
     fun servlet(
         /**
+         * Routing in the application.
+         */
+        vararg routing: Routing,
+
+        /**
+         * Handler for errors that occur during request processing.
+         */
+        errorsHandler: ErrorsHandler? = null,
+    ): HttpServlet {
+        return servlet(
+            routings = routing.toList(),
+            errorsHandler = errorsHandler
+        )
+    }
+
+    /**
+     * Creates a new [HttpServlet] that will handle all requests based on the provided routings.
+     */
+    fun servlet(
+        /**
          * List of all routings in the application.
          */
         routings: List<Routing>,

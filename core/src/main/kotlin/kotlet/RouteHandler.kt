@@ -7,13 +7,13 @@ package kotlet
 internal data class RouteHandler(
     val path: String,
     val method: HttpMethod,
+    val options: RouteOptions,
     val handler: Handler,
-    val settings: RouteSettings,
 ) {
     companion object {
         fun createRoute(path: String, globalInterceptors: List<Interceptor>, handlers: List<RouteHandler>): Route {
             if (handlers.isEmpty()) {
-                throw RoutingConfigurationException("Route must have at least one handler")
+                throw RoutingConfigurationException("Route for path $path must have at least one handler")
             }
 
             if (handlers.any { it.path != path }) {
@@ -25,12 +25,12 @@ internal data class RouteHandler(
                 globalInterceptors = globalInterceptors,
                 handlers = handlers.associate {
                     it.method to Interceptor.createRecursiveHandler(
-                        it.settings.interceptors,
-                        it.handler
+                        interceptors = it.options.interceptors,
+                        handler = it.handler,
                     )
                 },
                 attributes = handlers.associate {
-                    it.method to it.settings.attributes
+                    it.method to it.options.attributes
                 }
             )
         }

@@ -12,10 +12,12 @@ class AttributesRoutingUnitTest {
         val stringAttributeKey = RouteAttribute.of<String>("string")
 
         val routing = Kotlet.routing {
-            get("/", handler = {}) {
+            get("/", routeOptions {
                 withAttribute(intAttributeKey, 1001)
                 withAttribute(longAttributeKey, 1001L)
                 withAttribute(stringAttributeKey, "test_attribute")
+            }) {
+                // Handler implementation
             }
         }
 

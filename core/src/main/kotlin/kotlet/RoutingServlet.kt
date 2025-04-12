@@ -23,6 +23,12 @@ internal class RoutingServlet(
             val httpMethod = HttpMethod.parse(request.method)
                 ?: return errorsHandler.methodNotFound(request, response)
 
+            // httpMethod not allowed for this route
+            if (!route.allowedHttpMethods.contains(httpMethod)) {
+                errorsHandler.methodNotFound(request, response)
+                return
+            }
+
             val attributes = route.attributes[httpMethod] ?: emptyRouteAttributes()
 
             val httpCall = HttpCallImpl(
@@ -33,12 +39,6 @@ internal class RoutingServlet(
                 parameters = parameters,
                 attributes = attributes,
             )
-
-            // httpMethod not allowed for this route
-            if (!route.allowedHttpMethods.contains(httpMethod)) {
-                errorsHandler.methodNotFound(request, response)
-                return
-            }
 
             route.handler(httpCall)
         } catch (expected: Exception) {

@@ -4,6 +4,7 @@ import kotlet.HttpMethod
 import kotlet.Kotlet
 import kotlet.Routing
 import kotlet.mocks.Mocks
+import kotlet.routeOptions
 import org.junit.jupiter.api.Assertions.assertEquals
 import java.time.Instant
 import kotlin.test.Test
@@ -32,21 +33,23 @@ class OpenAPIUnitTest {
 
     @Test
     fun `should return OpenAPI with one method`() {
-        val routing = Kotlet.routing {
-            get("/posts/{id}", Mocks.okHandler) {
-                openapi {
-                    summary("Get post by ID")
-                    parameters {
-                        path<Long>("id") {
-                            description = "Post ID"
-                        }
-                    }
-                    responses {
-                        jsonResponse<Post>("Post found", statusCode = 200)
-                        notFound("Post not found")
+        val opts = routeOptions {
+            openapi {
+                summary("Get post by ID")
+                parameters {
+                    path<Long>("id") {
+                        description = "Post ID"
                     }
                 }
+                responses {
+                    jsonResponse<Post>("Post found", statusCode = 200)
+                    notFound("Post not found")
+                }
             }
+        }
+
+        val routing = Kotlet.routing {
+            get("/posts/{id}", opts, Mocks.okHandler)
         }
 
         assertOpenAPIJson(
@@ -141,9 +144,7 @@ class OpenAPIUnitTest {
             }
         }
 
-        val kotlet = Kotlet.servlet(
-            routings = listOf(routing, openAPIRouting),
-        )
+        val kotlet = Kotlet.servlet(routing, openAPIRouting)
 
         val call = Mocks.httpCall(
             method = HttpMethod.GET,
