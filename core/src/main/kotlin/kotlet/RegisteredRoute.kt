@@ -18,6 +18,11 @@ data class RegisteredRoute internal constructor(
     val method: HttpMethod,
 
     /**
+     * List of interceptors for the route.
+     */
+    val interceptors: List<Interceptor>,
+
+    /**
      * The attributes of the registered route.
      */
     val attributes: RouteAttributes,
