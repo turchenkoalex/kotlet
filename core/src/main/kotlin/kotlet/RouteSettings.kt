@@ -14,6 +14,7 @@ class RouteSettings(
     internal val interceptors: List<Interceptor>,
     internal val attributes: RouteAttributes,
 ) {
+    @KotletDsl
     class RouteSettingsBuilder(
         interceptors: Collection<Interceptor>
     ) {

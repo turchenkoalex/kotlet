@@ -6,6 +6,7 @@ import java.util.*
  * Routing provides a way to configure routes and global interceptors
  * @see Kotlet.routing
  */
+@KotletDsl
 class Routing internal constructor() {
     /**
      * Flag that indicates that all routes have been configured and sealed
