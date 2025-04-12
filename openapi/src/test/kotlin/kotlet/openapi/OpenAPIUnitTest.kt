@@ -33,21 +33,23 @@ class OpenAPIUnitTest {
 
     @Test
     fun `should return OpenAPI with one method`() {
-        val routing = Kotlet.routing {
-            get("/posts/{id}", routeOptions {
-                openapi {
-                    summary("Get post by ID")
-                    parameters {
-                        path<Long>("id") {
-                            description = "Post ID"
-                        }
-                    }
-                    responses {
-                        jsonResponse<Post>("Post found", statusCode = 200)
-                        notFound("Post not found")
+        val opts = routeOptions {
+            openapi {
+                summary("Get post by ID")
+                parameters {
+                    path<Long>("id") {
+                        description = "Post ID"
                     }
                 }
-            }, Mocks.okHandler)
+                responses {
+                    jsonResponse<Post>("Post found", statusCode = 200)
+                    notFound("Post not found")
+                }
+            }
+        }
+
+        val routing = Kotlet.routing {
+            get("/posts/{id}", opts, Mocks.okHandler)
         }
 
         assertOpenAPIJson(
