@@ -17,7 +17,7 @@ class RouteOptions(
     internal val attributes: RouteAttributes,
 ) {
     @KotletDsl
-    class RouteOptionsBuilder() {
+    class RouteOptionsBuilder {
         private val interceptors = mutableListOf<Interceptor>()
         private val attributes = MutableRouteAttributes()
 

@@ -108,15 +108,18 @@ internal object RouteHelpers {
         // Check for duplicated routes with the same HTTP method
         allRoutes
             .groupBy { it.route.path } // group by it path
-            .map { it.value }
-            .filter { it.size > 1 } // and check only those with more than one
-            .forEach { matchers ->
+            .filter { it.value.size > 1 } // and check only those with more than one
+            .forEach {
+                val path = it.key
+                val matchers = it.value
                 val alreadyRegisteredMethods = mutableSetOf<HttpMethod>()
 
                 matchers.forEach { matcher ->
                     val duplicatedMethods = matcher.route.allowedHttpMethods intersect alreadyRegisteredMethods
                     if (duplicatedMethods.isNotEmpty()) {
-                        throw RoutingConfigurationException("Route ${matcher.route.path} has more than one handler for the same HTTP method: $duplicatedMethods")
+                        throw RoutingConfigurationException(
+                            "Route $path has more than one handler for the same HTTP method: $duplicatedMethods"
+                        )
                     }
                     alreadyRegisteredMethods.addAll(matcher.route.allowedHttpMethods)
                 }

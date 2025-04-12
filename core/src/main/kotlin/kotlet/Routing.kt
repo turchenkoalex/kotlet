@@ -7,6 +7,7 @@ import java.util.*
  * @see Kotlet.routing
  */
 @KotletDsl
+@Suppress("TooManyFunctions")
 class Routing internal constructor() {
     /**
      * Flag that indicates that all routes have been configured and sealed
@@ -700,7 +701,9 @@ class Routing internal constructor() {
         val routePath = buildRoutePath(currentSegments, path)
 
         if (routeHandlers.any { it.path == routePath && it.method == method }) {
-            throw RoutingConfigurationException("Route $routePath has more than one handler for the same HTTP method: [$method]")
+            throw RoutingConfigurationException(
+                "Route $routePath has more than one handler for the same HTTP method: [$method]"
+            )
         }
 
         val mergedOptions = options.merge(currentInterceptors)
