@@ -428,8 +428,6 @@ class Routing internal constructor() {
     /**
      * HEAD method route
      *
-     * @param path route path
-     * @param options route settings block
      * @param handler route handler
      * @throws RoutingConfigurationException if routing is sealed
      *
