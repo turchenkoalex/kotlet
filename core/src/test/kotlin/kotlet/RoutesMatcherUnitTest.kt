@@ -246,6 +246,11 @@ internal class RoutesMatcherUnitTest {
                     get("/", {})
                     put("/c", {})
                 }
+
+                route("/e") {
+                    get("/", {})
+                    post("/h", {})
+                }
             }
 
             route("/c/d") {
@@ -288,6 +293,16 @@ internal class RoutesMatcherUnitTest {
 
         routes.findMatchForShuffledRoutes(mockRequest("/f/g/h")) { route, params, allRoutes ->
             assertEquals("/f/g/h", route.path, "All routes: $allRoutes")
+            assertEquals(0, params.size, "All routes: $allRoutes")
+        }
+
+        routes.findMatchForShuffledRoutes(mockRequest("/a/e")) { route, params, allRoutes ->
+            assertEquals("/a/e", route.path, "All routes: $allRoutes")
+            assertEquals(0, params.size, "All routes: $allRoutes")
+        }
+
+        routes.findMatchForShuffledRoutes(mockRequest("/a/e/h")) { route, params, allRoutes ->
+            assertEquals("/a/e/h", route.path, "All routes: $allRoutes")
             assertEquals(0, params.size, "All routes: $allRoutes")
         }
     }
