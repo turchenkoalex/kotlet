@@ -2,6 +2,12 @@ package kotlet.mocks.http
 
 import io.mockk.every
 import io.mockk.mockk
+import jakarta.servlet.AsyncContext
+import jakarta.servlet.AsyncEvent
+import jakarta.servlet.AsyncListener
+import jakarta.servlet.ServletContext
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import kotlet.HttpCall
@@ -9,8 +15,7 @@ import kotlet.HttpMethod
 import kotlet.attributes.RouteAttributes
 import kotlet.attributes.emptyRouteAttributes
 import java.io.ByteArrayOutputStream
-import java.util.Collections
-import java.util.Enumeration
+import java.util.*
 
 /**
  * A mock implementation of [HttpCall].
@@ -40,15 +45,6 @@ class MockHttpCall(
     val responseHeaders: MutableMap<String, String> = mutableMapOf()
 
     init {
-        rawRequest = createHttpRequestMock(
-            path = routePath,
-            methodName = httpMethod.name,
-            async = async,
-            headers = headers,
-            requestData = requestData
-        )
-
-        val responseHeaders = mutableMapOf<String, String>()
         rawResponse = mockk {
             every { outputStream } returns ByteArrayServletOutputStream(responseStream)
             every { setHeader(any(), any()) } answers {
@@ -74,17 +70,32 @@ class MockHttpCall(
                 header.split(",").map(String::trim)
             }
         }
+
+        rawRequest = createHttpRequestMock(
+            path = routePath,
+            methodName = httpMethod.name,
+            async = async,
+            headers = headers,
+            requestData = requestData,
+            response = rawResponse
+        )
     }
 }
 
+@Suppress("LongParameterList")
 private fun createHttpRequestMock(
     path: String,
     methodName: String,
     async: Boolean,
     headers: Map<String, String>,
     requestData: ByteArray,
+    response: HttpServletResponse
 ): HttpServletRequest {
     val attributes = mutableMapOf<String, Any>()
+
+
+
+
 
     return mockk {
         every { requestURI } returns path
@@ -108,5 +119,71 @@ private fun createHttpRequestMock(
         }
         every { isAsyncStarted } returns async
         every { method } returns methodName
+        every { asyncContext } returns MockAsyncContext(this@mockk, response)
+    }
+}
+
+private class MockAsyncContext(
+    private val req: ServletRequest,
+    private val resp: ServletResponse
+): AsyncContext {
+    override fun getRequest(): ServletRequest? {
+        return req
+    }
+
+    override fun getResponse(): ServletResponse? {
+        return resp
+    }
+
+    override fun hasOriginalRequestAndResponse(): Boolean {
+        return true
+    }
+
+    override fun dispatch() {
+        // No-op
+    }
+
+    override fun dispatch(path: String?) {
+        // No-op
+    }
+
+    override fun dispatch(context: ServletContext?, path: String?) {
+        // No-op
+    }
+
+    override fun complete() {
+        // No-op
+    }
+
+    override fun start(run: Runnable) {
+        run.run()
+    }
+
+    override fun addListener(listener: AsyncListener) {
+        val event = AsyncEvent(this, req, resp)
+        listener.onStartAsync(event)
+        listener.onComplete(event)
+    }
+
+    override fun addListener(
+        listener: AsyncListener,
+        servletRequest: ServletRequest,
+        servletResponse: ServletResponse
+    ) {
+        val event = AsyncEvent(this, servletRequest, servletResponse)
+        listener.onStartAsync(event)
+        listener.onComplete(event)
+    }
+
+    override fun <T : AsyncListener?> createListener(clazz: Class<T?>?): T? {
+        throw UnsupportedOperationException("createListener not supported in mock")
+    }
+
+    override fun setTimeout(timeout: Long) {
+        // No-op
+    }
+
+    override fun getTimeout(): Long {
+        return 0
     }
 }

@@ -53,8 +53,8 @@ jobs:
 
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
-      - name: Publish client to GitHub Packages
-        run: ./gradlew final publishToSonatype closeAndReleaseSonatypeStagingRepository printFinalReleaseNote
+      - name: Publish release package to central.sonatype.com
+        run: ./gradlew final closeAndReleaseSonatypeStagingRepository
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -184,10 +184,19 @@ subprojects {
     tasks {
         // All checks were already made by workflow "On pull request" => no checks here
         if (gradle.startParameter.taskNames.contains("final")) {
-            named("build").get().apply {
+            named("build") {
                 dependsOn.removeIf { it == "check" }
             }
         }
+
+        rootProject.tasks.named("final") {
+            dependsOn(named("publishToSonatype"))
+        }
+
+        rootProject.tasks.named("devSnapshot") {
+            dependsOn(named("publishToSonatype"))
+        }
+
     }
 }
 
@@ -241,33 +250,36 @@ object ProjectEnvs {
         get() = System.getenv("GPG_SIGNING_PASSWORD")
 }
 
-tasks.register("printFinalReleaseNote") {
-    doLast {
-        printReleaseNote()
-    }
-}
-
 tasks.register("printDevSnapshotReleaseNote") {
+    val outputFile = layout.buildDirectory.file("pr-note.txt")
+    outputs.file(outputFile)
+
     doLast {
-        printReleaseNote()
+        val groupId = project.group
+        val sanitizedVersion = project.sanitizeVersion()
+
+        val note = buildString {
+            appendLine("<!-- PR_NOTE_MARKER -->")
+            appendLine("\uD83D\uDCE6 New artifacts were published:")
+            publishPackages.sorted().forEach {
+                appendLine("  - $groupId:kotlet-$it:$sanitizedVersion")
+            }
+            appendLine("")
+
+            appendLine("Looks snapshot versions in https://central.sonatype.com/repository/maven-snapshots/ repository")
+            appendLine("<pre>")
+            appendLine("repositories {")
+            appendLine("\tmaven {")
+            appendLine("\t\turl = uri(&quot;https://central.sonatype.com/repository/maven-snapshots/&quot;)")
+            appendLine("\t}")
+            appendLine("}")
+            appendLine("</pre>")
+        }
+
+        outputFile.get().asFile.writeText(note)
+        println(note)
     }
+
+    dependsOn(tasks["devSnapshot"])
 }
 
-fun printReleaseNote() {
-    val groupId = project.group
-    val sanitizedVersion = project.sanitizeVersion()
-
-    println()
-    println("========================================================")
-    println()
-    println("New artifacts were published:")
-    println("	groupId: $groupId")
-    println("	version: $sanitizedVersion")
-    println("	artifacts:")
-    publishPackages.sorted().forEach {
-        println("\t\t- kotlet-$it")
-    }
-    println()
-    println("========================================================")
-    println()
-}

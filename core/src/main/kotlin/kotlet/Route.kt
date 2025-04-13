@@ -7,7 +7,7 @@ import java.util.EnumSet
  * Route configuration.
  * Contains a route path and a list of handlers for different HTTP methods.
  */
-internal data class Route(
+data class Route(
     /**
      * Route path.
      */
