@@ -1,8 +1,5 @@
 package kotlet
 
-import io.mockk.every
-import io.mockk.mockk
-import jakarta.servlet.http.HttpServletRequest
 import kotlet.Kotlet.routing
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.Scope
@@ -19,15 +16,11 @@ open class RoutingBenchmark {
     }
 
     private val matcher = RoutesMatcher.create(listOf(routing))
-
-    private val request = mockk<HttpServletRequest>(relaxed = true) {
-        every { pathInfo } returns "/test/XXXXXX"
-    }
+    private val request = DummyRequest("/test/XXXXXX")
 
     @Benchmark
     fun testManyRoutes(): Pair<Route, Map<String, String>>? {
-        val found = matcher.findRoute(request)
-        return found
+        return matcher.findRoute(request)
     }
 
 }

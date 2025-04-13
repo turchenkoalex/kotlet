@@ -20,7 +20,25 @@ internal object RouteHelpers {
     private const val TAIL_SEGMENT = "{...}"
 
     fun parsePathToSegments(path: String): List<String> {
-        return path.split('/').filter { it.isNotBlank() }
+        val segments = mutableListOf<String>()
+        var start = 0
+        val length = path.length
+
+        for (i in 0 until length) {
+            if (path[i] == '/') {
+                if (start < i) {
+                    segments.add(path.substring(start, i))
+                }
+                start = i + 1
+            }
+        }
+
+        // add last segment if it is not empty
+        if (start < length) {
+            segments.add(path.substring(start))
+        }
+
+        return segments
     }
 
     fun prepareSelectorsList(route: Route): List<Selector> {
