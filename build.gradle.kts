@@ -270,7 +270,7 @@ tasks.register("printDevSnapshotReleaseNote") {
             appendLine("<pre>")
             appendLine("repositories {")
             appendLine("\tmaven {")
-            appendLine("\t\turl = uri(\"https://central.sonatype.com/repository/maven-snapshots/\")")
+            appendLine("\t\turl = uri(&quot;https://central.sonatype.com/repository/maven-snapshots/&quot;)")
             appendLine("\t}")
             appendLine("}")
             appendLine("</pre>")
