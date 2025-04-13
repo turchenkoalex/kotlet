@@ -252,7 +252,7 @@ object ProjectEnvs {
 
 tasks.register("printFinalReleaseNote") {
     doLast {
-        printReleaseNote()
+        printReleaseNote(snapshot = false)
     }
 
     dependsOn(tasks["final"])
@@ -260,13 +260,13 @@ tasks.register("printFinalReleaseNote") {
 
 tasks.register("printDevSnapshotReleaseNote") {
     doLast {
-        printReleaseNote()
+        printReleaseNote(snapshot = true)
     }
 
     dependsOn(tasks["devSnapshot"])
 }
 
-fun printReleaseNote() {
+fun printReleaseNote(snapshot: Boolean) {
     val groupId = project.group
     val sanitizedVersion = project.sanitizeVersion()
 
@@ -281,6 +281,18 @@ fun printReleaseNote() {
         println("\t\t- kotlet-$it")
     }
     println()
+
+    if (snapshot) {
+        println("Look snapshot versions in https://central.sonatype.com/repository/maven-snapshots/ repository")
+        println()
+        println("repositories {")
+        println("\tmaven {")
+        println("\t\turl = uri(\"https://central.sonatype.com/repository/maven-snapshots/\")")
+        println("\t}")
+        println("}")
+        println()
+    }
+
     println("========================================================")
     println()
 }
