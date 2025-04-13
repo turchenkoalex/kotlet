@@ -81,6 +81,11 @@ jobs:
           echo "PR_NOTE<<EOF" >> $GITHUB_OUTPUT
           cat build/pr-note.txt >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+      - name: Remove old PR
+        if: github.event_name == 'pull_request'
+        run: gh pr view ${{ github.event.pull_request.number }} --json comments -q '.comments[] | select(.body | contains("<!-- PR_NOTE_MARKER -->")) | .id' | xargs -r -I {} gh api --method DELETE /repos/${{ github.repository }}/issues/comments/{}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Comment on PR
         if: github.event_name == 'pull_request'
         run: gh pr comment ${{ github.event.pull_request.number }} --body "${{ steps.read_pr_note.outputs.PR_NOTE }}"

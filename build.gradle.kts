@@ -259,7 +259,8 @@ tasks.register("printDevSnapshotReleaseNote") {
         val sanitizedVersion = project.sanitizeVersion()
 
         val note = buildString {
-            appendLine("New artifacts were published:")
+            appendLine("<!-- PR_NOTE_MARKER -->")
+            appendLine("\uD83D\uDCE6 New artifacts were published:")
             appendLine("```")
             appendLine("groupId: $groupId")
             appendLine("version: $sanitizedVersion")
