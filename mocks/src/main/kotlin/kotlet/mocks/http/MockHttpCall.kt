@@ -93,6 +93,10 @@ private fun createHttpRequestMock(
 ): HttpServletRequest {
     val attributes = mutableMapOf<String, Any>()
 
+
+
+
+
     return mockk {
         every { requestURI } returns path
         every { queryString } returns ""
@@ -136,15 +140,19 @@ private class MockAsyncContext(
     }
 
     override fun dispatch() {
+        // No-op
     }
 
     override fun dispatch(path: String?) {
+        // No-op
     }
 
     override fun dispatch(context: ServletContext?, path: String?) {
+        // No-op
     }
 
     override fun complete() {
+        // No-op
     }
 
     override fun start(run: Runnable) {
@@ -162,16 +170,17 @@ private class MockAsyncContext(
         servletRequest: ServletRequest,
         servletResponse: ServletResponse
     ) {
-        val event = AsyncEvent(this, req, resp)
+        val event = AsyncEvent(this, servletRequest, servletResponse)
         listener.onStartAsync(event)
         listener.onComplete(event)
     }
 
     override fun <T : AsyncListener?> createListener(clazz: Class<T?>?): T? {
-        return null
+        throw UnsupportedOperationException("createListener not supported in mock")
     }
 
     override fun setTimeout(timeout: Long) {
+        // No-op
     }
 
     override fun getTimeout(): Long {
