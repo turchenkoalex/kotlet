@@ -260,21 +260,24 @@ tasks.register("printDevSnapshotReleaseNote") {
 
         val note = buildString {
             appendLine("New artifacts were published:")
-            appendLine("\tgroupId: $groupId")
-            appendLine("\tversion: $sanitizedVersion")
-            appendLine("\tartifacts:")
+            appendLine("```")
+            appendLine("groupId: $groupId")
+            appendLine("version: $sanitizedVersion")
+            appendLine("artifacts:")
             publishPackages.sorted().forEach {
-                appendLine("\t\t- kotlet-$it")
+                appendLine("\t- kotlet-$it")
             }
-            appendLine()
+            appendLine("```")
+            appendLine("")
 
             appendLine("Look snapshot versions in https://central.sonatype.com/repository/maven-snapshots/ repository")
-            appendLine()
+            appendLine("```")
             appendLine("repositories {")
             appendLine("\tmaven {")
             appendLine("\t\turl = uri(\"https://central.sonatype.com/repository/maven-snapshots/\")")
             appendLine("\t}")
             appendLine("}")
+            appendLine("```")
         }
 
         outputFile.get().asFile.writeText(note)
