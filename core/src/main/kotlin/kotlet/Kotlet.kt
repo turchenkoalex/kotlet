@@ -41,11 +41,10 @@ object Kotlet {
          */
         errorsHandler: ErrorsHandler? = null,
     ): HttpServlet {
-        val allRoutes = routings.map(Routing::getAllRoutes).flatten()
-        val allRoutesMatcher = AllRoutesMatcher(allRoutes)
+        val routesMatcher = RoutesMatcher.create(routings)
 
         return RoutingServlet(
-            allRoutesMatcher = allRoutesMatcher,
+            routesMatcher = routesMatcher,
             errorsHandler = errorsHandler ?: ErrorsHandler.DEFAULT
         )
     }
