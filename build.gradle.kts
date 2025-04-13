@@ -184,10 +184,19 @@ subprojects {
     tasks {
         // All checks were already made by workflow "On pull request" => no checks here
         if (gradle.startParameter.taskNames.contains("final")) {
-            named("build").get().apply {
+            named("build") {
                 dependsOn.removeIf { it == "check" }
             }
         }
+
+        rootProject.tasks.named("final") {
+            dependsOn(named("publishToSonatype"))
+        }
+
+        rootProject.tasks.named("devSnapshot") {
+            dependsOn(named("publishToSonatype"))
+        }
+
     }
 }
 
@@ -245,12 +254,16 @@ tasks.register("printFinalReleaseNote") {
     doLast {
         printReleaseNote()
     }
+
+    dependsOn(tasks["final"])
 }
 
 tasks.register("printDevSnapshotReleaseNote") {
     doLast {
         printReleaseNote()
     }
+
+    dependsOn(tasks["devSnapshot"])
 }
 
 fun printReleaseNote() {
