@@ -40,6 +40,33 @@ class JWTAuthenticationInterceptorUnitTest {
     }
 
     @Test
+    fun `interceptor should add identity to async call and remove it afterCall`() {
+        val verifier = JWT.require(Algorithm.none()).build()
+        val interceptor = JWTAuthenticationInterceptor(verifier) { it }
+
+        val jwtToken = JWT.create().withIssuer("test")
+            .withClaim("scope", "test")
+            .sign(Algorithm.none())
+
+        val call = Mocks.httpCall(
+            method = HttpMethod.GET,
+            headers = mapOf("Authorization" to "Bearer $jwtToken"),
+            async = true
+        )
+
+        var token: DecodedJWT? = null
+        Interceptors.invokeInterceptor(interceptor, call) {
+            token = call.identity<DecodedJWT>()
+        }
+
+        assertNull(call.identity<DecodedJWT>())
+
+        val actual = token
+        assertNotNull(actual)
+        assertEquals("test", actual.getClaim("scope").asString())
+    }
+
+    @Test
     fun `interceptor should convert identity to call and remove it afterCall`() {
         val verifier = JWT.require(Algorithm.none()).build()
         val interceptor = JWTAuthenticationInterceptor(verifier) {
