@@ -75,3 +75,14 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_SIGNING_PASSWORD: ${{ secrets.GPG_SIGNING_PASSWORD }}
+      - name: Read pr note into variable
+        id: read_pr_note
+        run: |
+          echo "PR_NOTE<<EOF" >> $GITHUB_OUTPUT
+          cat build/pr-note.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        run: gh pr comment ${{ github.event.pull_request.number }} --body "${{ steps.read_pr_note.outputs.PR_NOTE }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

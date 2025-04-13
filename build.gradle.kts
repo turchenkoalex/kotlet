@@ -250,49 +250,37 @@ object ProjectEnvs {
         get() = System.getenv("GPG_SIGNING_PASSWORD")
 }
 
-tasks.register("printFinalReleaseNote") {
-    doLast {
-        printReleaseNote(snapshot = false)
-    }
-
-    dependsOn(tasks["final"])
-}
-
 tasks.register("printDevSnapshotReleaseNote") {
+    val outputFile = layout.buildDirectory.file("pr-note.txt")
+    outputs.file(outputFile)
+
     doLast {
-        printReleaseNote(snapshot = true)
+        val groupId = project.group
+        val sanitizedVersion = project.sanitizeVersion()
+
+        val note = buildString {
+            appendLine("New artifacts were published:")
+            appendLine("\tgroupId: $groupId")
+            appendLine("\tversion: $sanitizedVersion")
+            appendLine("\tartifacts:")
+            publishPackages.sorted().forEach {
+                appendLine("\t\t- kotlet-$it")
+            }
+            appendLine()
+
+            appendLine("Look snapshot versions in https://central.sonatype.com/repository/maven-snapshots/ repository")
+            appendLine()
+            appendLine("repositories {")
+            appendLine("\tmaven {")
+            appendLine("\t\turl = uri(\"https://central.sonatype.com/repository/maven-snapshots/\")")
+            appendLine("\t}")
+            appendLine("}")
+        }
+
+        outputFile.get().asFile.writeText(note)
+        println(note)
     }
 
     dependsOn(tasks["devSnapshot"])
 }
 
-fun printReleaseNote(snapshot: Boolean) {
-    val groupId = project.group
-    val sanitizedVersion = project.sanitizeVersion()
-
-    println()
-    println("========================================================")
-    println()
-    println("New artifacts were published:")
-    println("	groupId: $groupId")
-    println("	version: $sanitizedVersion")
-    println("	artifacts:")
-    publishPackages.sorted().forEach {
-        println("\t\t- kotlet-$it")
-    }
-    println()
-
-    if (snapshot) {
-        println("Look snapshot versions in https://central.sonatype.com/repository/maven-snapshots/ repository")
-        println()
-        println("repositories {")
-        println("\tmaven {")
-        println("\t\turl = uri(\"https://central.sonatype.com/repository/maven-snapshots/\")")
-        println("\t}")
-        println("}")
-        println()
-    }
-
-    println("========================================================")
-    println()
-}
