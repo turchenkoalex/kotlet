@@ -45,8 +45,6 @@ class MockHttpCall(
     val responseHeaders: MutableMap<String, String> = mutableMapOf()
 
     init {
-        val responseHeaders = mutableMapOf<String, String>()
-
         rawResponse = mockk {
             every { outputStream } returns ByteArrayServletOutputStream(responseStream)
             every { setHeader(any(), any()) } answers {
