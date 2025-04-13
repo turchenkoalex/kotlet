@@ -67,7 +67,7 @@ jobs:
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
       - name: Publish snapshot package to central.sonatype.com
-        run: ./gradlew devSnapshot printDevSnapshotReleaseNote
+        run: ./gradlew devSnapshot closeAndReleaseSonatypeStagingRepository printDevSnapshotReleaseNote
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
