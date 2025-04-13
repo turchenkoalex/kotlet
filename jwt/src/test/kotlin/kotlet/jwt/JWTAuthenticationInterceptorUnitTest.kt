@@ -65,5 +65,68 @@ class JWTAuthenticationInterceptorUnitTest {
         assertEquals(TestIdentity(scope = "test"), actual)
     }
 
+    @Test
+    fun `interceptor should not set identity without header`() {
+        val verifier = JWT.require(Algorithm.none()).build()
+        val interceptor = JWTAuthenticationInterceptor(verifier) {
+            TestIdentity(scope = it.getClaim("scope").asString())
+        }
+
+
+        val call = Mocks.httpCall(
+            method = HttpMethod.GET,
+            headers = emptyMap()
+        )
+
+        var identity: TestIdentity? = null
+        Interceptors.invokeInterceptor(interceptor, call) {
+            identity = call.identity<TestIdentity>()
+        }
+
+        assertNull(identity)
+    }
+
+    @Test
+    fun `interceptor should not set identity with broken header`() {
+        val verifier = JWT.require(Algorithm.none()).build()
+        val interceptor = JWTAuthenticationInterceptor(verifier) {
+            TestIdentity(scope = it.getClaim("scope").asString())
+        }
+
+
+        val call = Mocks.httpCall(
+            method = HttpMethod.GET,
+            headers = mapOf("Authorization" to "NONE")
+        )
+
+        var identity: TestIdentity? = null
+        Interceptors.invokeInterceptor(interceptor, call) {
+            identity = call.identity<TestIdentity>()
+        }
+
+        assertNull(identity)
+    }
+
+    @Test
+    fun `interceptor should not set identity with broken bearer value`() {
+        val verifier = JWT.require(Algorithm.none()).build()
+        val interceptor = JWTAuthenticationInterceptor(verifier) {
+            TestIdentity(scope = it.getClaim("scope").asString())
+        }
+
+
+        val call = Mocks.httpCall(
+            method = HttpMethod.GET,
+            headers = mapOf("Authorization" to "Bearer NONE")
+        )
+
+        var identity: TestIdentity? = null
+        Interceptors.invokeInterceptor(interceptor, call) {
+            identity = call.identity<TestIdentity>()
+        }
+
+        assertNull(identity)
+    }
+
     private data class TestIdentity(val scope: String)
 }
