@@ -260,7 +260,7 @@ tasks.register("printDevSnapshotReleaseNote") {
 
         val note = buildString {
             appendLine("<!-- PR_NOTE_MARKER -->")
-            appendLine("\uD83D\uDCE6 New artifacts were published:")
+            appendLine("New artifacts were published:")
             appendLine("```")
             appendLine("groupId: $groupId")
             appendLine("version: $sanitizedVersion")

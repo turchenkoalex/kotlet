@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 
 class JWTTest {
     @Test
-    fun `use test`() {
+    fun shouldRegisterJWTInterceptorsForRoutes() {
         val verifier = JWT.require(Algorithm.none()).build()
         val routes = routing {
             useJWTAuthentication(verifier) {
