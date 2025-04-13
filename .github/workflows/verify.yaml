@@ -83,7 +83,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
       - name: Remove old PR
         if: github.event_name == 'pull_request'
-        run: gh pr view ${{ github.event.pull_request.number }} --json comments -q '.comments[] | select(.body | contains("<!-- PR_NOTE_MARKER -->")) | .id' | xargs -r -I {} gh api --method DELETE /repos/${{ github.repository }}/issues/comments/{}
+        run: gh pr view ${{ github.event.pull_request.number }} --json comments -q '.comments[] | select(.body | contains("<!-- PR_NOTE_MARKER -->")) | .id' | xargs -r -I {} gh api --method DELETE /repos/${{ github.repository }}/issues/comments/{} || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Comment on PR
