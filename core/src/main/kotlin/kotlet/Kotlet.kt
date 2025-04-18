@@ -41,9 +41,51 @@ object Kotlet {
          */
         errorsHandler: ErrorsHandler? = null,
     ): HttpServlet {
+        return RoutingServlet(
+            routingHandler = handler(
+                routings = routings,
+                errorsHandler = errorsHandler
+            )
+        )
+    }
+
+    /**
+     * Creates a new [RoutingHandler] that will handle all requests based on the provided routings.
+     */
+    fun handler(
+        /**
+         * Routing in the application.
+         */
+        vararg routing: Routing,
+
+        /**
+         * Handler for errors that occur during request processing.
+         */
+        errorsHandler: ErrorsHandler? = null,
+    ): RoutingHandler {
+        return handler(
+            routings = routing.toList(),
+            errorsHandler = errorsHandler
+        )
+    }
+
+    /**
+     * Creates a new [RoutingHandler] that will handle all requests based on the provided routings.
+     */
+    fun handler(
+        /**
+         * List of all routings in the application.
+         */
+        routings: List<Routing>,
+
+        /**
+         * Handler for errors that occur during request processing.
+         */
+        errorsHandler: ErrorsHandler? = null
+    ): RoutingHandler {
         val routesMatcher = RoutesMatcher.create(routings)
 
-        return RoutingServlet(
+        return RoutingHandlerImpl(
             routesMatcher = routesMatcher,
             errorsHandler = errorsHandler ?: ErrorsHandler.DEFAULT
         )

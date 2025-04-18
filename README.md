@@ -20,6 +20,8 @@ intuitive and powerful API that makes the process of creating routes easy and fa
 
 # Example Usage
 
+Create a simple routing and servlet with Kotlet:
+
 ```kotlin
 val routing = Kotlet.routing {
     get("/hello") { call ->
@@ -37,6 +39,28 @@ val kotlet = Kotlet.servlet(routing)
 
 // add servlet to your server for example Jetty
 server.addServlet(ServletHolder(kotlet), "/*")
+```
+
+Or you can create your own `HttpServlet` and use Kotlet as a routing library through handler:
+
+```kotlin
+class MyServlet: HttpServlet() {
+    private val routing = Kotlet.routing {
+        get("/hello") { call ->
+            call.respondText("Hello, World!")
+        }
+    }
+
+    private val handler = Kotlet.handler(routing)
+    
+    override fun service(request: HttpServletRequest, response: HttpServletResponse) {
+        // process request and response with Kotlet library
+        handler.service(request, response)
+    }
+}
+
+// add servlet to your server for example Jetty
+server.addServlet(ServletHolder(MyServlet()), "/*")
 ```
 
 ## Routing methods
