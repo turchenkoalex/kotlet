@@ -15,6 +15,7 @@ import kotlet.HttpMethod
 import kotlet.attributes.RouteAttributes
 import kotlet.attributes.emptyRouteAttributes
 import java.io.ByteArrayOutputStream
+import java.io.PrintWriter
 import java.util.*
 
 /**
@@ -72,10 +73,14 @@ class MockHttpCall(
                 val header = responseHeaders[this.firstArg()] ?: ""
                 header.split(",").map(String::trim)
             }
+            every { sendError(any()) } answers {
+                statusField = this.firstArg()
+            }
             every { sendError(any(), any()) } answers {
                 statusField = this.firstArg()
                 responseStream.write(this.secondArg<String>().toByteArray())
             }
+            every { writer } returns PrintWriter(responseStream.writer(), true)
         }
 
         rawRequest = createHttpRequestMock(
