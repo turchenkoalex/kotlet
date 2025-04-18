@@ -15,9 +15,9 @@ Example:
 
 ```kotlin
 val applicationRouter = Kotlet.routing {
-    get("/hello", { call ->
+    get("/hello") { call ->
         call.respondText("Hello, World!")
-    })
+    }
 }
 
 val auxRouter = Kotlet.routing {

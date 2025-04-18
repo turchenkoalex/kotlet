@@ -15,16 +15,19 @@ Example:
 ```kotlin
     data class HelloResponse(val message: String)
 
-    val applicationRouter = Kotlet.routing {
-        get("/hello", { call ->
-            call.respondText("Hello, World!")
-        }) {
-            openapi {
-                summary("Hello world")
-                responses {
-                    jsonResponse<HelloResponse>("Simple response")
-                }
+
+    val opts = routeOptions {
+        openapi {
+            summary("Hello world")
+            responses {
+                jsonResponse<HelloResponse>("Simple response")
             }
+        }
+    }
+
+    val applicationRouter = Kotlet.routing {
+        get("/hello", opts) { call ->
+            call.respondText("Hello, World!")
         }
     }
 
