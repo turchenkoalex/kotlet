@@ -73,4 +73,36 @@ class KotletTest {
         assertEquals(201, call.status)
     }
 
+    @Test
+    fun handlerNotFoundTest() {
+        val routing = Kotlet.routing {
+            get("/test") {}
+        }
+
+        val handler = Kotlet.handler(routing)
+
+        val call = Mocks.httpCall(HttpMethod.GET, "/not_exists")
+
+        handler.service(call.rawRequest, call.rawResponse)
+
+        assertEquals(404, call.status)
+        assertEquals("Not found", call.responseDataAsString)
+    }
+
+    @Test
+    fun handlerNotAcceptedTest() {
+        val routing = Kotlet.routing {
+            get("/test") {}
+        }
+
+        val handler = Kotlet.handler(routing)
+
+        val call = Mocks.httpCall(HttpMethod.POST, "/test")
+
+        handler.service(call.rawRequest, call.rawResponse)
+
+        assertEquals(405, call.status)
+        assertEquals("Method not allowed", call.responseDataAsString)
+    }
+
 }

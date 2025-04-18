@@ -21,6 +21,6 @@ internal class RoutingServlet(
     }
 
     override fun toString(): String {
-        return "Servlet(routingHandler=$routingHandler)"
+        return "RoutingServlet(routingHandler=$routingHandler)"
     }
 }

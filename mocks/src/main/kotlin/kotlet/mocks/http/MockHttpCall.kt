@@ -42,6 +42,9 @@ class MockHttpCall(
     val responseData: ByteArray
         get() = responseStream.toByteArray()
 
+    val responseDataAsString: String
+        get() = responseStream.toByteArray().toString(Charsets.UTF_8)
+
     val responseHeaders: MutableMap<String, String> = mutableMapOf()
 
     init {
@@ -68,6 +71,10 @@ class MockHttpCall(
             every { getHeaders(any()) } answers {
                 val header = responseHeaders[this.firstArg()] ?: ""
                 header.split(",").map(String::trim)
+            }
+            every { sendError(any(), any()) } answers {
+                statusField = this.firstArg()
+                responseStream.write(this.secondArg<String>().toByteArray())
             }
         }
 
