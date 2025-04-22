@@ -22,7 +22,7 @@ class Routing internal constructor() {
     /**
      * List of global interceptors
      */
-    private val globalInterceptors = mutableListOf<Interceptor>()
+    private val globalInterceptors = mutableListOf<InterceptorInstallation>()
 
     /**
      * Stack of interceptors for the injecting into the route
@@ -58,20 +58,14 @@ class Routing internal constructor() {
         /**
          * Order of the interceptor in the chain
          */
-        order: InstallOrder = InstallOrder.LAST,
+        order: Int = InstallOrder.LAST,
     ) {
         if (sealed) {
             throw RoutingConfigurationException("All routes have been sealed, you can't install global interceptors")
         }
 
-        when (order) {
-            InstallOrder.FIRST -> {
-                interceptors.reversed().forEach(globalInterceptors::addFirst)
-            }
-
-            InstallOrder.LAST -> {
-                globalInterceptors.addAll(interceptors)
-            }
+        interceptors.forEach { interceptor ->
+            globalInterceptors.add(InterceptorInstallation(interceptor, order))
         }
     }
 
@@ -718,12 +712,12 @@ class Routing internal constructor() {
         // seal all settings and return a copy of the list
         sealed = true
 
-        val globalInterceptors = globalInterceptors.toList()
+        val orderedGlobalInterceptors = globalInterceptors.toOrderedInterceptorList()
 
         val routes = routeHandlers.groupBy(RouteHandler::path).map { (path, handlers) ->
             RouteHandler.createRoute(
                 path = path,
-                globalInterceptors = globalInterceptors,
+                globalInterceptors = orderedGlobalInterceptors,
                 handlers = handlers,
             )
         }
@@ -766,4 +760,15 @@ private fun normalizePathSegment(segment: String): String {
     } else {
         "/$segment".replace("//", "/")
     }
+}
+
+private data class InterceptorInstallation(
+    val interceptor: Interceptor,
+    val order: Int,
+)
+
+private fun List<InterceptorInstallation>.toOrderedInterceptorList(): List<Interceptor> {
+    return sortedBy { it.order }
+        .map { it.interceptor }
+        .toList()
 }

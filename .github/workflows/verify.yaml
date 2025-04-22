@@ -64,32 +64,3 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           os: linux-arm64
-      # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
-      # the publishing section of your build.gradle
-      - name: Publish snapshot package to central.sonatype.com
-        if: github.event.pull_request.user.login != 'dependabot[bot]'
-        run: ./gradlew devSnapshot closeAndReleaseSonatypeStagingRepository printDevSnapshotReleaseNote
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-          GPG_SIGNING_PASSWORD: ${{ secrets.GPG_SIGNING_PASSWORD }}
-      - name: Read pr note into variable
-        if: github.event.pull_request.user.login != 'dependabot[bot]'
-        id: read_pr_note
-        run: |
-          echo "PR_NOTE<<EOF" >> $GITHUB_OUTPUT
-          cat build/pr-note.txt >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-      - name: Remove old PR
-        if: github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]'
-        run: gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments --jq '.[] | select(.body | contains("<!-- PR_NOTE_MARKER -->")) | .id' | xargs -r -I {} gh api --method DELETE /repos/${{ github.repository }}/issues/comments/{} || true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Comment on PR
-        if: github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]'
-        run: gh pr comment ${{ github.event.pull_request.number }} --body "${{ steps.read_pr_note.outputs.PR_NOTE }}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

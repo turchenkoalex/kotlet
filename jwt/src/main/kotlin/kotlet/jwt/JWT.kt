@@ -66,7 +66,7 @@ fun Routing.installJWTAuthentication(
     /**
      * Order of the interceptor in the chain
      */
-    order: InstallOrder = InstallOrder.LAST,
+    order: Int = InstallOrder.LAST,
 ) {
     val interceptor = JWT.interceptor(verifier, identityBuilder)
     install(interceptor, order = order)

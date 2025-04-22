@@ -7,6 +7,51 @@ import kotlin.test.assertEquals
 
 class InterceptorsRoutingUnitTest {
     @Test
+    fun `install ordered global interceptors`() {
+        val operations = mutableListOf<String>()
+
+        val routing = Kotlet.routing {
+            get("/") {
+                operations.add("handler")
+            }
+        }
+
+        val global1 = object : Interceptor {
+            override fun beforeCall(call: HttpCall): HttpCall {
+                operations.add("global1")
+                return call
+            }
+        }
+
+        val global2 = object : Interceptor {
+            override fun beforeCall(call: HttpCall): HttpCall {
+                operations.add("global2")
+                return call
+            }
+        }
+
+        val global3 = object : Interceptor {
+            override fun beforeCall(call: HttpCall): HttpCall {
+                operations.add("global3")
+                return call
+            }
+        }
+
+        routing.install(global3, order = 300)
+        routing.install(global1, order = 100)
+        routing.install(global2, order = 200)
+
+        val route = routing.getAllRoutes().single()
+
+        val call = mockk<HttpCall> {
+            every { httpMethod } returns HttpMethod.GET
+        }
+        route.handler(call)
+
+        assertEquals(listOf("global1", "global2", "global3", "handler"), operations)
+    }
+
+    @Test
     fun `install global interceptors last`() {
         val operations = mutableListOf<String>()
 

@@ -75,7 +75,7 @@ fun Routing.installCORS(
     /**
      * Order of the interceptor in the chain
      */
-    order: InstallOrder = InstallOrder.LAST,
+    order: Int = InstallOrder.LAST,
 ) {
     install(CORS.interceptor(rules), order = order)
 }

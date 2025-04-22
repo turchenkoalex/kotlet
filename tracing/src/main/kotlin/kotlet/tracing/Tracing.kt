@@ -31,7 +31,7 @@ fun Routing.installTracing(
     /**
      * Order of the interceptor in the chain
      */
-    order: InstallOrder = InstallOrder.LAST,
+    order: Int = InstallOrder.LAST,
 ) {
     install(Tracing.interceptor(instrumenter), order = order)
 }
@@ -61,7 +61,7 @@ fun Routing.installTracing(
     /**
      * Order of the interceptor in the chain
      */
-    order: InstallOrder = InstallOrder.LAST,
+    order: Int = InstallOrder.LAST,
 ) {
     val instrumenter = buildServerInstrumenter(openTelemetry, textMapGetter, sanitizer)
     installTracing(instrumenter, order = order)
