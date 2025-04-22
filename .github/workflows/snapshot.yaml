@@ -1,0 +1,66 @@
+name: snapshot
+on:
+  workflow_dispatch:
+
+env:
+  JDK_VERSION: 21
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Pubilsh Snapshot
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      pull-requests: write
+      packages: write
+      # required for all workflows
+      security-events: write
+      checks: write
+      # only required for workflows in private repositories
+      actions: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: 'true'
+          fetch-depth: '0'
+      - name: Set up JDK ${{ env.JDK_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '${{ env.JDK_VERSION }}'
+          cache: 'gradle'
+      # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
+      # the publishing section of your build.gradle
+      - name: Publish snapshot package to central.sonatype.com
+        if: github.event.pull_request.user.login != 'dependabot[bot]'
+        run: ./gradlew devSnapshot closeAndReleaseSonatypeStagingRepository printDevSnapshotReleaseNote
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          GPG_SIGNING_PASSWORD: ${{ secrets.GPG_SIGNING_PASSWORD }}
+      - name: Read pr note into variable
+        if: github.event.pull_request.user.login != 'dependabot[bot]'
+        id: read_pr_note
+        run: |
+          echo "PR_NOTE<<EOF" >> $GITHUB_OUTPUT
+          cat build/pr-note.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Remove old PR
+        if: github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]'
+        run: gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments --jq '.[] | select(.body | contains("<!-- PR_NOTE_MARKER -->")) | .id' | xargs -r -I {} gh api --method DELETE /repos/${{ github.repository }}/issues/comments/{} || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]'
+        run: gh pr comment ${{ github.event.pull_request.number }} --body "${{ steps.read_pr_note.outputs.PR_NOTE }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
