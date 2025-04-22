@@ -4,7 +4,8 @@ package kotlet
  * Interceptor installation order
  *
  * Interceptors can be installed at the beginning or end of the interceptor list.
- * The order in which interceptors are called is determined by the order in which they are installed
+ * The order in which interceptors are called is determined by the order in which they are installed.
+ * Interceptors with the same order are called in the order they were installed.
  *
  * @see Interceptor
  */

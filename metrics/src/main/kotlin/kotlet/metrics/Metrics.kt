@@ -4,7 +4,13 @@ import kotlet.InstallOrder
 import kotlet.Interceptor
 import kotlet.Routing
 
+/**
+ * Kotlet metrics builder
+ */
 object Metrics {
+    /**
+     * Create a new [Interceptor] that collects metrics using the provided [MetricsCollector].
+     */
     fun interceptor(collector: MetricsCollector): Interceptor {
         return MetricsInterceptor(collector)
     }
