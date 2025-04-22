@@ -8,16 +8,16 @@ package kotlet
  *
  * @see Interceptor
  */
-enum class InstallOrder {
+object InstallOrder {
     /**
      * Install interceptors at the beginning of the interceptor list
      * The first interceptor will be the first to be called on the request
      */
-    FIRST,
+    const val FIRST: Int = 0
 
     /**
      * Install interceptors at the end of the interceptor list
      * The last interceptor will be called after all other installed interceptors
      */
-    LAST
+    const val LAST: Int = Int.MAX_VALUE
 }

@@ -22,7 +22,7 @@ fun Routing.installMetrics(
     /**
      * Order of the interceptor in the chain
      */
-    order: InstallOrder = InstallOrder.LAST,
+    order: Int = InstallOrder.LAST,
 ) {
     val interceptor = Metrics.interceptor(metricsCollector)
     install(interceptor, order = order)
