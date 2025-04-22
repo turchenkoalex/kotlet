@@ -3,7 +3,7 @@
 ## Installation
 
 ```kotlin
-implementation("io.github.turchenkoalex:kotlet-tracing:0.24.0")
+implementation("io.github.turchenkoalex:kotlet-tracing:0.25.0")
 ```
 
 ## Configuration
