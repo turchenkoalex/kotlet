@@ -2,6 +2,7 @@ package kotlet.jwt
 
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.auth0.jwt.interfaces.JWTVerifier
+import kotlet.InstallOrder
 import kotlet.Interceptor
 import kotlet.Routing
 
@@ -51,19 +52,45 @@ object JWT {
  * ```
  */
 fun Routing.installJWTAuthentication(
+    /**
+     * JWT verifier
+     */
     verifier: JWTVerifier,
-    identityBuilder: IdentityBuilder<*> = ::decodedJWTIdentityBuilder
+
+    /**
+     * Identity builder.
+     * This function will be called with the decoded JWT and should return the identity object.
+     * Default function returns the decoded JWT as is.
+     */
+    identityBuilder: IdentityBuilder<*> = ::decodedJWTIdentityBuilder,
+    /**
+     * Order of the interceptor in the chain
+     */
+    order: InstallOrder = InstallOrder.LAST,
 ) {
     val interceptor = JWT.interceptor(verifier, identityBuilder)
-    install(interceptor)
+    install(interceptor, order = order)
 }
 
 /**
  * Install JWT authentication as routing interceptor, only for the specified routing block
  */
 fun Routing.useJWTAuthentication(
+    /**
+     * JWT verifier
+     */
     verifier: JWTVerifier,
+
+    /**
+     * Identity builder.
+     * This function will be called with the decoded JWT and should return the identity object.
+     * Default function returns the decoded JWT as is.
+     */
     identityBuilder: IdentityBuilder<*> = ::decodedJWTIdentityBuilder,
+
+    /**
+     * Routing block
+     */
     block: Routing.() -> Unit
 ) {
     val interceptor = JWT.interceptor(verifier, identityBuilder)
