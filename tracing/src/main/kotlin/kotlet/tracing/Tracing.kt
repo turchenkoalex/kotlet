@@ -5,6 +5,7 @@ import io.opentelemetry.context.propagation.TextMapGetter
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter
 import jakarta.servlet.http.HttpServletResponse
 import kotlet.HttpCall
+import kotlet.InstallOrder
 import kotlet.Interceptor
 import kotlet.Routing
 
@@ -22,9 +23,17 @@ object Tracing {
  * Install tracing to the [Routing] using the provided opentelemetry [instrumenter].
  */
 fun Routing.installTracing(
-    instrumenter: Instrumenter<HttpCall, HttpServletResponse>
+    /**
+     * OpenTelemetry instance of the [instrumenter]
+     */
+    instrumenter: Instrumenter<HttpCall, HttpServletResponse>,
+
+    /**
+     * Order of the interceptor in the chain
+     */
+    order: InstallOrder = InstallOrder.LAST,
 ) {
-    install(Tracing.interceptor(instrumenter))
+    install(Tracing.interceptor(instrumenter), order = order)
 }
 
 /**
@@ -48,7 +57,12 @@ fun Routing.installTracing(
      * @see DefaultHttpCallSanitizer
      */
     sanitizer: HttpCallSanitizer = DefaultHttpCallSanitizer,
+
+    /**
+     * Order of the interceptor in the chain
+     */
+    order: InstallOrder = InstallOrder.LAST,
 ) {
     val instrumenter = buildServerInstrumenter(openTelemetry, textMapGetter, sanitizer)
-    installTracing(instrumenter)
+    installTracing(instrumenter, order = order)
 }

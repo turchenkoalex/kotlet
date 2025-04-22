@@ -10,7 +10,10 @@ import io.opentelemetry.semconv.NetworkAttributes
 import jakarta.servlet.http.HttpServletResponse
 import kotlet.HttpCall
 
-internal fun buildServerInstrumenter(
+/**
+ * Create a new [Instrumenter] that traces HTTP calls using the provided opentelemetry.
+ */
+fun buildServerInstrumenter(
     openTelemetry: OpenTelemetry,
     textMapGetter: TextMapGetter<HttpCall>,
     sanitizer: HttpCallSanitizer,
@@ -23,7 +26,10 @@ internal fun buildServerInstrumenter(
         .buildServerInstrumenter(textMapGetter)
 }
 
-internal class ServletHttpServerAttributesGetter(
+/**
+ * A [HttpServerAttributesGetter] for extracting attributes from HTTP calls.
+ */
+open class ServletHttpServerAttributesGetter(
     private val sanitizer: HttpCallSanitizer,
 ) : HttpServerAttributesGetter<HttpCall, HttpServletResponse> {
     override fun getHttpRequestMethod(call: HttpCall): String? {
