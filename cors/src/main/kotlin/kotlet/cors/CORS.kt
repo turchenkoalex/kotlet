@@ -1,5 +1,6 @@
 package kotlet.cors
 
+import kotlet.InstallOrder
 import kotlet.Interceptor
 import kotlet.Routing
 
@@ -65,6 +66,16 @@ object CORS {
  *  This will allow any origin to send requests to /hello
  *
  */
-fun Routing.installCORS(rules: CorsRules) {
-    install(CORS.interceptor(rules))
+fun Routing.installCORS(
+    /**
+     * CORS rules to apply to the routing
+     */
+    rules: CorsRules,
+
+    /**
+     * Order of the interceptor in the chain
+     */
+    order: InstallOrder = InstallOrder.LAST,
+) {
+    install(CORS.interceptor(rules), order = order)
 }

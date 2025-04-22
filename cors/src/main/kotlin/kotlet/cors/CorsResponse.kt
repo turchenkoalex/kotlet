@@ -30,6 +30,9 @@ sealed class CorsResponse {
     ) : CorsResponse()
 
     companion object {
+        /**
+         * Creates a [CorsResponse] with the given headers.
+         */
         fun headers(
             allowOrigin: String,
             allowMethods: List<String>,
@@ -42,6 +45,9 @@ sealed class CorsResponse {
             )
         }
 
+        /**
+         * Creates a [CorsResponse] with error status code and message.
+         */
         fun error(
             statusCode: Int,
             message: String,

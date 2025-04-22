@@ -12,7 +12,7 @@ import kotlet.Interceptor
 /**
  * An interceptor that traces HTTP calls using the provided opentelemetry [instrumenter].
  */
-class TracingInterceptor(
+internal class TracingInterceptor(
     private val instrumenter: Instrumenter<HttpCall, HttpServletResponse>
 ) : Interceptor {
     override fun aroundCall(call: HttpCall, next: Handler) {
@@ -32,7 +32,7 @@ class TracingInterceptor(
             } else {
                 instrumenter.end(context, call, call.rawResponse, null)
             }
-        } catch (expected: Throwable) {
+        } catch (expected: Exception) {
             instrumenter.end(context, call, null, expected)
             throw expected
         }
