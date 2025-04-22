@@ -55,6 +55,9 @@ class Routing internal constructor() {
      */
     fun install(
         vararg interceptors: Interceptor,
+        /**
+         * Order of the interceptor in the chain
+         */
         order: InstallOrder = InstallOrder.LAST,
     ) {
         if (sealed) {
