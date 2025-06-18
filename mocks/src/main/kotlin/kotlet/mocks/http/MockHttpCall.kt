@@ -138,7 +138,7 @@ private fun createHttpRequestMock(
 private class MockAsyncContext(
     private val req: ServletRequest,
     private val resp: ServletResponse
-): AsyncContext {
+) : AsyncContext {
     override fun getRequest(): ServletRequest? {
         return req
     }

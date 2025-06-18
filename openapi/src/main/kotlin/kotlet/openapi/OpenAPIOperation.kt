@@ -120,7 +120,7 @@ fun <T : Any> Operation.jsonRequest(clazz: KClass<T>) {
 class ParametersBuilder(
     private val operation: Operation
 ) {
-    inline fun <reified T: Any> path(name: String, crossinline configure: Parameter.() -> Unit = {}) {
+    inline fun <reified T : Any> path(name: String, crossinline configure: Parameter.() -> Unit = {}) {
         path(name, T::class) {
             configure()
         }

@@ -10,14 +10,14 @@ package kotlet.attributes
  * @see kotlet.RegisteredRoute
  * @see RouteAttributes
  */
-class RouteAttribute<T: Any> internal constructor(
+class RouteAttribute<T : Any> internal constructor(
     private val name: String
 ) {
     companion object {
         /**
          * Creates a new [RouteAttribute] with the specified name.
          */
-        fun <T: Any> of(name: String): RouteAttribute<T> {
+        fun <T : Any> of(name: String): RouteAttribute<T> {
             return RouteAttribute(name)
         }
     }

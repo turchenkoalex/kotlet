@@ -9,7 +9,7 @@ import java.io.OutputStream
  */
 internal class ByteArrayServletOutputStream(
     private val outputStream: OutputStream
-): ServletOutputStream() {
+) : ServletOutputStream() {
     override fun write(b: Int) {
         outputStream.write(b)
     }

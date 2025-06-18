@@ -1,7 +1,7 @@
 package kotlet
 
 import kotlet.attributes.RouteAttributes
-import java.util.EnumSet
+import java.util.*
 
 /**
  * Route configuration.
