@@ -734,7 +734,7 @@ class Routing internal constructor() {
                 RegisteredRoute(
                     path = route.path,
                     method = route.method,
-                    interceptors = route.options.interceptors,
+                    interceptors = globalInterceptors.toOrderedInterceptorList() + route.options.interceptors,
                     attributes = route.options.attributes,
                 )
             }
