@@ -25,6 +25,7 @@ internal data class CorsInterceptor(
                 call.rawResponse.setHeader("Access-Control-Allow-Headers", response.allowHeaders)
                 call.status = HttpServletResponse.SC_OK
             }
+
             is CorsResponse.Error -> {
                 call.status = response.statusCode
                 call.respondText(response.message)

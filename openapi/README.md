@@ -8,7 +8,8 @@ implementation("io.github.turchenkoalex:kotlet-openapi:0.38.0")
 
 ## Configuration
 
-Before configuration OpenAPI routing, you need to configure application routing as usual and provide it to `documentedRoutings` property.
+Before configuration OpenAPI routing, you need to configure application routing as usual and provide it to
+`documentedRoutings` property.
 
 Example:
 
@@ -50,4 +51,5 @@ Example:
     )
 ```
 
-This feature works better with the [`kotlet-swagger-ui`](../swagger-ui/README.md) library. You can use it to visualize the OpenAPI documentation.
+This feature works better with the [`kotlet-swagger-ui`](../swagger-ui/README.md) library. You can use it to visualize
+the OpenAPI documentation.

@@ -1,8 +1,8 @@
 package kotlet
 
+import kotlet.attributes.MutableRouteAttributes
 import kotlet.attributes.RouteAttribute
 import kotlet.attributes.RouteAttributes
-import kotlet.attributes.MutableRouteAttributes
 import kotlet.attributes.emptyRouteAttributes
 
 /**
@@ -36,7 +36,7 @@ class RouteOptions(
          * @param value Attribute value.
          * @throws IllegalStateException If the attribute is already present.
          */
-        fun <T: Any> withAttribute(key: RouteAttribute<T>, value: T) {
+        fun <T : Any> withAttribute(key: RouteAttribute<T>, value: T) {
             if (attributes[key] != null) {
                 error("Attribute $key already present in the route settings")
             }

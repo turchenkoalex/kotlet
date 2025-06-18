@@ -10,7 +10,6 @@ import io.swagger.v3.oas.models.media.ObjectSchema
 import io.swagger.v3.oas.models.media.Schema
 import io.swagger.v3.oas.models.media.StringSchema
 import java.math.BigDecimal
-import kotlin.collections.set
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
@@ -20,6 +19,7 @@ import kotlin.reflect.full.memberProperties
 internal fun generateSchema(clazz: KClass<*>): Schema<*> {
     return generateTypedSchema(type = clazz.createType())
 }
+
 /**
  * This is a simplified version of schema generation.
  */
@@ -36,11 +36,13 @@ private fun generateTypedSchema(
             maximum = BigDecimal.valueOf(Short.MAX_VALUE.toLong())
             minimum = BigDecimal.valueOf(Short.MIN_VALUE.toLong())
         }
+
         isByte(type) -> IntegerSchema().apply {
             format = "int32"
             maximum = BigDecimal.valueOf(Byte.MAX_VALUE.toLong())
             minimum = BigDecimal.valueOf(Byte.MIN_VALUE.toLong())
         }
+
         isBoolean(type) -> BooleanSchema()
         isDouble(type) -> NumberSchema().apply { format = "double" }
         isFloat(type) -> NumberSchema().apply { format = "float" }
@@ -50,6 +52,7 @@ private fun generateTypedSchema(
                 this.enum = (type.classifier as KClass<*>).java.enumConstants.map { it.toString() }
             }
         }
+
         isByteArray(type) -> ByteArraySchema()
         isCollection(type) -> {
             val valueType = type.arguments.firstOrNull()?.type
@@ -59,6 +62,7 @@ private fun generateTypedSchema(
                 }
             }
         }
+
         isMap(type) -> {
             val valueType = type.arguments.getOrNull(1)?.type
             MapSchema().apply {

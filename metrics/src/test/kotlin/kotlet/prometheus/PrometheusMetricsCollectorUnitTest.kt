@@ -10,7 +10,6 @@ import io.prometheus.metrics.core.metrics.Metric
 import io.prometheus.metrics.model.registry.Collector
 import io.prometheus.metrics.model.registry.PrometheusRegistry
 import io.prometheus.metrics.model.snapshots.CounterSnapshot.CounterDataPointSnapshot
-import io.prometheus.metrics.model.snapshots.Quantile
 import io.prometheus.metrics.model.snapshots.SummarySnapshot.SummaryDataPointSnapshot
 import kotlet.HttpMethod
 import kotlet.Kotlet
