@@ -5,23 +5,34 @@ import kotlet.Interceptor
 import kotlet.Routing
 import java.time.Duration
 
-private const val ALLOW_ALL_ORIGINS = "*"
-
 private val DEFAULT_ALLOWED_HEADERS =
     listOf("Accept", "Authorization", "Accept-Language", "Content-Language", "Content-Type")
 
-private val ALLOW_ALL_METHODS = listOf("*")
-
 private val DEFAULT_MAX_AGE = Duration.ofMinutes(10)
 
+/**
+ * CORS related utilities
+ */
 object CORS {
+
+    /**
+     * Special value to allow all methods
+     */
+    const val ALL_ORIGINS = "*"
+
+    /**
+     * Special value to allow all methods
+     */
+    val ALL_METHODS = listOf("*")
+
     /**
      * CORS rules that allows all origins, all methods and all headers
+     * with a max age of 10 minutes
      */
     val allowAll: CorsRules = run {
         val headers = CorsResponse.headers(
-            allowOrigin = ALLOW_ALL_ORIGINS,
-            allowMethods = ALLOW_ALL_METHODS,
+            allowOrigin = ALL_ORIGINS,
+            allowMethods = ALL_METHODS,
             allowHeaders = DEFAULT_ALLOWED_HEADERS,
             maxAge = DEFAULT_MAX_AGE
         )
@@ -34,7 +45,7 @@ object CORS {
     fun allowOrigin(origin: String): CorsRules {
         val headers = CorsResponse.headers(
             allowOrigin = origin,
-            allowMethods = ALLOW_ALL_METHODS,
+            allowMethods = ALL_METHODS,
             allowHeaders = DEFAULT_ALLOWED_HEADERS,
             maxAge = DEFAULT_MAX_AGE
         )
