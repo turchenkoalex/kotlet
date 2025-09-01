@@ -34,7 +34,10 @@ class CorsIntegration {
             call.status = 200
             call.rawResponse.setHeader("Access-Control-Allow-Origin", "*")
             call.rawResponse.setHeader("Access-Control-Allow-Methods", "*")
-            call.rawResponse.setHeader("Access-Control-Allow-Headers", "Accept, Authorization, Accept-Language, Content-Language, Content-Type")
+            call.rawResponse.setHeader(
+                "Access-Control-Allow-Headers",
+                "Accept, Authorization, Accept-Language, Content-Language, Content-Type"
+            )
             call.rawResponse.setHeader("Access-Control-Max-Age", "600")
         }
 
