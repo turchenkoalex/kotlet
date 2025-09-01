@@ -29,8 +29,7 @@ internal data class CorsInterceptor(
                 }
 
                 is CorsResponse.Error -> {
-                    call.status = response.statusCode
-                    call.respondText(response.message)
+                    call.respondError(response.statusCode, response.message)
 
                     // Abort the call chain on CORS error
                     return
@@ -68,8 +67,7 @@ internal data class CorsInterceptor(
             }
 
             is CorsResponse.Error -> {
-                call.status = response.statusCode
-                call.respondText(response.message)
+                call.respondError(response.statusCode, response.message)
             }
         }
     }

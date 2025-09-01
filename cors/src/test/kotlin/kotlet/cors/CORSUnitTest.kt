@@ -90,6 +90,7 @@ class CORSUnitTest {
             every { httpMethod } returns HttpMethod.OPTIONS
             every { rawResponse } returns response
             every { respondText(any()) } just Runs
+            every { respondError(any(), any()) } just Runs
         }
         every { call setProperty ("status") value any<Int>() } just Runs
 
@@ -106,8 +107,7 @@ class CORSUnitTest {
         }
 
         verify {
-            call.status = 403
-            call.respondText("Forbidden")
+            call.respondError(403, "Forbidden")
         }
     }
 
