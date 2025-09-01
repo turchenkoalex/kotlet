@@ -29,18 +29,11 @@ object CORS {
      * CORS rules that allows all origins, all methods and all headers
      * with a max age of 10 minutes
      */
-    val allowAll: CorsRules = run {
-        val headers = CorsResponse.headers(
-            allowOrigin = ALL_ORIGINS,
-            allowMethods = ALL_METHODS,
-            allowHeaders = DEFAULT_ALLOWED_HEADERS,
-            maxAge = DEFAULT_MAX_AGE
-        )
-        ConstantCorsRules(headers)
-    }
+    val allowAll: CorsRules = allowOrigin(ALL_ORIGINS)
 
     /**
      * Create a new CORS rules that allows requests from the given origins
+     * with all methods and with a max age of 10 minutes
      */
     fun allowOrigin(origin: String): CorsRules {
         val headers = CorsResponse.headers(
