@@ -65,7 +65,7 @@ class CORSUnitTest {
             call.status = 200
             response.setHeader("Access-Control-Allow-Origin", "https://example.com")
             response.setHeader("Access-Control-Allow-Methods", "*")
-            response.setHeader("Access-Control-Allow-Methods", "*")
+            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
             response.setHeader("Access-Control-Max-Age", "20")
         }
     }
