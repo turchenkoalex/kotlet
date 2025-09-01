@@ -32,12 +32,6 @@ internal class RoutingHandlerImpl(
             val httpMethod = HttpMethod.parse(request.method)
                 ?: return errorsHandler.methodNotFound(request, response)
 
-            // httpMethod not allowed for this route
-            if (!route.allowedHttpMethods.contains(httpMethod)) {
-                errorsHandler.methodNotFound(request, response)
-                return
-            }
-
             val attributes = route.attributes[httpMethod] ?: emptyRouteAttributes()
 
             val httpCall = HttpCallImpl(
@@ -50,6 +44,8 @@ internal class RoutingHandlerImpl(
             )
 
             route.handler(httpCall)
+        } catch (_: MethodNotFoundException) {
+            errorsHandler.methodNotFound(request, response)
         } catch (expected: Exception) {
             errorsHandler.internalServerError(request, response, expected)
         }

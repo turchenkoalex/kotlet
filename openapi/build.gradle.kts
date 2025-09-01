@@ -9,7 +9,5 @@ dependencies {
     implementation(libs.kotlin.reflect)
 
     testImplementation(project(":mocks"))
-    testImplementation(libs.kotlin.test)
-    testImplementation(libs.mockk)
-    testImplementation(libs.jakarta.api)
+    testImplementation(libs.bundles.testing)
 }

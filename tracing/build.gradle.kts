@@ -10,7 +10,5 @@ dependencies {
     implementation(libs.opentelemetry.semconv)
 
     testImplementation(project(":mocks"))
-    testImplementation(libs.kotlin.test)
-    testImplementation(libs.mockk)
-    testImplementation(libs.jakarta.api)
+    testImplementation(libs.bundles.testing)
 }

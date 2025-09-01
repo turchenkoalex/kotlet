@@ -8,7 +8,5 @@ dependencies {
     implementation(libs.auth0.jwt)
 
     testImplementation(project(":mocks"))
-    testImplementation(libs.kotlin.test)
-    testImplementation(libs.mockk)
-    testImplementation(libs.jakarta.api)
+    testImplementation(libs.bundles.testing)
 }
