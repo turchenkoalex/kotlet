@@ -1,6 +1,7 @@
 package kotlet.cors
 
 import io.mockk.Runs
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -49,7 +50,7 @@ class CORSUnitTest {
         })
 
         val response = mockk<HttpServletResponse> {
-            every { setHeader(any(), any()) } just Runs
+            every { addHeader(any(), any()) } just Runs
         }
         val call = mockk<HttpCall> {
             every { httpMethod } returns HttpMethod.OPTIONS
@@ -63,11 +64,13 @@ class CORSUnitTest {
 
         verify {
             call.status = 200
-            response.setHeader("Access-Control-Allow-Origin", "https://example.com")
-            response.setHeader("Access-Control-Allow-Methods", "*")
-            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
-            response.setHeader("Access-Control-Max-Age", "20")
+            response.addHeader("Access-Control-Allow-Origin", "https://example.com")
+            response.addHeader("Access-Control-Allow-Methods", "*")
+            response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
+            response.addHeader("Access-Control-Max-Age", "20")
         }
+
+        confirmVerified(response)
     }
 
     @Test
@@ -150,7 +153,7 @@ class CORSUnitTest {
         })
 
         val response = mockk<HttpServletResponse> {
-            every { setHeader(any(), any()) } just Runs
+            every { addHeader(any(), any()) } just Runs
         }
         val call = mockk<HttpCall> {
             every { httpMethod } returns HttpMethod.OPTIONS
@@ -167,7 +170,7 @@ class CORSUnitTest {
         }
 
         verify(exactly = 0) {
-            response.setHeader("Access-Control-Max-Age", any())
+            response.addHeader("Access-Control-Max-Age", any())
         }
     }
 }
