@@ -23,6 +23,9 @@ internal data class CorsInterceptor(
                 call.rawResponse.setHeader("Access-Control-Allow-Origin", response.allowOrigin)
                 call.rawResponse.setHeader("Access-Control-Allow-Methods", response.allowMethods)
                 call.rawResponse.setHeader("Access-Control-Allow-Headers", response.allowHeaders)
+                if (response.maxAgeSeconds.isNotEmpty()) {
+                    call.rawResponse.setHeader("Access-Control-Max-Age", response.maxAgeSeconds)
+                }
                 call.status = HttpServletResponse.SC_OK
             }
 

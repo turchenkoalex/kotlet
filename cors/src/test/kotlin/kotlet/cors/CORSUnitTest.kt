@@ -8,6 +8,7 @@ import io.mockk.verify
 import jakarta.servlet.http.HttpServletResponse
 import kotlet.HttpCall
 import kotlet.HttpMethod
+import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -20,6 +21,7 @@ class CORSUnitTest {
         assertEquals("*", response.allowOrigin)
         assertEquals("*", response.allowMethods)
         assertEquals("Accept, Authorization, Accept-Language, Content-Language, Content-Type", response.allowHeaders)
+        assertEquals("600", response.maxAgeSeconds)
     }
 
     @Test
@@ -30,6 +32,7 @@ class CORSUnitTest {
         assertEquals("https://example.com", response.allowOrigin)
         assertEquals("*", response.allowMethods)
         assertEquals("Accept, Authorization, Accept-Language, Content-Language, Content-Type", response.allowHeaders)
+        assertEquals("600", response.maxAgeSeconds)
     }
 
     @Test
@@ -39,7 +42,8 @@ class CORSUnitTest {
                 return CorsResponse.headers(
                     allowOrigin = "https://example.com",
                     allowMethods = listOf("*"),
-                    allowHeaders = listOf("Content-Type", "Authorization")
+                    allowHeaders = listOf("Content-Type", "Authorization"),
+                    maxAge = Duration.ofSeconds(20)
                 )
             }
         })
@@ -61,10 +65,8 @@ class CORSUnitTest {
             call.status = 200
             response.setHeader("Access-Control-Allow-Origin", "https://example.com")
             response.setHeader("Access-Control-Allow-Methods", "*")
-            response.setHeader(
-                "Access-Control-Allow-Headers",
-                "Content-Type, Authorization"
-            )
+            response.setHeader("Access-Control-Allow-Methods", "*")
+            response.setHeader("Access-Control-Max-Age", "20")
         }
     }
 
@@ -95,6 +97,7 @@ class CORSUnitTest {
             response.setHeader("Access-Control-Allow-Origin", any())
             response.setHeader("Access-Control-Allow-Methods", any())
             response.setHeader("Access-Control-Allow-Headers", any())
+            response.setHeader("Access-Control-Max-Age", any())
         }
 
         verify {
@@ -126,10 +129,45 @@ class CORSUnitTest {
             response.setHeader("Access-Control-Allow-Origin", any())
             response.setHeader("Access-Control-Allow-Methods", any())
             response.setHeader("Access-Control-Allow-Headers", any())
+            response.setHeader("Access-Control-Max-Age", "20")
         }
 
         verify {
             call.status = 201
+        }
+    }
+
+    @Test
+    fun testMaxAgeNotSpecifiedResponse() {
+        val interceptor = CORS.interceptor(object : CorsRules {
+            override fun getResponse(call: HttpCall): CorsResponse {
+                return CorsResponse.headers(
+                    allowOrigin = "https://example.com",
+                    allowMethods = listOf("*"),
+                    allowHeaders = listOf("Content-Type", "Authorization"),
+                )
+            }
+        })
+
+        val response = mockk<HttpServletResponse> {
+            every { setHeader(any(), any()) } just Runs
+        }
+        val call = mockk<HttpCall> {
+            every { httpMethod } returns HttpMethod.OPTIONS
+            every { rawResponse } returns response
+        }
+        every { call setProperty ("status") value any<Int>() } just Runs
+
+        interceptor.aroundCall(call) {
+            error("Should not be called")
+        }
+
+        verify {
+            call.status = 200
+        }
+
+        verify(exactly = 0) {
+            response.setHeader("Access-Control-Max-Age", any())
         }
     }
 }

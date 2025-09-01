@@ -3,6 +3,7 @@ package kotlet.cors
 import kotlet.InstallOrder
 import kotlet.Interceptor
 import kotlet.Routing
+import java.time.Duration
 
 private const val ALLOW_ALL_ORIGINS = "*"
 
@@ -11,6 +12,7 @@ private val DEFAULT_ALLOWED_HEADERS =
 
 private val ALLOW_ALL_METHODS = listOf("*")
 
+private val DEFAULT_MAX_AGE = Duration.ofMinutes(10)
 
 object CORS {
     /**
@@ -21,6 +23,7 @@ object CORS {
             allowOrigin = ALLOW_ALL_ORIGINS,
             allowMethods = ALLOW_ALL_METHODS,
             allowHeaders = DEFAULT_ALLOWED_HEADERS,
+            maxAge = DEFAULT_MAX_AGE
         )
         ConstantCorsRules(headers)
     }
@@ -33,6 +36,7 @@ object CORS {
             allowOrigin = origin,
             allowMethods = ALLOW_ALL_METHODS,
             allowHeaders = DEFAULT_ALLOWED_HEADERS,
+            maxAge = DEFAULT_MAX_AGE
         )
         return ConstantCorsRules(headers)
     }
