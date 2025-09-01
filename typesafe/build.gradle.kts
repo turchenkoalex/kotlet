@@ -7,6 +7,5 @@ dependencies {
     implementation(libs.kotlin.reflect)
     compileOnly(libs.jakarta.api)
 
-    testImplementation(libs.kotlin.test)
-    testImplementation(libs.mockk)
+    testImplementation(libs.bundles.testing)
 }

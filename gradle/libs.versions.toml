@@ -58,3 +58,6 @@ swagger-core = { group = "io.swagger.core.v3", name = "swagger-core", version.re
 
 # Testing
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+
+[bundles]
+testing = ["kotlin-test", "mockk", "jakarta-api"]
