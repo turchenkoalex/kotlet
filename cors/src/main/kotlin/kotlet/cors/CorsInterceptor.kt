@@ -20,16 +20,17 @@ internal data class CorsInterceptor(
 
         when (val response = rules.getResponse(call)) {
             is CorsResponse.Headers -> {
+                call.status = HttpServletResponse.SC_OK
+
                 with(call.rawResponse) {
-                    addHeader("Access-Control-Allow-Origin", response.allowOrigin)
-                    addHeader("Access-Control-Allow-Methods", response.allowMethods)
-                    addHeader("Access-Control-Allow-Headers", response.allowHeaders)
+                    setHeader("Access-Control-Allow-Origin", response.allowOrigin)
+                    setHeader("Access-Control-Allow-Methods", response.allowMethods)
+                    setHeader("Access-Control-Allow-Headers", response.allowHeaders)
 
                     if (response.maxAgeSeconds.isNotEmpty()) {
-                        addHeader("Access-Control-Max-Age", response.maxAgeSeconds)
+                        setHeader("Access-Control-Max-Age", response.maxAgeSeconds)
                     }
                 }
-                call.status = HttpServletResponse.SC_OK
             }
 
             is CorsResponse.Error -> {
