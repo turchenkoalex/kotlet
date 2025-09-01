@@ -69,6 +69,7 @@ class CorsIntegration {
 
         verify {
             call.status = 202
+            call.rawResponse.setHeader("Access-Control-Allow-Origin", "*")
         }
 
         confirmVerified(call.rawResponse)
