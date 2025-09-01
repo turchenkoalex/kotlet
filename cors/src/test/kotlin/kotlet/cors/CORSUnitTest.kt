@@ -9,6 +9,7 @@ import io.mockk.verify
 import jakarta.servlet.http.HttpServletResponse
 import kotlet.HttpCall
 import kotlet.HttpMethod
+import kotlet.mocks.Mocks
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -68,6 +69,7 @@ class CORSUnitTest {
             response.setHeader("Access-Control-Allow-Methods", "*")
             response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
             response.setHeader("Access-Control-Max-Age", "20")
+            response.setHeader("Vary", "Origin")
         }
 
         confirmVerified(response)
@@ -88,6 +90,7 @@ class CORSUnitTest {
             every { httpMethod } returns HttpMethod.OPTIONS
             every { rawResponse } returns response
             every { respondText(any()) } just Runs
+            every { respondError(any(), any()) } just Runs
         }
         every { call setProperty ("status") value any<Int>() } just Runs
 
@@ -104,8 +107,7 @@ class CORSUnitTest {
         }
 
         verify {
-            call.status = 403
-            call.respondText("Forbidden")
+            call.respondError(403, "Forbidden")
         }
     }
 
@@ -113,31 +115,35 @@ class CORSUnitTest {
     fun testNotPreflightRequest() {
         val interceptor = CORS.interceptor(CORS.allowAll)
 
-        val response = mockk<HttpServletResponse> {
-            every { setHeader(any(), any()) } just Runs
-        }
-        val call = mockk<HttpCall> {
-            every { httpMethod } returns HttpMethod.GET
-            every { rawResponse } returns response
-        }
-        every { call setProperty ("status") value any<Int>() } just Runs
+        val call = Mocks.httpCall(
+            method = HttpMethod.GET,
+            headers = mapOf(
+                "Origin" to "https://example.com"
+            )
+        )
 
         interceptor.aroundCall(call) {
             // set status to 201 for checking
             call.status = 201
         }
 
+        // only allow origin header should be set
+        verify {
+            call.rawResponse.setHeader("Access-Control-Allow-Origin", "*")
+        }
+
         // headers should not be set
         verify(exactly = 0) {
-            response.setHeader("Access-Control-Allow-Origin", any())
-            response.setHeader("Access-Control-Allow-Methods", any())
-            response.setHeader("Access-Control-Allow-Headers", any())
-            response.setHeader("Access-Control-Max-Age", "20")
+            call.rawResponse.setHeader("Access-Control-Allow-Methods", any())
+            call.rawResponse.setHeader("Access-Control-Allow-Headers", any())
+            call.rawResponse.setHeader("Access-Control-Max-Age", any())
         }
 
         verify {
             call.status = 201
         }
+
+        confirmVerified(call.rawResponse)
     }
 
     @Test

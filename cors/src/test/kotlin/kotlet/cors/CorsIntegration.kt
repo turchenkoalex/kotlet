@@ -2,6 +2,7 @@ package kotlet.cors
 
 import io.mockk.confirmVerified
 import io.mockk.verify
+import kotlet.HttpCall
 import kotlet.Kotlet
 import kotlet.mocks.Mocks
 import kotlin.test.Test
@@ -69,6 +70,7 @@ class CorsIntegration {
 
         verify {
             call.status = 202
+            call.rawResponse.setHeader("Access-Control-Allow-Origin", "*")
         }
 
         confirmVerified(call.rawResponse)
@@ -97,6 +99,47 @@ class CorsIntegration {
 
         verify {
             call.rawResponse.sendError(405, "Method not allowed")
+        }
+
+        confirmVerified(call.rawResponse)
+    }
+
+    @Test
+    fun testCorsErrorOnGetMethod() {
+        val routing = Kotlet.routing {
+            installCORS(
+                object : CorsRules {
+                    override fun getResponse(call: HttpCall): CorsResponse {
+                        return CorsResponse.error(403, "Cors Error")
+                    }
+
+                }
+            )
+
+            get("/test") {
+                it.status = 202
+            }
+        }
+
+        val handler = Kotlet.handler(routing)
+
+        val call = Mocks.httpCall(
+            method = kotlet.HttpMethod.GET,
+            routePath = "/test",
+            headers = mapOf(
+                "Origin" to "https://example.com",
+                "Access-Control-Request-Method" to "GET"
+            )
+        )
+
+        handler.service(call.rawRequest, call.rawResponse)
+
+        verify {
+            call.respondError(403, "Cors Error")
+        }
+
+        verify(exactly = 0) {
+            call.rawResponse.setHeader("Access-Control-Allow-Origin", any())
         }
 
         confirmVerified(call.rawResponse)
