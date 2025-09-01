@@ -75,7 +75,7 @@ sealed class CorsResponse {
              */
             maxAge: Duration = Duration.ZERO,
         ): CorsResponse {
-            val maxAgeSeconds = if (!maxAge.isZero && !maxAge.isNegative && maxAge.seconds > 0) {
+            val maxAgeSeconds = if (maxAge.seconds > 0) {
                 maxAge.seconds.toString()
             } else {
                 ""
