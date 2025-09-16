@@ -249,7 +249,7 @@ internal class RoutesMatcherUnitTest {
                     put("/c") {}
                 }
 
-                route("/e") {
+                route("/e/") {
                     get {}
                     post("/h") {}
                 }
