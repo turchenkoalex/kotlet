@@ -14,6 +14,19 @@ import kotlin.test.fail
 internal class RoutesMatcherUnitTest {
 
     @Test
+    fun findRoute_Root() {
+        // simple test – longer static path should always win
+        val routes = routing {
+            get("/") {}
+        }
+
+        routes.findMatchForShuffledRoutes(mockRequest("/")) { route, params, allRoutes ->
+            assertEquals("/", route.path, "All routes: $allRoutes")
+            assertEquals(0, params.size, "All routes: $allRoutes")
+        }
+    }
+
+    @Test
     fun findRoute_Static() {
         // simple test – longer static path should always win
         val routes = routing {
@@ -249,7 +262,7 @@ internal class RoutesMatcherUnitTest {
                     put("/c") {}
                 }
 
-                route("/e") {
+                route("/e/") {
                     get {}
                     post("/h") {}
                 }

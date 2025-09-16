@@ -755,10 +755,14 @@ private fun buildRoutePath(segments: Collection<String>, path: String): String {
 }
 
 private fun normalizePathSegment(segment: String): String {
-    return if (segment.startsWith(RouteHelpers.ROOT_ROUTE_PATH)) {
-        segment.replace("//", "/")
+    val normalizedSegment = segment
+        .replace("//", "/")
+        .removeSuffix("/")
+
+    return if (normalizedSegment.startsWith(RouteHelpers.ROOT_ROUTE_PATH)) {
+        normalizedSegment
     } else {
-        "/$segment".replace("//", "/")
+        "/$normalizedSegment"
     }
 }
 
