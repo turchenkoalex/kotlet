@@ -3,7 +3,7 @@
 ## Installation
 
 ```kotlin
-implementation("io.github.turchenkoalex:kotlet-jetty:0.65.0")
+implementation("io.github.turchenkoalex:kotlet-jetty:0.66.0")
 ```
 
 ## Configuration
