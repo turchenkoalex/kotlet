@@ -3,7 +3,7 @@
 ## Installation
 
 ```kotlin
-implementation("io.github.turchenkoalex:kotlet-jwt:0.68.0")
+implementation("io.github.turchenkoalex:kotlet-jwt:0.70.0")
 ```
 
 > [!IMPORTANT]
