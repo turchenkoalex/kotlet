@@ -13,3 +13,7 @@ dependencies {
     testImplementation(libs.prometheus.metrics.core)
     testImplementation(libs.prometheus.metrics.exporter.servlet.jakarta)
 }
+
+kotlin {
+    jvmToolchain(21)
+}
