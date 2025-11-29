@@ -10,8 +10,11 @@ internal data class OpenAPIConfig(
     val openAPI: OpenAPI,
 )
 
-class OpenAPIConfigBuilder internal constructor() {
+class OpenAPIConfigBuilder internal constructor(
+    routing: Routing
+) {
     private var openAPI = OpenAPI()
+    private var describeHandler: OpenAPI.() -> Unit = {}
 
     /**
      * Path to the OpenAPI endpoint
@@ -22,19 +25,25 @@ class OpenAPIConfigBuilder internal constructor() {
     /**
      * Routing list to generate OpenAPI documentation
      */
-    var documentedRoutings: List<Routing> = emptyList()
+    var documentedRoutings: List<Routing> = listOf(routing)
 
     /**
      * Enable pretty print for the OpenAPI JSON
      */
     var prettyPrint: Boolean = false
 
-    fun openAPI(openAPI: OpenAPI) {
+    /**
+     * Override the OpenAPI model completely
+     */
+    fun overrideOpenAPI(openAPI: OpenAPI) {
         this.openAPI = openAPI
     }
 
-    fun openAPI(configure: OpenAPI.() -> Unit) {
-        openAPI.configure()
+    /**
+     * Describe the OpenAPI model using the DSL
+     */
+    fun describe(configure: OpenAPI.() -> Unit) {
+        describeHandler = configure
     }
 
     internal fun build(): OpenAPIConfig {
