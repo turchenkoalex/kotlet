@@ -8,17 +8,21 @@ import kotlet.Routing
 /**
  * Install OpenAPI endpoint to the routing
  *
+ * @param path Path to the OpenAPI endpoint, default is /openapi.json
  * @param configure Configuration of the OpenAPI endpoint
  */
-fun Routing.installOpenAPI(configure: OpenAPIConfigBuilder.() -> Unit) {
+fun Routing.openAPI(
+    path: String = "/openapi.json",
+    configure: OpenAPIConfigBuilder.() -> Unit
+) {
     val builder = OpenAPIConfigBuilder(this)
     builder.configure()
     val config = builder.build()
 
-    val jsonResponse = renderOpenAPIJson(config)
+    val jsonResponse = lazy { renderOpenAPIJson(config) }
 
     // Serve OpenAPI JSON
-    get(config.path, JsonHandler(jsonResponse))
+    get(path, JsonHandler(jsonResponse))
 }
 
 /**
@@ -36,9 +40,9 @@ private fun renderOpenAPIJson(config: OpenAPIConfig): ByteArray {
 /**
  * Just serve JSON bytes
  */
-private class JsonHandler(private val bytes: ByteArray) : Handler {
+private class JsonHandler(private val bytes: Lazy<ByteArray>) : Handler {
     override fun invoke(call: HttpCall) {
         call.rawResponse.contentType = "application/json"
-        call.respondBytes(bytes)
+        call.respondBytes(bytes.value)
     }
 }

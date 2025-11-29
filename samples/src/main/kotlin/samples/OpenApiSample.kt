@@ -2,17 +2,16 @@ package samples
 
 import jetty.startJettyServer
 import kotlet.Kotlet
-import kotlet.configure
 import kotlet.openapi.describe
 import kotlet.openapi.info
-import kotlet.openapi.installOpenAPI
+import kotlet.openapi.openAPI
 import kotlet.openapi.response
 import kotlet.openapi.responses
 
 fun main() {
 
     val routing = Kotlet.routing {
-        installOpenAPI {
+        openAPI {
             describe {
                 info {
                     title = "Metrics Sample API"

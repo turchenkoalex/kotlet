@@ -13,8 +13,7 @@ class OpenAPIUnitTest {
     @Test
     fun `should return OpenAPI without any methods`() {
         val routing = Kotlet.routing {
-            installOpenAPI {
-                path = "/swagger/openapi.json"
+            openAPI("/swagger/openapi.json") {
                 prettyPrint = true
                 describe {
                     info {
@@ -44,8 +43,7 @@ class OpenAPIUnitTest {
     @Test
     fun `should return OpenAPI with one method`() {
         val routing = Kotlet.routing {
-            installOpenAPI {
-                path = "/swagger/openapi.json"
+            openAPI("/swagger/openapi.json") {
                 prettyPrint = true
                 describe {
                     info {
@@ -146,7 +144,7 @@ class OpenAPIUnitTest {
     }
 
     private fun assertOpenAPIJson(expectedJson: String, routing: Routing) {
-        val kotlet = Kotlet.servlet(routing)
+        val kotlet = Kotlet.handler(routing)
 
         val call = Mocks.httpCall(
             method = HttpMethod.GET,
