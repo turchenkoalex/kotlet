@@ -29,8 +29,8 @@ internal object OpenAPIModelBuilder {
 
             val pathItem = PathItem()
 
-            attributes.forEach { (method, openAPIRoute) ->
-                pathItem.applyOperation(method, openAPIRoute.operation)
+            attributes.forEach { (method, operation) ->
+                pathItem.applyOperation(method, operation)
             }
 
             openAPI.path(path, pathItem)
