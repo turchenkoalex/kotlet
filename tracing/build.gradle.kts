@@ -12,3 +12,7 @@ dependencies {
     testImplementation(project(":mocks"))
     testImplementation(libs.bundles.testing)
 }
+
+kotlin {
+    jvmToolchain(21)
+}

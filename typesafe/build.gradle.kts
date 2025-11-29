@@ -9,3 +9,7 @@ dependencies {
 
     testImplementation(libs.bundles.testing)
 }
+
+kotlin {
+    jvmToolchain(21)
+}

@@ -7,3 +7,7 @@ dependencies {
     compileOnly(libs.jakarta.api)
     implementation(libs.mockk)
 }
+
+kotlin {
+    jvmToolchain(21)
+}
