@@ -11,7 +11,7 @@ import kotlet.Routing
  * @param configure Configuration of the OpenAPI endpoint
  */
 fun Routing.installOpenAPI(configure: OpenAPIConfigBuilder.() -> Unit) {
-    val builder = OpenAPIConfigBuilder()
+    val builder = OpenAPIConfigBuilder(this)
     builder.configure()
     val config = builder.build()
 
