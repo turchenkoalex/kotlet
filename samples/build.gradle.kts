@@ -38,3 +38,7 @@ dependencies {
     implementation(libs.opentelemetry.exporter.otlp)
     implementation(libs.opentelemetry.semconv)
 }
+
+kotlin {
+    jvmToolchain(21)
+}

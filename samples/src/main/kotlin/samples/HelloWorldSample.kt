@@ -5,7 +5,7 @@ import kotlet.Kotlet
 
 fun main() {
     val routing = Kotlet.routing {
-        get("/", { call ->
+        get("/hello", { call ->
             call.respondText("Hello World!")
         })
     }

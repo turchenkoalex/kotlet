@@ -7,17 +7,12 @@ import io.swagger.v3.oas.models.parameters.Parameter
 import io.swagger.v3.oas.models.parameters.RequestBody
 import io.swagger.v3.oas.models.responses.ApiResponse
 import io.swagger.v3.oas.models.responses.ApiResponses
-import kotlet.RouteOptions
+import kotlet.RouteContext
 import kotlet.attributes.RouteAttribute
 import kotlet.attributes.RouteAttributes
+import kotlet.configure
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
-
-fun RouteOptions.RouteOptionsBuilder.openapi(configure: Operation.() -> Unit) {
-    val operation = Operation()
-    operation.configure()
-    withAttribute(OPEN_API_OPERATION_KEY, OpenAPIOperation(operation))
-}
 
 fun Operation.responses(configure: ApiResponses.() -> Unit) {
     if (responses == null) {
@@ -142,10 +137,12 @@ class ParametersBuilder(
     }
 }
 
-private val OPEN_API_OPERATION_KEY = RouteAttribute.of<OpenAPIOperation>("openapi.operation")
+private val OPEN_API_OPERATION_KEY = RouteAttribute.of<Operation>("openapi.operation")
 
-internal data class OpenAPIOperation(
-    val operation: Operation
-)
+internal fun RouteContext.writeOpenAPIOperation(operation: Operation) {
+    configure {
+        withAttribute(OPEN_API_OPERATION_KEY, operation)
+    }
+}
 
 internal fun RouteAttributes.readOpenAPIOperation() = get(OPEN_API_OPERATION_KEY)

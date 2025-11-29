@@ -4,7 +4,6 @@ import kotlet.HttpMethod
 import kotlet.Kotlet
 import kotlet.Routing
 import kotlet.mocks.Mocks
-import kotlet.routeOptions
 import org.junit.jupiter.api.Assertions.assertEquals
 import java.time.Instant
 import kotlin.test.Test
@@ -14,6 +13,16 @@ class OpenAPIUnitTest {
     @Test
     fun `should return OpenAPI without any methods`() {
         val routing = Kotlet.routing {
+            openAPI("/swagger/openapi.json") {
+                prettyPrint = true
+                describe {
+                    info {
+                        title = "Sample API"
+                        version = "1.0"
+                    }
+                }
+            }
+
             get("/posts/{id}", Mocks.okHandler)
         }
 
@@ -33,8 +42,18 @@ class OpenAPIUnitTest {
 
     @Test
     fun `should return OpenAPI with one method`() {
-        val opts = routeOptions {
-            openapi {
+        val routing = Kotlet.routing {
+            openAPI("/swagger/openapi.json") {
+                prettyPrint = true
+                describe {
+                    info {
+                        title = "Sample API"
+                        version = "1.0"
+                    }
+                }
+            }
+
+            get("/posts/{id}", Mocks.okHandler) describe {
                 summary("Get post by ID")
                 parameters {
                     path<Long>("id") {
@@ -46,10 +65,6 @@ class OpenAPIUnitTest {
                     notFound("Post not found")
                 }
             }
-        }
-
-        val routing = Kotlet.routing {
-            get("/posts/{id}", opts, Mocks.okHandler)
         }
 
         assertOpenAPIJson(
@@ -129,22 +144,7 @@ class OpenAPIUnitTest {
     }
 
     private fun assertOpenAPIJson(expectedJson: String, routing: Routing) {
-        val openAPIRouting = Kotlet.routing {
-            installOpenAPI {
-                path = "/swagger/openapi.json"
-                this.documentedRoutings = listOf(routing)
-                prettyPrint = true
-                openAPI {
-                    info {
-                        title = "Sample API"
-                        version = "1.0"
-                    }
-
-                }
-            }
-        }
-
-        val kotlet = Kotlet.servlet(routing, openAPIRouting)
+        val kotlet = Kotlet.handler(routing)
 
         val call = Mocks.httpCall(
             method = HttpMethod.GET,

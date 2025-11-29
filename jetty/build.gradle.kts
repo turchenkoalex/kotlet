@@ -11,3 +11,7 @@ dependencies {
     api(libs.jetty.server.http2)
     api(libs.jetty.ee10.servlet)
 }
+
+kotlin {
+    jvmToolchain(21)
+}

@@ -16,38 +16,30 @@ Example:
 ```kotlin
     data class HelloResponse(val message: String)
 
-
-    val opts = routeOptions {
-        openapi {
-            summary("Hello world")
-            responses {
-                jsonResponse<HelloResponse>("Simple response")
-            }
-        }
-    }
-
-    val applicationRouter = Kotlet.routing {
-        get("/hello", opts) { call ->
-            call.respondText("Hello, World!")
-        }
-    }
-
-    val auxRouter = Kotlet.routing {
+    val router = Kotlet.routing {
         installOpenAPI {
             path = "/swagger/openapi.json"
-            documentedRoutings = listOf(applicationRouter)
             prettyPrint = true
-            openAPI {
+            describe {
                 info {
                     title = "Sample API"
                     version = "1.0"
                 }
             }
         }
+        
+        get("/hello") { call ->
+            call.respondText("Hello, World!")
+        } describe {
+            summary = "Hello world"
+            responses {
+                jsonResponse<HelloResponse>("Simple response")
+            }
+        }
     }
 
     val kotlet = Kotlet.servlet(
-        routings = listOf(applicationRouter, auxRouter)
+        routings = listOf(router)
     )
 ```
 

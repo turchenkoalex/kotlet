@@ -7,7 +7,7 @@ package kotlet
 internal data class RouteHandler(
     val path: String,
     val method: HttpMethod,
-    val options: RouteOptions,
+    val context: RouteContext,
     val handler: Handler,
 ) {
     companion object {
@@ -25,12 +25,12 @@ internal data class RouteHandler(
                 globalInterceptors = globalInterceptors,
                 handlers = handlers.associate {
                     it.method to Interceptor.createRecursiveHandler(
-                        interceptors = it.options.interceptors,
+                        interceptors = it.context.interceptors(),
                         handler = it.handler,
                     )
                 },
                 attributes = handlers.associate {
-                    it.method to it.options.attributes
+                    it.method to it.context.attributes()
                 }
             )
         }

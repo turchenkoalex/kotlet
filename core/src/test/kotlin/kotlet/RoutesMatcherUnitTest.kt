@@ -377,7 +377,7 @@ internal class RoutesMatcherUnitTest {
         val error = assertThrows(RoutingConfigurationException::class.java) {
             routing {
                 get("/foo") { }
-                get("/foo", routeOptions { }) { }
+                get("/foo") { }
             }
         }
 

@@ -143,31 +143,7 @@ class Routing internal constructor() {
     fun get(
         path: String,
         handler: Handler,
-    ) = get(path, RouteOptions.EMPTY_OPTIONS, handler)
-
-    /**
-     * GET method route
-     *
-     * @param path route path
-     * @param options route settings block
-     * @param handler route handler
-     * @throws RoutingConfigurationException if routing is sealed
-     *
-     * Example:
-     * ```
-     * Kotlet.routing {
-     *   get("/users", routeOptions {}) { call ->
-     *     call.respondText("Hello, user!")
-     *   }
-     * }
-     * ```
-     */
-    fun get(
-        path: String,
-        options: RouteOptions,
-        handler: Handler,
-    ) = createRoute(path, HttpMethod.GET, options, handler)
-
+    ) = createRoute(path, HttpMethod.GET, handler)
 
     /**
      * POST method route
@@ -207,30 +183,7 @@ class Routing internal constructor() {
     fun post(
         path: String,
         handler: Handler,
-    ) = post(path, RouteOptions.EMPTY_OPTIONS, handler)
-
-    /**
-     * POST method route
-     *
-     * @param path route path
-     * @param options route settings block
-     * @param handler route handler
-     * @throws RoutingConfigurationException if routing is sealed
-     *
-     * Example:
-     * ```
-     * Kotlet.routing {
-     *   post("/users", routeOptions {}) { call ->
-     *     call.status = HttpServletResponse.SC_CREATED
-     *   }
-     * }
-     * ```
-     */
-    fun post(
-        path: String,
-        options: RouteOptions,
-        handler: Handler,
-    ) = createRoute(path, HttpMethod.POST, options, handler)
+    ) = createRoute(path, HttpMethod.POST, handler)
 
     /**
      * PUT method route
@@ -270,30 +223,7 @@ class Routing internal constructor() {
     fun put(
         path: String,
         handler: Handler,
-    ) = put(path, RouteOptions.EMPTY_OPTIONS, handler)
-
-    /**
-     * PUT method route
-     *
-     * @param path route path
-     * @param options route settings block
-     * @param handler route handler
-     * @throws RoutingConfigurationException if routing is sealed
-     *
-     * Example:
-     * ```
-     * Kotlet.routing {
-     *   put("/users/{id}", routeOptions {}) { call ->
-     *     call.status = HttpServletResponse.SC_OK
-     *   }
-     * }
-     * ```
-     */
-    fun put(
-        path: String,
-        options: RouteOptions,
-        handler: Handler,
-    ) = createRoute(path, HttpMethod.PUT, options, handler)
+    ) = createRoute(path, HttpMethod.PUT, handler)
 
     /**
      * PATCH method route
@@ -312,7 +242,7 @@ class Routing internal constructor() {
      */
     fun patch(
         handler: Handler,
-    ) = patch(RouteHelpers.ROOT_ROUTE_PATH, RouteOptions.EMPTY_OPTIONS, handler)
+    ) = patch(RouteHelpers.ROOT_ROUTE_PATH, handler)
 
     /**
      * PATCH method route
@@ -333,31 +263,7 @@ class Routing internal constructor() {
     fun patch(
         path: String,
         handler: Handler,
-    ) = patch(path, RouteOptions.EMPTY_OPTIONS, handler)
-
-
-    /**
-     * PATCH method route
-     *
-     * @param path route path
-     * @param options route settings block
-     * @param handler route handler
-     * @throws RoutingConfigurationException if routing is sealed
-     *
-     * Example:
-     * ```
-     * Kotlet.routing {
-     *   patch("/users/{id}", routeOptions {}) { call ->
-     *     call.status = HttpServletResponse.SC_CREATED
-     *   }
-     * }
-     * ```
-     */
-    fun patch(
-        path: String,
-        options: RouteOptions,
-        handler: Handler,
-    ) = createRoute(path, HttpMethod.PATCH, options, handler)
+    ) = createRoute(path, HttpMethod.PATCH, handler)
 
     /**
      * DELETE method route
@@ -397,30 +303,7 @@ class Routing internal constructor() {
     fun delete(
         path: String,
         handler: Handler,
-    ) = delete(path, RouteOptions.EMPTY_OPTIONS, handler)
-
-    /**
-     * DELETE method route
-     *
-     * @param path route path
-     * @param options route settings block
-     * @param handler route handler
-     * @throws RoutingConfigurationException if routing is sealed
-     *
-     * Example:
-     * ```
-     * Kotlet.routing {
-     *   delete("/users/{id}", routeOptions {}) { call ->
-     *     call.status = HttpServletResponse.SC_NO_CONTENT
-     *   }
-     * }
-     * ```
-     */
-    fun delete(
-        path: String,
-        options: RouteOptions,
-        handler: Handler,
-    ) = createRoute(path, HttpMethod.DELETE, options, handler)
+    ) = createRoute(path, HttpMethod.DELETE, handler)
 
     /**
      * HEAD method route
@@ -460,30 +343,7 @@ class Routing internal constructor() {
     fun head(
         path: String,
         handler: Handler,
-    ) = head(path, RouteOptions.EMPTY_OPTIONS, handler)
-
-    /**
-     * HEAD method route
-     *
-     * @param path route path
-     * @param options route settings block
-     * @param handler route handler
-     * @throws RoutingConfigurationException if routing is sealed
-     *
-     * Example:
-     * ```
-     * Kotlet.routing {
-     *   head("/users/{id}", routeOptions {}) { call ->
-     *     call.status = HttpServletResponse.SC_NO_CONTENT
-     *   }
-     * }
-     * ```
-     */
-    fun head(
-        path: String,
-        options: RouteOptions,
-        handler: Handler,
-    ) = createRoute(path, HttpMethod.HEAD, options, handler)
+    ) = createRoute(path, HttpMethod.HEAD, handler)
 
     /**
      * OPTIONS method route
@@ -531,34 +391,7 @@ class Routing internal constructor() {
     fun options(
         path: String,
         handler: Handler,
-    ) = options(path, RouteOptions.EMPTY_OPTIONS, handler)
-
-    /**
-     * OPTIONS method route
-     *
-     * @param path route path
-     * @param options route settings block
-     * @param handler route handler
-     * @throws RoutingConfigurationException if routing is sealed
-     *
-     * Example:
-     * ```
-     * Kotlet.routing {
-     *   options("/users", routeOptions {}) { call ->
-     *     // CORS processing
-     *     call.rawResponse.setHeader("Access-Control-Allow-Origin", "*")
-     *     call.rawResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-     *     call.rawResponse.setHeader("Access-Control-Allow-Headers", "Content-Type")
-     *     call.status = HttpServletResponse.SC_OK
-     *   }
-     * }
-     * ```
-     */
-    fun options(
-        path: String,
-        options: RouteOptions,
-        handler: Handler,
-    ) = createRoute(path, HttpMethod.OPTIONS, options, handler)
+    ) = createRoute(path, HttpMethod.OPTIONS, handler)
 
     /**
      * TRACE method route
@@ -598,30 +431,7 @@ class Routing internal constructor() {
     fun trace(
         path: String,
         handler: Handler,
-    ) = trace(path, RouteOptions.EMPTY_OPTIONS, handler)
-
-    /**
-     * TRACE method route
-     *
-     * @param path route path
-     * @param options route settings block
-     * @param handler route handler
-     * @throws RoutingConfigurationException if routing is sealed
-     *
-     * Example:
-     * ```
-     * Kotlet.routing {
-     *   trace("/users", routeOptions {}) { call ->
-     *     call.status = HttpServletResponse.SC_OK
-     *   }
-     * }
-     * ```
-     */
-    fun trace(
-        path: String,
-        options: RouteOptions,
-        handler: Handler,
-    ) = createRoute(path, HttpMethod.TRACE, options, handler)
+    ) = createRoute(path, HttpMethod.TRACE, handler)
 
     /**
      * All routes configured in [block] will be nested under the specified [path]
@@ -681,14 +491,13 @@ class Routing internal constructor() {
     }
 
     /**
-     * Create a route with the specified [path], [method] and [options]
+     * Create a route with the specified [path], [method] and [handler]
      */
     private fun createRoute(
         path: String,
         method: HttpMethod,
-        options: RouteOptions,
         handler: Handler,
-    ) {
+    ): RouteContext {
         if (sealed) {
             throw RoutingConfigurationException("All routes have been sealed, you can't create another one")
         }
@@ -701,8 +510,12 @@ class Routing internal constructor() {
             )
         }
 
-        val mergedOptions = options.merge(currentInterceptors)
-        routeHandlers += RouteHandler(routePath, method, mergedOptions, handler)
+        val context = RouteContext(
+            interceptors = currentInterceptors.toList()
+        )
+        routeHandlers += RouteHandler(routePath, method, context, handler)
+
+        return context
     }
 
     /**
@@ -734,8 +547,8 @@ class Routing internal constructor() {
                 RegisteredRoute(
                     path = route.path,
                     method = route.method,
-                    interceptors = globalInterceptors.toOrderedInterceptorList() + route.options.interceptors,
-                    attributes = route.options.attributes,
+                    interceptors = globalInterceptors.toOrderedInterceptorList() + route.context.interceptors(),
+                    attributes = route.context.attributes(),
                 )
             }
         }

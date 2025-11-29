@@ -4,42 +4,44 @@ import io.swagger.v3.oas.models.OpenAPI
 import kotlet.Routing
 
 internal data class OpenAPIConfig(
-    val path: String,
     val documentedRoutings: List<Routing>,
     val prettyPrint: Boolean,
     val openAPI: OpenAPI,
 )
 
-class OpenAPIConfigBuilder internal constructor() {
+class OpenAPIConfigBuilder internal constructor(
+    routing: Routing
+) {
     private var openAPI = OpenAPI()
-
-    /**
-     * Path to the OpenAPI endpoint
-     * Default: /openapi.json
-     */
-    var path: String = "/openapi.json"
+    private var describeHandler: OpenAPI.() -> Unit = {}
 
     /**
      * Routing list to generate OpenAPI documentation
      */
-    var documentedRoutings: List<Routing> = emptyList()
+    var documentedRoutings: List<Routing> = listOf(routing)
 
     /**
      * Enable pretty print for the OpenAPI JSON
      */
     var prettyPrint: Boolean = false
 
-    fun openAPI(openAPI: OpenAPI) {
+    /**
+     * Override the OpenAPI model completely
+     */
+    fun overrideOpenAPI(openAPI: OpenAPI) {
         this.openAPI = openAPI
     }
 
-    fun openAPI(configure: OpenAPI.() -> Unit) {
-        openAPI.configure()
+    /**
+     * Describe the OpenAPI model using the DSL
+     */
+    fun describe(configure: OpenAPI.() -> Unit) {
+        describeHandler = configure
     }
 
     internal fun build(): OpenAPIConfig {
+        describeHandler(openAPI)
         return OpenAPIConfig(
-            path = path,
             documentedRoutings = documentedRoutings,
             prettyPrint = prettyPrint,
             openAPI = openAPI,

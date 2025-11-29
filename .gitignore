@@ -12,6 +12,7 @@ build/
 .idea/misc.xml
 .idea/uiDesigner.xml
 .idea/libraries/
+.idea/copilot.*
 *.iws
 *.iml
 *.ipr
