@@ -2,7 +2,6 @@ package kotlet.openapi
 
 import io.swagger.v3.oas.models.Operation
 import kotlet.RouteContext
-import kotlet.configure
 
 /**
  * Describe the OpenAPI operation for the route.
