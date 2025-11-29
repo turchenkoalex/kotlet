@@ -31,7 +31,7 @@ Example:
         get("/hello") { call ->
             call.respondText("Hello, World!")
         } describe {
-            summary("Hello world")
+            summary = "Hello world"
             responses {
                 jsonResponse<HelloResponse>("Simple response")
             }
