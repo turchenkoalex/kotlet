@@ -2,10 +2,9 @@ package kotlet.openapi.dsl
 
 import io.swagger.v3.oas.models.Operation
 import io.swagger.v3.oas.models.parameters.Parameter
-import kotlet.openapi.OpenApiDescription
 import kotlet.openapi.generateSchema
+import kotlet.openapi.getOpenApiDescription
 import kotlin.reflect.KClass
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 
 /**
@@ -64,9 +63,8 @@ inline fun <reified T : Any> Operation.pathParameter(
  */
 fun <T : Any> Operation.pathParameters(clazz: KClass<T>) {
     clazz.memberProperties.forEach { property ->
-        val descriptionAnnotation = property.findAnnotation<OpenApiDescription>()
-        val description = descriptionAnnotation?.description ?: ""
-        pathParameter(property.name, description, property.returnType.classifier as KClass<*>)
+        val parameterDescription = property.getOpenApiDescription() ?: ""
+        pathParameter(property.name, parameterDescription, property.returnType.classifier as KClass<*>)
     }
 }
 
