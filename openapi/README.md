@@ -14,7 +14,11 @@ Before configuration OpenAPI routing, you need to configure application routing 
 Example:
 
 ```kotlin
-    data class HelloResponse(val message: String)
+    @Serializable
+    @OpenApiDescription("Simple response")
+    data class HelloResponse(
+        val message: String
+    )
 
     val router = Kotlet.routing {
         openAPI {
