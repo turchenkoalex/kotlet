@@ -10,6 +10,7 @@ import kotlet.openapi.dsl.pathParameter
 import kotlet.openapi.dsl.response
 import kotlet.openapi.openAPI
 import kotlet.respondJson
+import kotlet.swagger.ui.serveSwaggerUI
 
 fun main() {
 
@@ -22,6 +23,10 @@ fun main() {
                     description = "This is a sample API to demonstrate metrics collection with Kotlet."
                 }
             }
+        }
+
+        serveSwaggerUI {
+
         }
 
         get("/hello") { call ->

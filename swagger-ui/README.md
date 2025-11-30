@@ -15,7 +15,7 @@ implementation("io.github.turchenkoalex:kotlet-swagger-ui:0.74.0")
 
 ```kotlin
 Kotlet.routing {
-    installSwaggerUIEndpoint {
+    serveSwaggerUI {
         path = "/swagger/ui"
         openAPIPath = "/openapi.json"
     }
@@ -26,7 +26,7 @@ Kotlet.routing {
 }
 ```
 
-The `installSwaggerUIEndpoint` method adds a route to your application that serves the Swagger UI interface. The method
+The `serveSwaggerUI` method adds a route to your application that serves the Swagger UI interface. The method
 takes a configuration, which contains the following fields:
 * `path` - the path where the Swagger UI will be available. Default value is `/swagger/ui`.
 * `openAPIPath` - the path to the OpenAPI specification file. Default value is `/openapi.json`.
