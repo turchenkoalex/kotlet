@@ -49,7 +49,9 @@ private fun generateTypedSchema(
         isChar(type) -> StringSchema().apply { maxLength = 1 }
         isEnum(type) -> {
             StringSchema().apply {
-                this.enum = (type.classifier as KClass<*>).java.enumConstants.map { it.toString() }
+                val clazz = type.classifier as KClass<*>
+                enum = clazz.java.enumConstants.map { it.toString() }
+                description = clazz.getOpenApiDescription()
             }
         }
 
@@ -57,6 +59,7 @@ private fun generateTypedSchema(
         isCollection(type) -> {
             val valueType = type.arguments.firstOrNull()?.type
             ArraySchema().apply {
+                description = "Array of ${valueType?.classifier}"
                 if (valueType != null) {
                     items = generateTypedSchema(valueType)
                 }
@@ -66,6 +69,7 @@ private fun generateTypedSchema(
         isMap(type) -> {
             val valueType = type.arguments.getOrNull(1)?.type
             MapSchema().apply {
+                description = "Map of ${valueType?.classifier}"
                 if (valueType != null) {
                     additionalProperties = generateTypedSchema(valueType)
                 }
@@ -73,19 +77,27 @@ private fun generateTypedSchema(
         }
 
         else -> {
-            val schema = ObjectSchema()
-            schema.description = (type.classifier as KClass<*>).qualifiedName
-            schema.properties = mutableMapOf<String, Schema<*>>()
+            val clazz = type.classifier as KClass<*>
 
-            (type.classifier as KClass<*>).memberProperties.forEach { property ->
+            val schema = ObjectSchema().apply {
+                properties = mutableMapOf<String, Schema<*>>()
+                description = clazz.getOpenApiDescription() ?: clazz.qualifiedName
+            }
+
+            clazz.memberProperties.forEach { property ->
                 val propertyType = property.returnType
+                val propertyDescription = property.getOpenApiDescription()
                 val classifier = propertyType.classifier
                 if (classifier is KClass<*>) {
-                    schema.properties[property.name] = generateTypedSchema(type = propertyType)
+                    schema.properties[property.name] = generateTypedSchema(type = propertyType).apply {
+                        if (propertyDescription != null) {
+                            description = propertyDescription
+                        }
+                    }
                 } else {
                     // if classifier is not KClass, we don't know how to handle it
                     schema.properties[property.name] = Schema<Any>().apply {
-                        description = "Unknown type for property '${property.name}'"
+                        description = propertyDescription
                     }
                 }
             }

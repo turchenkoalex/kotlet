@@ -2,8 +2,10 @@ package kotlet.openapi.dsl
 
 import io.swagger.v3.oas.models.Operation
 import io.swagger.v3.oas.models.parameters.Parameter
+import kotlet.openapi.OpenApiDescription
 import kotlet.openapi.generateSchema
 import kotlin.reflect.KClass
+import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 
 /**
@@ -60,13 +62,15 @@ inline fun <reified T : Any> Operation.pathParameter(
  *
  * @param clazz The KClass whose properties will be used to create path parameters.
  */
-fun <T : Any> Operation.parameters(clazz: KClass<T>) {
+fun <T : Any> Operation.pathParameters(clazz: KClass<T>) {
     clazz.memberProperties.forEach { property ->
-        pathParameter(property.name, "", property.returnType.classifier as KClass<*>)
+        val descriptionAnnotation = property.findAnnotation<OpenApiDescription>()
+        val description = descriptionAnnotation?.description ?: ""
+        pathParameter(property.name, description, property.returnType.classifier as KClass<*>)
     }
 }
 
 /**
  * Adds path parameters to the Operation based on the properties of the reified type T.
  */
-inline fun <reified T : Any> Operation.parameters() = parameters(T::class)
+inline fun <reified T : Any> Operation.pathParameters() = pathParameters(T::class)
