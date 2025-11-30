@@ -32,9 +32,7 @@ Example:
             call.respondText("Hello, World!")
         } describe {
             summary = "Hello world"
-            responses {
-                jsonResponse<HelloResponse>("Simple response")
-            }
+            jsonResponse<HelloResponse>("Simple response")
         }
     }
 

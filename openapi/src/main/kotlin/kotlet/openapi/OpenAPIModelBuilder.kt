@@ -7,7 +7,6 @@ import kotlet.HttpMethod
 import kotlet.Routing
 
 internal object OpenAPIModelBuilder {
-
     fun build(config: OpenAPIConfig): OpenAPI {
         val openAPI = config.openAPI
 

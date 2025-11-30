@@ -4,6 +4,10 @@ import kotlet.HttpMethod
 import kotlet.Kotlet
 import kotlet.Routing
 import kotlet.mocks.Mocks
+import kotlet.openapi.dsl.info
+import kotlet.openapi.dsl.jsonResponse
+import kotlet.openapi.dsl.notFound
+import kotlet.openapi.dsl.pathParameter
 import org.junit.jupiter.api.Assertions.assertEquals
 import java.time.Instant
 import kotlin.test.Test
@@ -54,16 +58,10 @@ class OpenAPIUnitTest {
             }
 
             get("/posts/{id}", Mocks.okHandler) describe {
-                summary("Get post by ID")
-                parameters {
-                    path<Long>("id") {
-                        description = "Post ID"
-                    }
-                }
-                responses {
-                    jsonResponse<Post>("Post found", statusCode = 200)
-                    notFound("Post not found")
-                }
+                summary = "Get post by ID"
+                pathParameter<Long>("id", description = "Post ID")
+                jsonResponse<Post>(200, "Post found")
+                notFound("Post not found")
             }
         }
 
