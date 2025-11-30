@@ -5,11 +5,11 @@ import kotlet.HttpCall
 import kotlet.Routing
 
 /**
- * Install OpenAPI endpoint to the routing
+ * Install Swagger UI endpoint to the routing for serving UI to visualize OpenAPI documentation.
  *
  * @param configure Configuration of the OpenAPI endpoint
  */
-fun Routing.installSwaggerUIEndpoint(configure: SwaggerUIConfigBuilder.() -> Unit) {
+fun Routing.serveSwaggerUI(configure: SwaggerUIConfigBuilder.() -> Unit) {
     val builder = SwaggerUIConfigBuilder()
     builder.configure()
     val config = builder.build()
