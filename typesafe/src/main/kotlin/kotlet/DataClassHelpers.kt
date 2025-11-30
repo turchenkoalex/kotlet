@@ -4,6 +4,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.jvm.isAccessible
 
 object DataClassHelpers {
 
@@ -54,6 +55,9 @@ object DataClassHelpers {
                 arguments[parameter] = value
             }
         }
+
+        // make the constructor accessible if it's private or protected
+        primaryConstructor.isAccessible = true
 
         // invoke the constructor with these arguments
         return primaryConstructor.callBy(arguments)

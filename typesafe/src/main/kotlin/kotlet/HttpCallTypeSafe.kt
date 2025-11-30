@@ -1,9 +1,15 @@
 package kotlet
 
+/**
+ * Receives path parameters from the HTTP call and converts them into an instance of the specified data class.
+ */
 inline fun <reified T : Any> HttpCall.receivePath(): T {
     return DataClassHelpers.convertMapToDataClass(T::class, parameters)
 }
 
+/**
+ * Receives query parameters from the HTTP call and converts them into an instance of the specified data class.
+ */
 inline fun <reified T : Any> HttpCall.receiveQuery(): T {
     // In query part of the request, keys can be repeated with different values, like this:
     // /path?foo=1&bar=2&foo=3
