@@ -17,7 +17,7 @@ Example:
     data class HelloResponse(val message: String)
 
     val router = Kotlet.routing {
-        installOpenAPI {
+        openAPI {
             path = "/swagger/openapi.json"
             prettyPrint = true
             describe {
@@ -32,7 +32,7 @@ Example:
             call.respondText("Hello, World!")
         } describe {
             summary = "Hello world"
-            jsonResponse<HelloResponse>("Simple response")
+            jsonResponse<HelloResponse>(200, "Simple response")
         }
     }
 
