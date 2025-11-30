@@ -8,8 +8,8 @@ import kotlet.openapi.dsl.info
 import kotlet.openapi.dsl.jsonRequest
 import kotlet.openapi.dsl.jsonResponse
 import kotlet.openapi.dsl.notFound
-import kotlet.openapi.dsl.parameters
 import kotlet.openapi.dsl.pathParameter
+import kotlet.openapi.dsl.pathParameters
 import org.junit.jupiter.api.Assertions.assertEquals
 import java.time.Instant
 import kotlin.test.Test
@@ -69,7 +69,7 @@ class OpenAPIUnitTest {
             post("/post/{postId}/comments/{commentId}") { call ->
                 call.status = 201
             } describe {
-                parameters<CommentPostParameter>()
+                pathParameters<CommentPostPath>()
                 jsonRequest<CommentPostRequest>("Comment update body")
             }
         }
@@ -117,8 +117,9 @@ class OpenAPIUnitTest {
                                         "type" : "string"
                                       }
                                     },
-                                    "description" : "kotlet.openapi.Comment"
-                                  }
+                                    "description" : "Comment on a post"
+                                  },
+                                  "description" : "Map of class kotlet.openapi.Comment"
                                 },
                                 "content" : {
                                   "type" : "string",
@@ -132,7 +133,7 @@ class OpenAPIUnitTest {
                                   "type" : "string"
                                 }
                               },
-                              "description" : "kotlet.openapi.Post"
+                              "description" : "Blog post"
                             }
                           }
                         }
@@ -148,7 +149,7 @@ class OpenAPIUnitTest {
                     "parameters" : [ {
                       "name" : "commentId",
                       "in" : "path",
-                      "description" : "",
+                      "description" : "Comment ID",
                       "required" : true,
                       "schema" : {
                         "type" : "integer",
@@ -157,7 +158,7 @@ class OpenAPIUnitTest {
                     }, {
                       "name" : "postId",
                       "in" : "path",
-                      "description" : "",
+                      "description" : "Post ID",
                       "required" : true,
                       "schema" : {
                         "type" : "integer",
@@ -176,7 +177,7 @@ class OpenAPIUnitTest {
                                 "format" : "int32"
                               }
                             },
-                            "description" : "kotlet.openapi.CommentPostRequest"
+                            "description" : "Comment post request"
                           }
                         }
                       }
@@ -205,7 +206,19 @@ class OpenAPIUnitTest {
     }
 }
 
+@OpenApiDescription("Blog post")
 private data class Post(val id: Int, val title: String, val content: String?, val comments: Map<Instant, Comment>)
+
+@OpenApiDescription("Comment on a post")
 private data class Comment(val id: Int, val text: String)
+
+@OpenApiDescription("Comment post request")
 private data class CommentPostRequest(val message: Int)
-private data class CommentPostParameter(val postId: Int, val commentId: Int)
+
+private data class CommentPostPath(
+    @OpenApiDescription("Post ID")
+    val postId: Int,
+
+    @OpenApiDescription("Comment ID")
+    val commentId: Int
+)
