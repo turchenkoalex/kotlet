@@ -71,7 +71,7 @@ fun Operation.notFound(description: String, configure: ApiResponse.() -> Unit = 
 }
 
 /**
- * Adds a 404 Not found response to the ApiResponses object.
+ * Adds a 400 Bad request response to the ApiResponses object.
  *
  * @param description A brief description of the response.
  * @param configure An optional configuration block for the ApiResponse.
