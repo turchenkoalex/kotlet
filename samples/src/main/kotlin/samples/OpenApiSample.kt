@@ -6,6 +6,7 @@ import kotlet.openapi.describe
 import kotlet.openapi.dsl.info
 import kotlet.openapi.dsl.jsonRequest
 import kotlet.openapi.dsl.jsonResponse
+import kotlet.openapi.dsl.pathParameter
 import kotlet.openapi.dsl.response
 import kotlet.openapi.openAPI
 import kotlet.respondJson
@@ -35,8 +36,14 @@ fun main() {
             call.respondJson(JsonResponse("This is a JSON response"))
         } describe {
             summary = "Get JSON message"
-            jsonRequest<JsonRequest>("Get JSON message")
             jsonResponse<JsonResponse>(200, "Successful JSON Response")
+        }
+
+        post("/post/{name}") { call ->
+            call.status = 201
+        } describe {
+            pathParameter<String>("name")
+            jsonRequest<JsonRequest>("Get JSON message")
         }
     }
 
