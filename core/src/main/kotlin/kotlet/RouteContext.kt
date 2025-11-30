@@ -13,7 +13,7 @@ class RouteContext(
     interceptors: List<Interceptor>
 ) {
     private val initialInterceptors = interceptors.toList()
-    private val interceptors = mutableListOf<Interceptor>()
+    private val additionalInterceptors = mutableListOf<Interceptor>()
     private val attributes = MutableRouteAttributes()
 
     /**
@@ -21,7 +21,7 @@ class RouteContext(
      * @param interceptor Interceptor to add.
      */
     internal fun addInterceptor(interceptor: Interceptor) {
-        interceptors.add(interceptor)
+        additionalInterceptors.add(interceptor)
     }
 
     /**
@@ -39,7 +39,7 @@ class RouteContext(
     }
 
     internal fun interceptors(): List<Interceptor> {
-        return initialInterceptors + interceptors
+        return initialInterceptors + additionalInterceptors
     }
 
     internal fun attributes(): RouteAttributes {
