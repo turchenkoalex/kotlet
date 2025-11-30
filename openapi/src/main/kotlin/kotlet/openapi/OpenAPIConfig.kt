@@ -3,9 +3,23 @@ package kotlet.openapi
 import io.swagger.v3.oas.models.OpenAPI
 import kotlet.Routing
 
+/**
+ * Configuration for OpenAPI generation
+ */
 internal data class OpenAPIConfig(
+    /**
+     * Routing list to generate OpenAPI documentation
+     */
     val documentedRoutings: List<Routing>,
+
+    /**
+     * Enable pretty print for the OpenAPI JSON
+     */
     val prettyPrint: Boolean,
+
+    /**
+     * OpenAPI model
+     */
     val openAPI: OpenAPI,
 )
 
@@ -33,7 +47,10 @@ class OpenAPIConfigBuilder internal constructor(
     }
 
     /**
-     * Describe the OpenAPI model using the DSL
+     * Describe the OpenAPI model using the DSL.
+     * Will be applied on top of any existing model.
+     *
+     * @param configure Configuration block for the OpenAPI model
      */
     fun describe(configure: OpenAPI.() -> Unit) {
         describeHandler = configure
