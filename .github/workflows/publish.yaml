@@ -70,7 +70,7 @@ jobs:
           find . -name "README.md" -exec sed -Ei "s|io.github.turchenkoalex:kotlet-([a-zA-Z0-9_-]+):[0-9.]+|io.github.turchenkoalex:kotlet-\1:${NEW_VERSION}|g" {} +;
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Update README dependencies to new version"
