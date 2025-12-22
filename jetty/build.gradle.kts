@@ -9,6 +9,8 @@ dependencies {
     // Jetty
     api(libs.jetty.server)
     api(libs.jetty.server.http2)
+    api(libs.jetty.compression.server)
+    api(libs.jetty.compression.gzip)
     api(libs.jetty.ee10.servlet)
 }
 

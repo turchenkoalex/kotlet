@@ -49,6 +49,8 @@ opentelemetry-instrumentation-api = { group = "io.opentelemetry.instrumentation"
 opentelemetry-semconv = { group = "io.opentelemetry.semconv", name = "opentelemetry-semconv", version.ref = "opentelemetry-semconv" }
 
 # Jetty
+jetty-compression-server = { group = "org.eclipse.jetty.compression", name = "jetty-compression-server", version.ref = "jetty" }
+jetty-compression-gzip = { group = "org.eclipse.jetty.compression", name = "jetty-compression-gzip", version.ref = "jetty" }
 jetty-ee10-servlet = { group = "org.eclipse.jetty.ee10", name = "jetty-ee10-servlet", version.ref = "jetty" }
 jetty-server = { group = "org.eclipse.jetty", name = "jetty-server", version.ref = "jetty" }
 jetty-server-http2 = { group = "org.eclipse.jetty.http2", name = "jetty-http2-server", version.ref = "jetty" }
