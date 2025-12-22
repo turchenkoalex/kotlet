@@ -8,7 +8,7 @@ Library contains all necessary resources to run Swagger UI, so you don't need to
 ## Installation
 
 ```kotlin
-implementation("io.github.turchenkoalex:kotlet-swagger-ui:0.79.0")
+implementation("io.github.turchenkoalex:kotlet-swagger-ui:0.80.0")
 ```
 
 ## Configuration
