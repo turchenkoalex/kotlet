@@ -1,7 +1,5 @@
 package kotlet.client
 
-import com.sun.net.httpserver.Headers
-
 /**
  * Configuration options for the HTTP client.
  */
