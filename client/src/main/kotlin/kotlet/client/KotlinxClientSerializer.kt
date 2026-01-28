@@ -35,6 +35,21 @@ object KotlinxClientSerializer : ClientSerializer {
     }
 
     override fun <T> deserializeFromStream(inputStream: InputStream, clazz: Class<T>): T {
+        if (clazz == Unit::class.java) {
+            @Suppress("UNCHECKED_CAST")
+            return Unit as T
+        }
+
+        if (clazz == ByteArray::class.java) {
+            @Suppress("UNCHECKED_CAST")
+            return inputStream.readBytes() as T
+        }
+
+        if (clazz == String::class.java) {
+            @Suppress("UNCHECKED_CAST")
+            return inputStream.bufferedReader().use { it.readText() } as T
+        }
+
         val serializer = findSerializer(clazz)
         return json.decodeFromStream(serializer, inputStream)
     }
