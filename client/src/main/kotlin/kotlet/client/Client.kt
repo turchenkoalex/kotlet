@@ -22,15 +22,18 @@ class Client(
 ) : Closeable {
 
     /**
-     * Indicates whether GZIP compression is allowed for request bodies.
+     * Default headers to include in every request.
      */
     private val defaultHeaders: Map<String, String>
 
     init {
         val headers = mutableMapOf(
-            "User-Agent" to "kotlet-client/1.0",
             "Accept" to serializer.acceptContentType
         )
+
+        if (options.userAgent.isNotEmpty()) {
+            headers["User-Agent"] = options.userAgent
+        }
 
         if (options.allowGzipResponses) {
             headers[ACCEPT_ENCODING] = GZIP
@@ -40,7 +43,11 @@ class Client(
             headers[CONTENT_ENCODING] = GZIP
         }
 
-        defaultHeaders = headers
+        if (options.additionalHeaders.isNotEmpty()) {
+            headers.putAll(options.additionalHeaders)
+        }
+
+        defaultHeaders = headers.toMap()
     }
 
 
@@ -51,7 +58,10 @@ class Client(
      * @param headers Optional headers to include in the request.
      * @return The response body deserialized into the specified class, or null if no body is present.
      */
-    inline fun <reified TRes : Any> get(uri: URI, headers: Map<String, String> = emptyMap()): TRes? {
+    inline fun <reified TRes : Any> get(
+        uri: URI,
+        headers: Map<String, String> = emptyMap()
+    ): TRes? {
         val request = buildRequest("GET", uri, headers, null, Unit::class.java)
         return send(request, TRes::class.java).body
     }
@@ -66,7 +76,9 @@ class Client(
      * @return The response body deserialized into the specified class, or null if no body is present.
      */
     inline fun <reified TReq : Any, reified TRes : Any> post(
-        uri: URI, req: TReq? = null, headers: Map<String, String> = emptyMap()
+        uri: URI,
+        req: TReq? = null,
+        headers: Map<String, String> = emptyMap()
     ): TRes? {
         val request = buildRequest("POST", uri, headers, req, TReq::class.java)
         return send(request, TRes::class.java).body
@@ -82,9 +94,11 @@ class Client(
      * @return The response body deserialized into the specified class, or null if no body is present.
      */
     inline fun <reified TReq : Any, reified TRes : Any> put(
-        uri: URI, req: TReq? = null, headers: Map<String, String> = emptyMap()
+        uri: URI,
+        req: TReq? = null,
+        headers: Map<String, String> = emptyMap()
     ): TRes? {
-        val request = buildRequest("POST", uri, headers, req, TReq::class.java)
+        val request = buildRequest("PUT", uri, headers, req, TReq::class.java)
         return send(request, TRes::class.java).body
     }
 
@@ -95,7 +109,10 @@ class Client(
      * @param headers Optional headers to include in the request.
      * @return The response body deserialized into the specified class, or null if no body is present.
      */
-    inline fun <reified TRes : Any> delete(uri: URI, headers: Map<String, String> = emptyMap()): TRes? {
+    inline fun <reified TRes : Any> delete(
+        uri: URI,
+        headers: Map<String, String> = emptyMap()
+    ): TRes? {
         val request = buildRequest("DELETE", uri, headers, null, Unit::class.java)
         return send(request, TRes::class.java).body
     }
@@ -209,6 +226,10 @@ class Client(
 
         if (req is ByteArray) {
             return req
+        }
+
+        if (req is String) {
+            return req.toByteArray()
         }
 
         return ByteArrayOutputStream().use { bao ->

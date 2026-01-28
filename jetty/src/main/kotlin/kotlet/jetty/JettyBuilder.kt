@@ -4,6 +4,7 @@ import kotlet.ErrorsHandler
 import kotlet.Kotlet
 import kotlet.Routing
 import org.eclipse.jetty.compression.gzip.GzipCompression
+import org.eclipse.jetty.compression.server.CompressionConfig
 import org.eclipse.jetty.compression.server.CompressionHandler
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler
 import org.eclipse.jetty.ee10.servlet.ServletHolder
@@ -44,8 +45,21 @@ class JettyBuilder internal constructor() {
         return Server(threadPool).apply {
             handler = if (compressionEnabled) {
                 CompressionHandler(servletHandler).apply {
+                    val config = CompressionConfig.builder()
+                        .compressIncludeMethod("GET")
+                        .compressIncludeMethod("POST")
+                        .compressIncludeMethod("PUT")
+                        .compressIncludeMethod("DELETE")
+                        .compressIncludeMethod("OPTIONS")
+                        .build()
+
+
+                    putConfiguration("/*", config)
                     putCompression(GzipCompression())
                 }
+
+
+
             } else {
                 servletHandler
             }
