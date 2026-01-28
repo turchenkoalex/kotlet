@@ -77,6 +77,7 @@ subprojects {
 
 // The main packages
 val publishPackages = setOf(
+    "client",
     "core",
     "cors",
     "jetty",
