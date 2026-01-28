@@ -90,6 +90,20 @@ interface HttpCall {
     }
 }
 
+/**
+ * Internal implementation of [HttpCall].
+ *
+ * This is the concrete implementation used by the routing handler to wrap HTTP request/response
+ * pairs along with extracted route parameters and attributes. It provides a clean abstraction
+ * over the raw servlet API.
+ *
+ * @property httpMethod The HTTP method (GET, POST, etc.) of the request
+ * @property routePath The configured route path pattern that matched this request
+ * @property rawRequest The underlying Jakarta Servlet request
+ * @property rawResponse The underlying Jakarta Servlet response
+ * @property parameters Path parameters extracted from the route (e.g., {id} -> "123")
+ * @property attributes Route-specific attributes configured for this path and method
+ */
 internal data class HttpCallImpl(
     override val httpMethod: HttpMethod,
     override val routePath: String,
