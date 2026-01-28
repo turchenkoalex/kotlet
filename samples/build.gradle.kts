@@ -27,6 +27,9 @@ dependencies {
     implementation(project(":swagger-ui"))
     implementation(libs.swagger.core)
 
+    // Client
+    implementation(project(":client"))
+
     // Prometheus metrics
     implementation(project(":metrics"))
     implementation(libs.prometheus.metrics.core)

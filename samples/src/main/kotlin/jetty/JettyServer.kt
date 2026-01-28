@@ -10,7 +10,8 @@ import kotlin.concurrent.thread
 
 fun startJettyServer(
     routing: Routing,
-    onShutdown: () -> Unit
+    onStart: () -> Unit = {},
+    onShutdown: () -> Unit = {}
 ) {
     val server = jetty(routing) {
         port = 8080
@@ -20,6 +21,8 @@ fun startJettyServer(
     server.start()
 
     println("Open http://localhost:8080/ in your browser")
+
+    onStart()
 
     awaitShutdown(onShutdown)
 }
