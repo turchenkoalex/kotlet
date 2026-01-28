@@ -12,14 +12,14 @@ fun main() {
 
         // intercept all requests to the root path
         use(AuthInterceptor()) {
-            get("/", { call ->
+            get("/") { call ->
                 call.respondText("Authorized!")
-            })
+            }
         }
 
-        get("/public", { call ->
+        get("/public") { call ->
             call.respondText("Public")
-        })
+        }
     }
 
     startJettyServer(

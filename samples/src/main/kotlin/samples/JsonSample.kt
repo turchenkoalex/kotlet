@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 fun main() {
     val routing = Kotlet.routing {
-        get("/", { call ->
+        get("/") { call ->
             call.respondJson(
                 Example(
                     id = 1,
@@ -15,7 +15,7 @@ fun main() {
                     age = 30
                 )
             )
-        })
+        }
     }
 
     startJettyServer(
