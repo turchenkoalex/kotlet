@@ -13,10 +13,11 @@ private val OPEN_API_OPERATION_KEY = RouteAttribute.of<Operation>("openapi.opera
  *
  * @param block Configuration block for the OpenAPI operation.
  */
-infix fun RouteContext.describe(block: Operation.() -> Unit) {
+infix fun RouteContext.describe(block: Operation.() -> Unit): RouteContext {
     val operation = Operation()
     operation.block()
     writeOpenAPIOperation(operation)
+    return this
 }
 
 
