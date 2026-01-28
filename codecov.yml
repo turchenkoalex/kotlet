@@ -23,6 +23,10 @@ component_management:
         branches:
           - "!main"
   individual_components:
+    - component_id: client
+      name: client
+      paths:
+        - client/**
     - component_id: core
       name: core
       paths:
