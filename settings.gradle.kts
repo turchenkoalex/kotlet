@@ -6,6 +6,7 @@ rootProject.name = "kotlet"
 
 include(
     "benchmarks",
+    "client",
     "core",
     "cors",
     "jetty",
