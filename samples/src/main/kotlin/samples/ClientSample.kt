@@ -25,28 +25,31 @@ fun startClientTest() {
     println("Starting client test...")
 
     val client = Client.newClient(
-        options = ClientOptions(
-            allowGzipRequests = true,
-            allowGzipResponses = true
-        )
+        options = ClientOptions.DEFAULT.copy(allowGzipRequests = true)
     )
 
     var counter = 0L
     while (true) {
         val req = SimpleRequest(message = "Hello, Kotlet RPC!", iteration = counter++)
 
-        try {
-            val resp: SimpleResponse? = client.post(URI.create("http://localhost:8080/client_sample"), req)
-            println("Received response: $resp")
-        } catch (expected: Exception) {
-            println("Request failed: ${expected.message}")
+        run {
+            val resp: SimpleResponse? = client.post(URI.create("http://localhost:8080/post"), req)
+            println("Client: $resp")
         }
 
-        try {
-            val resp = client.get<SimpleResponse>(URI.create("http://localhost:8080/client_sample"))
-            println("Received response: $resp")
-        } catch (expected: Exception) {
-            println("Request failed: ${expected.message}")
+        run {
+            val resp: SimpleResponse? = client.put(URI.create("http://localhost:8080/put"), req)
+            println("Client: $resp")
+        }
+
+        run {
+            val resp = client.get<SimpleResponse>(URI.create("http://localhost:8080/get"))
+            println("Client: $resp")
+        }
+
+        run {
+            val resp = client.delete<SimpleResponse>(URI.create("http://localhost:8080/delete"))
+            println("Client: $resp")
         }
 
         Thread.sleep(1000)
@@ -55,16 +58,29 @@ fun startClientTest() {
 
 fun startServer(waitForServer: CountDownLatch) {
     val routing = Kotlet.routing {
-        get("/client_sample") { call ->
-            println("Received GET request")
-            val resp = SimpleResponse(reply = "Received GET")
+        get("/get") { call ->
+            println("Server GET request")
+            val resp = SimpleResponse(reply = "GET")
             call.respondJson(resp)
         }
 
-        post("/client_sample") { call ->
-            println("Received POST request")
+        post("/post") { call ->
+            println("Server POST request")
             val req = call.receiveBody<SimpleRequest>()
-            val resp = SimpleResponse(reply = "Received POST: $req")
+            val resp = SimpleResponse(reply = "POST: $req")
+            call.respondJson(resp)
+        }
+
+        put("/put") { call ->
+            println("Server PUT request")
+            val req = call.receiveBody<SimpleRequest>()
+            val resp = SimpleResponse(reply = "PUT: $req")
+            call.respondJson(resp)
+        }
+
+        delete("/delete") { call ->
+            println("Server DELETE request")
+            val resp = SimpleResponse(reply = "DELETE")
             call.respondJson(resp)
         }
     }
