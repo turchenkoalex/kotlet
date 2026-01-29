@@ -42,12 +42,12 @@ object KotlinxClientSerializer : ClientSerializer {
 
         if (clazz == ByteArray::class.java) {
             @Suppress("UNCHECKED_CAST")
-            return inputStream.readBytes() as T
+            return inputStream.readAllBytes() as T
         }
 
         if (clazz == String::class.java) {
             @Suppress("UNCHECKED_CAST")
-            return inputStream.bufferedReader().use { it.readText() } as T
+            return inputStream.bufferedReader().readText() as T
         }
 
         val serializer = findSerializer(clazz)
@@ -56,9 +56,7 @@ object KotlinxClientSerializer : ClientSerializer {
 
     private fun <T> findSerializer(clazz: Class<T>): KSerializer<T> {
         @Suppress("UNCHECKED_CAST")
-        return kotlinSerializersCache.computeIfAbsent(clazz) {
-            serializer(clazz)
-        } as KSerializer<T>
+        return kotlinSerializersCache.computeIfAbsent(clazz, ::serializer) as KSerializer<T>
     }
 
     // Custom JSON instance used for routing serialization/deserialization

@@ -39,10 +39,6 @@ class Client(
             headers[ACCEPT_ENCODING] = GZIP
         }
 
-        if (options.allowGzipRequests) {
-            headers[CONTENT_ENCODING] = GZIP
-        }
-
         if (options.additionalHeaders.isNotEmpty()) {
             headers.putAll(options.additionalHeaders)
         }
@@ -129,15 +125,25 @@ class Client(
     fun <TRes : Any> send(request: Request, clazz: Class<TRes>): Response<TRes> {
         val httpRequest = request.toHttpRequest()
         val httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofInputStream())
+        val statusCode = httpResponse.statusCode()
 
-        val bodyIsRequired = httpResponse.statusCode() in 200..299 && clazz != Unit::class.java
+        val bodyIsRequired = statusCode in 200..299 && statusCode != 204 && clazz != Unit::class.java
         val responseBody = if (bodyIsRequired) {
             val inputStream = if (httpResponse.isGzipped()) {
                 GZIPInputStream(httpResponse.body())
             } else {
                 httpResponse.body()
             }
-            serializer.deserializeFromStream(inputStream, clazz)
+
+            try {
+                inputStream.use { io -> serializer.deserializeFromStream(io, clazz) }
+            } catch (expected: RuntimeException) {
+                throw DeserializationException(
+                    statusCode = statusCode,
+                    message = "Failed to deserialize response body to ${clazz.name}",
+                    cause = expected
+                )
+            }
         } else {
             null
         }
@@ -191,13 +197,8 @@ class Client(
         req: TReq?,
         clazz: Class<TReq>
     ): Request {
-        val requestHeaders = if (headers.isNotEmpty()) {
-            defaultHeaders + headers
-        } else {
-            defaultHeaders
-        }
-
         if (req == null) {
+            val requestHeaders = buildHeaders(contentExists = false, headers)
             return Request(
                 method = method,
                 uri = uri,
@@ -206,6 +207,8 @@ class Client(
         }
 
         val body = serializeBodyToByteArray(req, clazz)
+        val requestHeaders = buildHeaders(contentExists = body != null, headers)
+
         return Request(
             method = method,
             uri = uri,
@@ -214,13 +217,37 @@ class Client(
         )
     }
 
+    private fun buildHeaders(contentExists: Boolean, headers: Map<String, String>): Map<String, String> {
+        return if (contentExists) {
+            if (options.allowGzipRequests) {
+                if (headers.isNotEmpty()) {
+                    defaultHeaders + headers + (CONTENT_ENCODING to GZIP)
+                } else {
+                    defaultHeaders + (CONTENT_ENCODING to GZIP)
+                }
+            } else {
+                if (headers.isNotEmpty()) {
+                    defaultHeaders + headers
+                } else {
+                    defaultHeaders
+                }
+            }
+        } else {
+            if (headers.isNotEmpty()) {
+                defaultHeaders + headers
+            } else {
+                defaultHeaders
+            }
+        }
+    }
+
     private fun <TReq : Any> serializeBodyToByteArray(req: TReq, clazz: Class<TReq>): ByteArray? {
         if (options.allowGzipRequests) {
-            return ByteArrayOutputStream().use { bao ->
-                GZIPOutputStream(bao).use { gzo ->
-                    serializer.serializeToStream(req, clazz, gzo)
+            return ByteArrayOutputStream().use { out ->
+                GZIPOutputStream(out).use { gzip ->
+                    serializer.serializeToStream(req, clazz, gzip)
                 }
-                bao.toByteArray()
+                out.toByteArray()
             }
         }
 
@@ -232,9 +259,9 @@ class Client(
             return req.toByteArray()
         }
 
-        return ByteArrayOutputStream().use { bao ->
-            serializer.serializeToStream(req, clazz, bao)
-            bao.toByteArray()
+        return ByteArrayOutputStream().use { out ->
+            serializer.serializeToStream(req, clazz, out)
+            out.toByteArray()
         }
     }
 }
