@@ -10,7 +10,7 @@ interface ClientSerializer {
     /**
      * The content type used by this serializer (e.g., "application/json").
      */
-    val acceptContentType: String
+    val contentType: String
 
     /**
      * Serializes the given object and writes it to the provided output stream.

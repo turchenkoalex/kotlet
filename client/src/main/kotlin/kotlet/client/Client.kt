@@ -28,7 +28,7 @@ class Client(
 
     init {
         val headers = mutableMapOf(
-            "Accept" to serializer.acceptContentType
+            "Accept" to serializer.contentType
         )
 
         if (options.userAgent.isNotEmpty()) {
@@ -218,27 +218,24 @@ class Client(
     }
 
     private fun buildHeaders(contentExists: Boolean, headers: Map<String, String>): Map<String, String> {
-        return if (contentExists) {
-            if (options.allowGzipRequests) {
-                if (headers.isNotEmpty()) {
-                    defaultHeaders + headers + (CONTENT_ENCODING to GZIP)
-                } else {
-                    defaultHeaders + (CONTENT_ENCODING to GZIP)
-                }
-            } else {
-                if (headers.isNotEmpty()) {
-                    defaultHeaders + headers
-                } else {
-                    defaultHeaders
-                }
-            }
-        } else {
-            if (headers.isNotEmpty()) {
-                defaultHeaders + headers
-            } else {
-                defaultHeaders
-            }
+        val requestHeaders = requestAdditionalHeaders(contentExists, headers)
+        if (requestHeaders.isEmpty()) {
+            return defaultHeaders
         }
+        return defaultHeaders + requestHeaders
+    }
+
+    private fun requestAdditionalHeaders(contentExists: Boolean, headers: Map<String, String>): Map<String, String> {
+        if (!contentExists) {
+            return headers
+        }
+
+        val requestHeaders = headers.toMutableMap()
+        requestHeaders[CONTENT_TYPE] = serializer.contentType
+        if (options.allowGzipRequests) {
+            requestHeaders[CONTENT_ENCODING] = GZIP
+        }
+        return requestHeaders
     }
 
     private fun <TReq : Any> serializeBodyToByteArray(req: TReq, clazz: Class<TReq>): ByteArray? {
@@ -269,6 +266,7 @@ class Client(
 private const val GZIP = "gzip"
 private const val ACCEPT_ENCODING = "Accept-Encoding"
 private const val CONTENT_ENCODING = "Content-Encoding"
+private const val CONTENT_TYPE = "Content-Type"
 
 private fun HttpResponse<*>.isGzipped(): Boolean {
     return this.contentEncoding() == GZIP
