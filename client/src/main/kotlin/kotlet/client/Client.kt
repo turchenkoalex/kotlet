@@ -230,11 +230,12 @@ class Client(
             return headers
         }
 
-        val requestHeaders = headers.toMutableMap()
+        val requestHeaders = mutableMapOf<String, String>()
         requestHeaders[CONTENT_TYPE] = serializer.contentType
         if (options.allowGzipRequests) {
             requestHeaders[CONTENT_ENCODING] = GZIP
         }
+        requestHeaders.putAll(headers)
         return requestHeaders
     }
 
