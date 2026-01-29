@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap
 object KotlinxClientSerializer : ClientSerializer {
     private val kotlinSerializersCache = ConcurrentHashMap<Class<*>, KSerializer<*>>()
 
-    override val acceptContentType: String = "application/json"
+    override val contentType: String = "application/json"
 
     override fun <T> serializeToStream(obj: T, clazz: Class<T>, outputStream: OutputStream) {
         if (obj == null) {
