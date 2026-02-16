@@ -1,5 +1,5 @@
 [versions]
-auth0-jwt = "4.5.0"
+auth0-jwt = "4.5.1"
 detekt = "1.23.8"
 jakarta = "6.1.0"
 jetty = "12.1.6"
