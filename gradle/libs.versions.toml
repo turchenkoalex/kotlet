@@ -13,7 +13,7 @@ opentelemetry = "1.60.1"
 opentelemetry-instrumentation-api = "2.26.0"
 opentelemetry-semconv = "1.40.0"
 prometheus = "1.5.0"
-swagger = "2.2.44"
+swagger = "2.2.45"
 
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
