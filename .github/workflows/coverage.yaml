@@ -42,7 +42,7 @@ jobs:
       - name: Build and Run Tests
         run: ./gradlew test koverXmlReport --parallel
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           os: linux-arm64
