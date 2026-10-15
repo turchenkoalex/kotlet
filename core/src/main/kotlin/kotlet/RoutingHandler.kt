@@ -46,6 +46,9 @@ internal class RoutingHandlerImpl(
             route.handler(httpCall)
         } catch (_: MethodNotFoundException) {
             errorsHandler.methodNotFound(request, response)
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+            throw e
         } catch (expected: Exception) {
             errorsHandler.internalServerError(request, response, expected)
         }

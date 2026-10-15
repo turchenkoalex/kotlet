@@ -135,7 +135,7 @@ Kotlet provides a set of extensions that can be used to enhance the functionalit
 are designed to be lightweight and easy to use. You can add them to your project as needed to extend.
 
 The following extensions are available:
-- [client](client/README.md)
+- [Client](client/README.md)
 - [CORS](cors/README.md)
 - [Jetty](jetty/README.md)
 - [JSON](json/README.md)
