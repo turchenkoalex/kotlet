@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
 env:
-  JDK_VERSION: 21
+  JDK_VERSION: 25
   GRADLE_OPTS: -Dorg.gradle.daemon=false
 
 concurrency:

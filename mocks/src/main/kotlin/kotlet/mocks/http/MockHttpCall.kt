@@ -70,7 +70,7 @@ class MockHttpCall(
                 responseHeaders[this.firstArg()]
             }
             every { getHeaders(any()) } answers {
-                val header = responseHeaders[this.firstArg()] ?: ""
+                val header = responseHeaders[this.firstArg()].orEmpty()
                 header.split(",").map(String::trim)
             }
             every { sendError(any()) } answers {
@@ -117,7 +117,7 @@ private fun createHttpRequestMock(
             headers[this.firstArg()]
         }
         every { getHeaders(any()) } answers {
-            val header = headers[this.firstArg()] ?: ""
+            val header = headers[this.firstArg()].orEmpty()
             Collections.enumeration(header.split(",").map(String::trim))
         }
         every { getAttribute(any()) } answers {

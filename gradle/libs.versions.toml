@@ -1,6 +1,6 @@
 [versions]
 auth0-jwt = "4.5.2"
-detekt = "1.23.8"
+detekt = "2.0.0-alpha.6"
 jakarta = "6.1.0"
 jetty = "12.1.14"
 kotlin = "2.4.21"
@@ -16,7 +16,7 @@ prometheus = "1.10.0"
 swagger = "2.2.55"
 
 [plugins]
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
 jmh = { id = "me.champeau.jmh", version = "0.7.3" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

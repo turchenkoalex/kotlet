@@ -48,6 +48,7 @@ open class InterceptorBenchmark {
         return interceptedHandler(EMPTY_CALL)
     }
 
+    @Suppress("UnusedParameter")
     private fun handler(call: HttpCall) {
         // do nothing
     }

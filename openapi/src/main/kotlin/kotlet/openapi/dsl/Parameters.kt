@@ -63,7 +63,7 @@ inline fun <reified T : Any> Operation.pathParameter(
  */
 fun <T : Any> Operation.pathParameters(clazz: KClass<T>) {
     clazz.memberProperties.forEach { property ->
-        val parameterDescription = property.getOpenApiDescription() ?: ""
+        val parameterDescription = property.getOpenApiDescription().orEmpty()
         pathParameter(property.name, parameterDescription, property.returnType.classifier as KClass<*>)
     }
 }

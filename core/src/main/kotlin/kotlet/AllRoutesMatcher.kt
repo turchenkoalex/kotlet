@@ -38,7 +38,7 @@ internal class AllRoutesMatcher(routes: List<Route>) : RoutesMatcher {
                 RouteHelpers.checkSelectorsList(route.path, routeSelectors)
             } catch (expected: IllegalArgumentException) {
                 log.log(Level.WARNING, "Invalid selectors for route ${route.path}: ${expected.message}", expected)
-                throw RoutingConfigurationException(expected.message ?: "")
+                throw RoutingConfigurationException(expected.message.orEmpty())
             }
             OneRouteMatcher(route, routeSelectors)
         }
