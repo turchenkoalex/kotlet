@@ -150,6 +150,7 @@ internal object RouteHelpers {
         val pathSegments = parsePathToSegments(request.requestURI)
 
         // almost all match() calls will fail, it is better not to create map in advance
+        @Suppress("DoubleMutabilityForCollection")
         var parameters: MutableMap<String, String>? = null
         var segmentIndex = 0
 
@@ -197,9 +198,9 @@ internal object RouteHelpers {
         }
     }
 
-    sealed class RouteMatchResult {
-        data class Match(val parameters: Map<String, String>) : RouteMatchResult()
-        data object Failure : RouteMatchResult()
+    sealed interface RouteMatchResult {
+        data class Match(val parameters: Map<String, String>) : RouteMatchResult
+        data object Failure : RouteMatchResult
 
         companion object {
             val MATCH_WITH_EMPTY_PARAMETERS = Match(emptyMap())

@@ -15,13 +15,13 @@ internal interface Selector {
  * EvaluationResult is a sealed class that represents the result of evaluating a request against a path segment.
  * It can be either a success or a failure.
  */
-internal sealed class EvaluationResult {
+internal sealed interface EvaluationResult {
 
     data class Success(
         val segmentIncrement: Int, val parameters: Map<String, String> = emptyMap()
-    ) : EvaluationResult()
+    ) : EvaluationResult
 
-    data object Failure : EvaluationResult()
+    data object Failure : EvaluationResult
 
     companion object {
         // Useful constants to avoid excessive allocation

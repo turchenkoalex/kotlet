@@ -19,6 +19,7 @@ import java.security.Principal
 import java.util.Enumeration
 import java.util.Locale
 
+@Suppress("TooManyFunctions")
 class DummyRequest(val path: String) : HttpServletRequest {
     override fun getAuthType(): String? {
         TODO("Not yet implemented")
