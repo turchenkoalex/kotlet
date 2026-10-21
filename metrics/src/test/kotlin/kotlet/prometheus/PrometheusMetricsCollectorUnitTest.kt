@@ -107,7 +107,7 @@ class PrometheusMetricsCollectorUnitTest {
                 return false
             }
 
-            return arg.prometheusName == name
+            return arg.metricFamilyDescriptor?.prometheusName == name
         }
     }
 }
