@@ -41,7 +41,7 @@ allprojects {
 }
 
 // register task before using in subprojects
-val reportMerge by tasks.registering(ReportMergeTask::class) {
+val reportMerge = tasks.register<ReportMergeTask>("reportMerge") {
     output.set(rootProject.layout.buildDirectory.file("reports/detekt/merge.xml"))
 }
 

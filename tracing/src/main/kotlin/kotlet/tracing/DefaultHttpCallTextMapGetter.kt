@@ -8,6 +8,8 @@ import kotlet.HttpCall
  * Just extracts the headers from the HTTP call without any modification.
  */
 object DefaultHttpCallTextMapGetter : TextMapGetter<HttpCall> {
+    // Deprecated upstream, but some propagators still iterate over keys, so keep providing them
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun keys(call: HttpCall): MutableIterable<String> {
         return call.rawRequest.headerNames
             .toList()
