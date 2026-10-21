@@ -34,7 +34,8 @@ internal class JWTAuthenticationInterceptor(
             val decodedToken = verifier.verify(token)
             call.rawRequest.setAttribute(IDENTITY_PARAMETER_NAME, identityBuilder(decodedToken))
         } catch (e: JWTVerificationException) {
-            log.log(Level.WARNING, "JWT verification failed: ${e.message}", e)
+            // client-side error (expired, malformed, wrong signature): keep it quiet to avoid log flooding
+            log.log(Level.FINE, "JWT verification failed: ${e.message}", e)
         }
 
         return call

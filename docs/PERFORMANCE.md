@@ -1,690 +1,177 @@
-# Performance Tuning Guide
+# Performance
 
-This guide covers performance optimization techniques for Kotlet applications.
+This guide explains what affects performance in Kotlet applications and how to tune it.
 
 ## Table of Contents
 
-1. [Benchmarking](#benchmarking)
-2. [Servlet Container Tuning](#servlet-container-tuning)
-3. [Route Configuration](#route-configuration)
-4. [Interceptor Performance](#interceptor-performance)
-5. [Request Processing](#request-processing)
-6. [Response Optimization](#response-optimization)
-7. [Monitoring](#monitoring)
-8. [Common Issues](#common-issues)
+1. [How Routing Works](#how-routing-works)
+2. [Interceptors](#interceptors)
+3. [Servlet Container](#servlet-container)
+4. [Request and Response Bodies](#request-and-response-bodies)
+5. [Monitoring](#monitoring)
+6. [Benchmarking](#benchmarking)
+7. [Checklist](#checklist)
 
-## Benchmarking
+## How Routing Works
 
-### Using JMH
+All work that can be done once is done when the servlet (or handler) is created:
 
-Kotlet includes JMH benchmarks in the `benchmarks` module:
+* Routes are split into segment selectors, validated, and sorted: routes with more segments and more specific segments
+  go first. A static segment is more specific than a parameter, a parameter more than an optional parameter, an optional
+  parameter more than a wildcard, and routes ending with a tail `{...}` go last.
+* Interceptor chains are built for every route and method.
 
-```bash
-# Run all benchmarks
-./gradlew :benchmarks:jmh
+On each request Kotlet goes through the sorted routes and takes the first one that matches the path, then picks the
+handler by the HTTP method.
 
-# Run specific benchmark
-./gradlew :benchmarks:jmh -Pjmh.includes=RoutingBenchmark
-```
+What follows from this:
 
-### Creating Custom Benchmarks
+* **Declaration order doesn't matter.** `/users/me` always wins over `/users/{id}` for the path `/users/me`, wherever
+  it is declared.
+* **Methods of one path share one route.** Declaring `get("/users/{id}")` and `delete("/users/{id}")` in different
+  blocks is the same as declaring them together, there is no extra cost.
+* **The matching cost grows linearly with the number of routes.** For typical services (tens to hundreds of routes)
+  it is negligible compared to I/O. If you have thousands of routes, measure it with the `RoutingBenchmark`
+  (see [Benchmarking](#benchmarking)).
+* **Configuration errors fail fast.** Duplicate path and method pairs and invalid paths throw
+  `RoutingConfigurationException` on startup, not on the request.
+
+See [ROUTES.md](ROUTES.md#route-matching-order) for the path syntax and matching order.
+
+## Interceptors
+
+Every interceptor adds a `beforeCall` / `aroundCall` / `afterCall` round to the request, so its cost is the cost of the
+code inside it.
+
+* **Scope interceptors to where they are needed.** `install` applies an interceptor to every route of the routing,
+  `use { }` and `configure { withInterceptor(...) }` apply it only to specific routes:
+
+  ```kotlin
+  val routing = Kotlet.routing {
+      installMetrics(metricsCollector) // needed everywhere
+
+      get("/health") { call -> call.respondText("OK") }
+
+      useJWTAuthentication(verifier, ::buildIdentity) { // only for the API
+          get("/api/profile") { call -> /* ... */ }
+      }
+  }
+  ```
+
+* **Order global interceptors deliberately.** Use `order = InstallOrder.FIRST` for interceptors that can stop a request
+  early (rate limiting, cheap header checks), so expensive ones don't run for rejected requests:
+
+  ```kotlin
+  install(RateLimitInterceptor, order = InstallOrder.FIRST)
+  installJWTAuthentication(verifier) // InstallOrder.LAST by default
+  ```
+
+* **Don't do per-request work that can be done once.** Load configuration, compile regexes, and create clients in the
+  interceptor constructor, not in `beforeCall`.
+
+See [INTERCEPTORS.md](INTERCEPTORS.md) for details.
+
+## Servlet Container
+
+Kotlet adds very little on top of the servlet container, so the container configuration usually matters more.
+
+### kotlet-jetty Defaults
+
+The [kotlet-jetty](../jetty/README.md) extension creates a Jetty server with:
+
+| Setting       | Default                                                            | Property             |
+|---------------|--------------------------------------------------------------------|----------------------|
+| Port          | `80`                                                               | `port`               |
+| Thread pool   | `VirtualThreadPool` (a virtual thread per request)                 | `threadPool`         |
+| Compression   | gzip for `GET`, `POST`, `PUT`, `DELETE` and `OPTIONS` responses    | `compressionEnabled` |
+| Protocols     | HTTP/1.1 and HTTP/2 cleartext (h2c) on the same port               | -                    |
 
 ```kotlin
-@State(Scope.Benchmark)
-@BenchmarkMode(Mode.Throughput)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-open class CustomBenchmark {
-
-    private lateinit var routing: Routing
-
-    @Setup
-    fun setup() {
-        routing = Kotlet.routing {
-            route("/api/users/{id}") {
-                get {
-                    respondText("User ${parameters["id"]}")
-                }
-            }
-        }
-    }
-
-    @Benchmark
-    fun benchmarkRouteMatching(blackhole: Blackhole) {
-        val request = MockHttpServletRequest(
-            method = "GET",
-            requestURI = "/api/users/123"
-        )
-        val response = MockHttpServletResponse()
-
-        routing.service(request, response)
-        blackhole.consume(response)
-    }
-}
-```
-
-### Load Testing
-
-Use tools like Apache Bench, wrk, or Gatling:
-
-```bash
-# Apache Bench
-ab -n 10000 -c 100 http://localhost:8080/api/users/123
-
-# wrk
-wrk -t 4 -c 100 -d 30s http://localhost:8080/api/users/123
-
-# Gatling
-mvn gatling:test -Dgatling.simulationClass=com.example.UserSimulation
-```
-
-## Servlet Container Tuning
-
-### Jetty Configuration
-
-```kotlin
-val server = Server()
-
-// Thread pool configuration
-val threadPool = QueuedThreadPool().apply {
-    minThreads = 10
-    maxThreads = 200
-    idleTimeout = 60000
-}
-server.threadPool = threadPool
-
-// Connector configuration
-val connector = ServerConnector(server).apply {
+val server = jetty(routing) {
     port = 8080
-    acceptQueueSize = 100
-    idleTimeout = 30000
-    soLingerTime = -1
+    // a platform thread pool instead of virtual threads, if you need it
+    threadPool = QueuedThreadPool(200)
 }
-server.addConnector(connector)
-
-// Handler configuration
-val handler = ServletContextHandler().apply {
-    contextPath = "/"
-    addServlet(ServletHolder(RoutingServlet(routing)), "/*")
-}
-server.handler = handler
-
 server.start()
 ```
 
-### Connection Pool Sizing
-
-Calculate thread pool size based on the formula:
-```
-threads = number_of_cores * (1 + wait_time / service_time)
-```
-
-For I/O-bound applications:
-```kotlin
-val cores = Runtime.getRuntime().availableProcessors()
-val threadPool = QueuedThreadPool().apply {
-    minThreads = cores
-    maxThreads = cores * 4  // For I/O-bound with 3:1 wait:service ratio
-}
-```
-
-For CPU-bound applications:
-```kotlin
-val cores = Runtime.getRuntime().availableProcessors()
-val threadPool = QueuedThreadPool().apply {
-    minThreads = cores
-    maxThreads = cores + 1  // CPU-bound: cores + 1
-}
-```
-
-### HTTP/2 Support
-
-Enable HTTP/2 for better performance:
-
-```kotlin
-val http2 = HTTP2ServerConnectionFactory(HttpConfiguration())
-val connector = ServerConnector(server, http2).apply {
-    port = 8080
-}
-```
-
-## Route Configuration
-
-### Route Ordering
-
-Routes are matched in order. Put specific routes before generic ones:
-
-```kotlin
-routing {
-    // Good: Specific routes first
-    route("/api/users/me") {
-        get { /* ... */ }
-    }
-
-    route("/api/users/{id}") {
-        get { /* ... */ }
-    }
-
-    // Bad: Generic route first (would match /api/users/me)
-    route("/api/users/{id}") {
-        get { /* ... */ }
-    }
-
-    route("/api/users/me") {
-        get { /* ... */ }  // Never reached!
-    }
-}
-```
-
-### Route Complexity
-
-Simpler routes match faster. Route matching performance (fastest to slowest):
-
-1. Static segments: `/api/users` ⚡
-2. Parameters: `/api/users/{id}` ⚡
-3. Optional parameters: `/api/users/{id?}` 🔸
-4. Wildcards: `/api/*/users` 🔸
-5. Tail selectors: `/files/{path...}` 🐌
-
-### Minimize Route Count
-
-Consolidate routes when possible:
-
-```kotlin
-// Good: Single route with method branching
-route("/api/users/{id}") {
-    get {
-        // Fetch user
-    }
-    put {
-        // Update user
-    }
-    delete {
-        // Delete user
-    }
-}
-
-// Less optimal: Multiple route definitions (still works, but more overhead)
-route("/api/users/{id}") { get { /* ... */ } }
-route("/api/users/{id}") { put { /* ... */ } }
-route("/api/users/{id}") { delete { /* ... */ } }
-```
-
-## Interceptor Performance
-
-### Interceptor Order Matters
-
-Lightweight interceptors should run first:
-
-```kotlin
-routing {
-    // Fast: Simple header check
-    install(SecurityHeadersInterceptor(), order = InstallOrder.FIRST)
-
-    // Medium: JWT parsing
-    install(jwtAuthentication(...), order = InstallOrder.NORMAL)
-
-    // Slow: Database lookup
-    install(UserProfileInterceptor(), order = InstallOrder.LAST)
-}
-```
-
-### Avoid Heavy Operations
-
-Don't perform expensive operations in interceptors unless necessary:
-
-```kotlin
-// Bad: Database call in interceptor for every request
-class HeavyInterceptor : Interceptor {
-    override fun beforeCall(call: HttpCall): HttpCall {
-        val settings = database.loadSettings() // Expensive!
-        call.rawRequest.setAttribute("settings", settings)
-        return call
-    }
-}
-
-// Good: Cache or lazy load
-class OptimizedInterceptor : Interceptor {
-    private val settings by lazy { database.loadSettings() }
-
-    override fun beforeCall(call: HttpCall): HttpCall {
-        call.rawRequest.setAttribute("settings", settings)
-        return call
-    }
-}
-```
-
-### Conditional Interceptors
-
-Skip interceptors when not needed:
-
-```kotlin
-class ConditionalAuthInterceptor(
-    private val verifier: JWTVerifier
-) : Interceptor {
-    override fun beforeCall(call: HttpCall): HttpCall {
-        // Skip auth for public endpoints
-        if (call.routePath.startsWith("/public/")) {
-            return call
-        }
-
-        // Only verify JWT if Authorization header present
-        val authHeader = call.rawRequest.getHeader("Authorization")
-            ?: return call
-
-        // ... verify JWT
-        return call
-    }
-}
-```
-
-## Request Processing
-
-### Lazy Parameter Extraction
-
-Extract parameters only when needed:
-
-```kotlin
-route("/api/users/{id}") {
-    get {
-        // Bad: Extract even if not needed
-        val id = parameters["id"]?.toLong()
-        val format = rawRequest.getParameter("format")
-        val fields = rawRequest.getParameter("fields")
-
-        if (checkCache()) {
-            respondCached() // Didn't need those params!
-            return@get
-        }
-
-        // ... use params
-    }
-}
-
-// Good: Extract when needed
-route("/api/users/{id}") {
-    get {
-        if (checkCache()) {
-            respondCached()
-            return@get
-        }
-
-        // Only extract when cache miss
-        val id = parameters["id"]?.toLong()
-        // ... use params
-    }
-}
-```
-
-### Stream Large Responses
-
-Use streaming for large responses instead of buffering:
-
-```kotlin
-route("/api/download/{file}") {
-    get {
-        val file = File("/data/${parameters["file"]}")
-
-        rawResponse.contentType = "application/octet-stream"
-        rawResponse.setContentLengthLong(file.length())
-
-        // Stream directly (no buffering)
-        file.inputStream().use { input ->
-            rawResponse.outputStream.use { output ->
-                input.copyTo(output, bufferSize = 8192)
-            }
-        }
-    }
-}
-```
-
-### Avoid Unnecessary String Operations
-
-```kotlin
-// Bad: Multiple string operations
-route("/api/data") {
-    get {
-        val json = """
-            {
-                "status": "ok",
-                "data": [${items.joinToString { toJson(it) }}]
-            }
-        """.trimIndent()
-        respondText(json)
-    }
-}
-
-// Good: Use proper JSON serialization
-route("/api/data") {
-    get {
-        respondJson(mapOf(
-            "status" to "ok",
-            "data" to items
-        ))
-    }
-}
-```
-
-## Response Optimization
-
-### Enable Compression
-
-Configure compression in your servlet container:
-
-```kotlin
-// Jetty example
-val gzipHandler = GzipHandler().apply {
-    includedMimeTypes = setOf(
-        "text/html",
-        "text/css",
-        "text/javascript",
-        "application/json",
-        "application/javascript"
-    )
-    minGzipSize = 1024 // Only compress responses > 1KB
-}
-gzipHandler.handler = servletHandler
-server.handler = gzipHandler
-```
-
-### Set Appropriate Cache Headers
-
-```kotlin
-route("/api/static/{resource}") {
-    get {
-        rawResponse.setHeader("Cache-Control", "public, max-age=3600")
-        rawResponse.setHeader("ETag", generateETag(resource))
-
-        // Check If-None-Match
-        val ifNoneMatch = rawRequest.getHeader("If-None-Match")
-        if (ifNoneMatch == etag) {
-            status = 304 // Not Modified
-            return@get
-        }
-
-        // Return resource
-        respondBytes(loadResource(resource))
-    }
-}
-```
-
-### Response Size
-
-Minimize response payload:
-
-```kotlin
-// Bad: Return entire object
-route("/api/users/{id}") {
-    get {
-        val user = userRepository.findById(id)
-        respondJson(user) // Includes internal fields
-    }
-}
-
-// Good: Return only needed fields
-route("/api/users/{id}") {
-    get {
-        val user = userRepository.findById(id)
-        respondJson(UserDTO(
-            id = user.id,
-            name = user.name,
-            email = user.email
-            // Exclude internal fields
-        ))
-    }
-}
-
-// Better: Support field selection
-route("/api/users/{id}") {
-    get {
-        val user = userRepository.findById(id)
-        val fields = rawRequest.getParameter("fields")?.split(",") ?: defaultFields
-
-        respondJson(user.toDTO(fields))
-    }
-}
-```
+With virtual threads, blocking calls in handlers (JDBC, HTTP clients, file I/O) are fine: a blocked virtual thread
+doesn't hold a platform thread. Limit concurrency to downstream resources (a database connection pool) instead of
+limiting request threads.
+
+> [!WARNING]
+> Don't hand the response to another thread (`executor.submit { call.respondJson(...) }`) and return from the handler:
+> the container completes the response as soon as the handler returns. Do blocking work in the handler itself.
+
+### Other Containers
+
+If you use `Kotlet.servlet(...)` with your own container, configure the thread pool, compression and HTTP/2 there.
+Compression usually helps JSON APIs a lot, and should be enabled either in the container or in a reverse proxy.
+
+## Request and Response Bodies
+
+* **Read bodies with a limit.** `receiveText`, `receiveBytes` and `receiveLimitedStream` stop reading after `maxSize`
+  bytes and reject requests with a larger `Content-Length` without reading them. See [SECURITY.md](SECURITY.md).
+* **Stream large bodies.** `receiveLimitedStream` gives you an `InputStream` to process the upload without buffering it.
+  `respondBytes(inputStream)` copies the stream to the response without loading it into memory:
+
+  ```kotlin
+  get("/files/{name}") { call ->
+      val file = storage.resolve(call.parameters["name"].orEmpty())
+      call.rawResponse.setContentLengthLong(Files.size(file))
+      Files.newInputStream(file).use { input ->
+          call.respondBytes(input)
+      }
+  }
+  ```
+
+  Remember to close the streams you open, `respondBytes` doesn't close the input stream.
+* **Use the JSON extension instead of building JSON by hand.** `respondJson` serializes `@Serializable` classes
+  directly to the response stream with kotlinx.serialization and caches the serializer for every class.
+* **Use HTTP caching for rarely changing resources** (`Cache-Control`, `ETag` with `If-None-Match` and `304 Not Modified`).
 
 ## Monitoring
 
-### OpenTelemetry Integration
+Measure before tuning. Kotlet has extensions for both metrics and traces:
 
 ```kotlin
-dependencies {
-    implementation("kotlet:tracing")
-}
+val routing = Kotlet.routing {
+    // kotlet_http_requests_total and kotlet_http_requests_duration_seconds
+    installMetrics(PrometheusMetricsCollector(PrometheusRegistry.defaultRegistry))
+    installMetricsScrape() // GET /metrics
 
-routing {
-    install(
-        tracing(
-            serviceName = "my-service",
-            endpoint = "http://localhost:4318/v1/traces"
-        )
-    )
+    // a server span for every request
+    installTracing(GlobalOpenTelemetry.get())
 }
 ```
 
-### Prometheus Metrics
+See [Metrics](../metrics/README.md) and [Tracing](../tracing/README.md) for the required dependencies.
 
-```kotlin
-dependencies {
-    implementation("kotlet:metrics")
-}
+## Benchmarking
 
-routing {
-    install(metrics())
+The `benchmarks` module contains JMH benchmarks for the routing (`RoutingBenchmark`, 1000 routes) and the interceptor
+chain (`InterceptorBenchmark`):
 
-    // Expose metrics endpoint
-    route("/metrics") {
-        get {
-            rawResponse.contentType = "text/plain; version=0.0.4"
-            respondText(metricsRegistry.scrape())
-        }
-    }
-}
+```bash
+./gradlew :benchmarks:jmh
 ```
 
-### Custom Metrics
+Results are written to `benchmarks/build/reports/jmh/results.json`. Numbers depend on hardware and JVM, so compare
+results on the same machine before and after a change.
 
-```kotlin
-class MetricsInterceptor(
-    private val registry: MetricsRegistry
-) : Interceptor {
-    override fun aroundCall(call: HttpCall, next: Handler) {
-        val start = System.nanoTime()
+For end-to-end numbers, load test the running application with a tool like [wrk](https://github.com/wg/wrk),
+[k6](https://k6.io/) or [Gatling](https://gatling.io/):
 
-        try {
-            next(call)
-        } finally {
-            val duration = System.nanoTime() - start
-            registry.recordRequestDuration(
-                path = call.routePath,
-                method = call.httpMethod.name,
-                status = call.status,
-                durationNanos = duration
-            )
-        }
-    }
-}
+```bash
+wrk -t4 -c100 -d30s http://localhost:8080/api/users/123
 ```
 
-### Health Checks
+## Checklist
 
-```kotlin
-route("/health") {
-    get {
-        val checks = mapOf(
-            "database" to checkDatabase(),
-            "redis" to checkRedis(),
-            "disk" to checkDiskSpace()
-        )
-
-        if (checks.values.all { it }) {
-            status = 200
-            respondJson(mapOf("status" to "UP", "checks" to checks))
-        } else {
-            status = 503
-            respondJson(mapOf("status" to "DOWN", "checks" to checks))
-        }
-    }
-}
-
-route("/health/ready") {
-    get {
-        // Kubernetes readiness probe
-        if (isReady()) {
-            status = 200
-            respondText("OK")
-        } else {
-            status = 503
-            respondText("Not Ready")
-        }
-    }
-}
-
-route("/health/live") {
-    get {
-        // Kubernetes liveness probe
-        status = 200
-        respondText("OK")
-    }
-}
-```
-
-## Common Issues
-
-### Issue: High Latency on First Request
-
-**Cause:** JVM warmup and class loading
-
-**Solution:**
-- Use GraalVM native image for instant startup
-- Implement warmup requests in tests
-- Use tiered compilation: `-XX:TieredStopAtLevel=1` for faster startup
-
-```kotlin
-// Warmup utility
-fun warmupRouting(routing: Routing) {
-    val warmupPaths = listOf(
-        "/api/users/1",
-        "/api/data",
-        "/health"
-    )
-
-    warmupPaths.forEach { path ->
-        repeat(100) {
-            val request = MockHttpServletRequest(method = "GET", requestURI = path)
-            val response = MockHttpServletResponse()
-            routing.service(request, response)
-        }
-    }
-}
-```
-
-### Issue: Memory Leaks
-
-**Cause:** Unclosed resources, growing caches
-
-**Solution:**
-- Always use `.use {}` for resources
-- Implement bounded caches
-- Monitor heap usage
-
-```kotlin
-// Bad: Resource leak
-route("/api/file") {
-    get {
-        val stream = FileInputStream(file)
-        respondBytes(stream) // Stream not closed!
-    }
-}
-
-// Good: Automatic cleanup
-route("/api/file") {
-    get {
-        FileInputStream(file).use { stream ->
-            respondBytes(stream)
-        }
-    }
-}
-```
-
-### Issue: Thread Pool Exhaustion
-
-**Cause:** Blocking I/O on all threads
-
-**Solution:**
-- Use async I/O or separate thread pool for blocking operations
-- Increase thread pool size
-- Use virtual threads (Java 21+)
-
-```kotlin
-// Java 21 Virtual Threads
-val executor = Executors.newVirtualThreadPerTaskExecutor()
-
-route("/api/blocking") {
-    get {
-        executor.submit {
-            val result = blockingDatabaseCall()
-            respondJson(result)
-        }
-    }
-}
-```
-
-### Issue: Slow JSON Serialization
-
-**Cause:** Reflection-based serialization
-
-**Solution:**
-- Use kotlinx.serialization (compile-time)
-- Configure Jackson properly
-- Cache serialized responses
-
-```kotlin
-dependencies {
-    implementation("kotlet:json") // Uses kotlinx.serialization
-}
-
-// kotlinx.serialization is faster than reflection-based JSON libraries
-@Serializable
-data class User(val id: Long, val name: String)
-
-route("/api/users/{id}") {
-    get {
-        val user = findUser(id)
-        respondJson(user) // Fast compile-time serialization
-    }
-}
-```
-
-## Performance Checklist
-
-- [ ] JMH benchmarks created for critical paths
-- [ ] Thread pool sized appropriately
-- [ ] HTTP/2 enabled
-- [ ] Routes ordered from specific to generic
-- [ ] Lightweight interceptors run first
-- [ ] Heavy operations cached or lazy-loaded
-- [ ] Large responses streamed, not buffered
-- [ ] Response compression enabled
-- [ ] Cache headers set appropriately
-- [ ] Field selection supported for large objects
-- [ ] Metrics and monitoring in place
-- [ ] Health check endpoints implemented
-- [ ] Resources properly closed
-- [ ] Warmup performed in production
-- [ ] Load testing completed
-
-## Benchmarking Results
-
-Typical Kotlet performance (varies by hardware):
-
-| Operation             | Throughput  | Latency (p99) |
-|-----------------------|-------------|---------------|
-| Static route match    | ~1M req/s   | ~1ms          |
-| Parameter extraction  | ~800K req/s | ~1.5ms        |
-| JSON serialization    | ~500K req/s | ~2ms          |
-| JWT verification      | ~200K req/s | ~5ms          |
-| With interceptors (3) | ~400K req/s | ~3ms          |
-
-Run your own benchmarks for accurate numbers on your hardware and workload.
+- [ ] Metrics and tracing are enabled, and you know your latency percentiles
+- [ ] Interceptors are scoped to the routes that need them, cheap rejecting interceptors go first
+- [ ] Request bodies are read with a size limit, large bodies are streamed
+- [ ] Opened streams are closed
+- [ ] Response compression is enabled (kotlet-jetty, container or reverse proxy)
+- [ ] Blocking work runs in the handler, concurrency is limited at downstream resources
+- [ ] Changes in hot paths are checked with benchmarks or load tests

@@ -152,16 +152,38 @@ Kotlet provides an interceptor functionality that allows you to intercept reques
 interceptors to add custom logic before or after handling a request, such as logging, authentication, or error handling.
 For more information, see the [Interceptors](docs/INTERCEPTORS.md) documentation.
 
+### Reading request body
+
+Read the request body with a size limit using `receiveText`, `receiveBytes` or `receiveLimitedStream` extensions.
+Bodies larger than the limit (10 MB by default) are rejected with `413 Payload Too Large`:
+
+```kotlin
+post("/notes") { call ->
+    val text = call.receiveText(maxSize = 64 * 1024)
+    call.respondText("Received ${text.length} chars")
+}
+```
+
 ### Custom error handling
 
 Kotlet support error handling by providing a way to define error handlers for few types of errors:
 
 * `routeNotFound`: Invoked when no route matches the request path.
 * `methodNotFound`: Invoked when the route matches the request path but does not support the request method.
+* `requestBodyTooLarge`: Invoked when the request body exceeds the limit of `receiveText`, `receiveBytes` or
+  `receiveLimitedStream`.
 * `internalServerError`: Invoked when an exception occurs during request processing.
 
 For overriding default error handling you can implement `kotlet.ErrorsHandler` interface and provide it to
-`Kotlet.servlet` method.
+`Kotlet.servlet` method. For more information, see the [Error Handling](docs/ERROR-HANDLING.md) documentation.
+
+## Guides
+
+- [Routing](docs/ROUTES.md)
+- [Interceptors](docs/INTERCEPTORS.md)
+- [Error Handling](docs/ERROR-HANDLING.md)
+- [Security](docs/SECURITY.md)
+- [Performance](docs/PERFORMANCE.md)
 
 ## Contributing
 

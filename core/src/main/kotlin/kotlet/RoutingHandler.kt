@@ -46,9 +46,12 @@ internal class RoutingHandlerImpl(
             route.handler(httpCall)
         } catch (_: MethodNotFoundException) {
             errorsHandler.methodNotFound(request, response)
+        } catch (e: RequestBodyTooLargeException) {
+            errorsHandler.requestBodyTooLarge(request, response, e)
         } catch (e: InterruptedException) {
+            // restore the interrupted status for the container
             Thread.currentThread().interrupt()
-            throw e
+            errorsHandler.internalServerError(request, response, e)
         } catch (expected: Exception) {
             errorsHandler.internalServerError(request, response, expected)
         }

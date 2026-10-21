@@ -90,6 +90,28 @@ Kotlet's routing methods provide a flexible way to define HTTP routes with vario
 using static paths, dynamic parameters, optional segments, wildcards, or complex combinations, Kotlet makes it easy to
 handle different routing scenarios in your application.
 
+### Route Matching Order
+
+Routes are sorted once on startup, so the declaration order doesn't matter. Routes with more segments and more specific
+segments are tried first: static segments win over parameters, parameters over optional parameters, optional
+parameters over wildcards, and routes ending with a tail path `{...}` are tried last.
+
+```kotlin
+get("/users/{id}") { call -> call.respondText("User ${call.parameters["id"]}") }
+get("/users/me") { call -> call.respondText("Current user") } // /users/me matches this route
+```
+
+### Root Route
+
+The root route `/` also catches all requests that don't match any other route, so with a root route defined the
+`ErrorsHandler.routeNotFound` is never called:
+
+```kotlin
+get("/") { call ->
+    call.respondText("Index") // GET /, GET /unknown/path, ...
+}
+```
+
 ## Route Blocks
 
 Kotlet supports route blocks for grouping related routes together. Use the `route` method to define a block of routes

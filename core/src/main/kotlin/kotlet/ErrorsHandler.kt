@@ -40,6 +40,21 @@ interface ErrorsHandler {
         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error")
     }
 
+    /**
+     * Handling too large request body.
+     *
+     * If a handler throws [RequestBodyTooLargeException] (see [receiveText], [receiveBytes], [receiveLimitedStream]),
+     * the [RoutingServlet] will call the [requestBodyTooLarge] method.
+     * By default, it will send a 413 error with the message "Request body too large".
+     */
+    fun requestBodyTooLarge(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        e: RequestBodyTooLargeException,
+    ) {
+        response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "Request body too large")
+    }
+
     companion object {
         private val log = Logger.getLogger(ErrorsHandler::class.qualifiedName)
 
@@ -47,7 +62,6 @@ interface ErrorsHandler {
          * Default implementation of [ErrorsHandler].
          */
         internal val DEFAULT = object : ErrorsHandler {
-
             override fun toString(): String {
                 return "DefaultErrorsHandler"
             }

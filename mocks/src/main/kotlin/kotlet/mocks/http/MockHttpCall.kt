@@ -113,6 +113,7 @@ private fun createHttpRequestMock(
         every { requestURI } returns path
         every { queryString } returns ""
         every { inputStream } returns ByteArrayServletInputStream(requestData)
+        every { contentLengthLong } returns requestData.size.toLong()
         every { getHeader(any()) } answers {
             headers[this.firstArg()]
         }

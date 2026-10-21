@@ -6,488 +6,372 @@ This guide covers security considerations when building applications with Kotlet
 
 1. [Input Validation](#input-validation)
 2. [Request Body Size Limits](#request-body-size-limits)
-3. [JWT Authentication](#jwt-authentication)
-4. [Error Handling](#error-handling)
-5. [CORS Configuration](#cors-configuration)
-6. [Content Security](#content-security)
+3. [Authentication with JWT](#authentication-with-jwt)
+4. [Error Responses](#error-responses)
+5. [CORS](#cors)
+6. [Security Headers](#security-headers)
 7. [Common Vulnerabilities](#common-vulnerabilities)
+8. [Checklist](#checklist)
 
 ## Input Validation
 
-Always validate user input at system boundaries. Kotlet provides raw access to request data, so validation is your responsibility.
+Kotlet gives you raw access to the request, so validation is your responsibility. Validate everything that comes from
+the client: path parameters, query parameters, headers and the body.
 
-### Validate Path Parameters
+### Path Parameters
+
+Path parameters are always strings. Parse them with the `*OrNull` functions:
 
 ```kotlin
-route("/users/{id}") {
-    get {
-        val id = parameters["id"] ?: run {
-            status = 400
-            respondText("Missing user ID")
-            return@get
-        }
-
-        // Validate format
-        val userId = id.toLongOrNull() ?: run {
-            status = 400
-            respondText("Invalid user ID format")
-            return@get
-        }
-
-        // Validate range
-        if (userId <= 0 || userId > Long.MAX_VALUE) {
-            status = 400
-            respondText("User ID out of range")
-            return@get
-        }
-
-        // Safe to use
-        val user = userRepository.findById(userId)
-        // ...
+get("/users/{id}") { call ->
+    val userId = call.parameters["id"]?.toLongOrNull()
+    if (userId == null || userId <= 0) {
+        call.respondError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID")
+        return@get
     }
+
+    call.respondJson(userRepository.findById(userId))
 }
 ```
 
-### Validate Query Parameters
+### Query Parameters
+
+Query parameters are available through the raw servlet request:
 
 ```kotlin
-route("/search") {
-    get {
-        val query = rawRequest.getParameter("q")
-
-        // Check for null/empty
-        if (query.isNullOrBlank()) {
-            status = 400
-            respondText("Search query required")
-            return@get
-        }
-
-        // Limit length
-        if (query.length > 100) {
-            status = 400
-            respondText("Query too long (max 100 characters)")
-            return@get
-        }
-
-        // Sanitize for your use case
-        val sanitized = query.trim()
-
-        // Safe to use
-        val results = searchService.search(sanitized)
-        // ...
+get("/search") { call ->
+    val query = call.rawRequest.getParameter("q")?.trim()
+    if (query.isNullOrEmpty() || query.length > 100) {
+        call.respondError(HttpServletResponse.SC_BAD_REQUEST, "Query must be 1..100 characters")
+        return@get
     }
+
+    call.respondJson(searchService.search(query))
 }
 ```
 
 ## Request Body Size Limits
 
-**Critical:** Always limit request body size to prevent denial-of-service attacks.
+**Always limit the request body size.** Reading an unbounded body into memory lets a single client exhaust the heap.
 
-### Using Built-in Size-Limited Helpers
+### Size-Limited Helpers
 
-Kotlet provides extension functions for safe body reading:
+The core module provides extension functions on `HttpCall` that enforce a limit (10 MB by default):
+
+| Function                                | Returns       |
+|-----------------------------------------|---------------|
+| `receiveText(maxSize, charset = UTF_8)` | `String`      |
+| `receiveBytes(maxSize)`                 | `ByteArray`   |
+| `receiveLimitedStream(maxSize)`         | `InputStream` |
+
+When the body is larger than `maxSize`, a `RequestBodyTooLargeException` is thrown. If the request has a
+`Content-Length` header larger than the limit, the exception is thrown before anything is read. Uncaught, the exception
+is handled by `ErrorsHandler.requestBodyTooLarge`, which responds with `413 Payload Too Large` by default
+(see [ERROR-HANDLING.md](ERROR-HANDLING.md)).
 
 ```kotlin
-route("/api/upload") {
-    post {
-        try {
-            // Read text with 1 MB limit
-            val body = receiveText(maxSize = 1024 * 1024)
+post("/api/notes") { call ->
+    val text = call.receiveText(maxSize = 64 * 1024) // 64 KB, larger bodies get 413
+    notes.save(text)
+    call.status = HttpServletResponse.SC_CREATED
+}
 
-            // Process body
-            val data = parseJson(body)
-            respondText("Success")
-        } catch (e: RequestBodyTooLargeException) {
-            status = 413 // Payload Too Large
-            respondText("Request body exceeds 1 MB limit")
-        }
+post("/api/avatar") { call ->
+    val image = call.receiveBytes(maxSize = 5 * 1024 * 1024) // 5 MB
+    avatars.save(image)
+    call.status = HttpServletResponse.SC_NO_CONTENT
+}
+```
+
+Catch the exception if you want a custom response for a single route:
+
+```kotlin
+post("/api/upload") { call ->
+    try {
+        val data = call.receiveBytes(maxSize = 1024 * 1024)
+        storage.save(data)
+    } catch (e: RequestBodyTooLargeException) {
+        call.respondError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "Max upload size is 1 MB")
     }
 }
 ```
 
-### Reading Binary Data
+### Streaming
+
+For large uploads, don't buffer the body in memory. Stream it with a limit:
 
 ```kotlin
-route("/api/file") {
-    post {
-        try {
-            // Read binary data with 5 MB limit
-            val fileData = receiveBytes(maxSize = 5 * 1024 * 1024)
-
-            // Save file
-            saveFile(fileData)
-            respondText("File uploaded successfully")
-        } catch (e: RequestBodyTooLargeException) {
-            status = 413
-            respondText("File size exceeds 5 MB limit")
-        }
+post("/api/files") { call ->
+    call.receiveLimitedStream(maxSize = 100 * 1024 * 1024).use { stream ->
+        fileStorage.save(stream) // throws RequestBodyTooLargeException after 100 MB
     }
+    call.status = HttpServletResponse.SC_CREATED
 }
 ```
 
-### Streaming Large Files
+### JSON Bodies
 
-For streaming, use the size-limited input stream:
+`receiveBody<T>()` from the [JSON](../json/README.md) extension reads the raw input stream **without a limit**.
+To limit JSON bodies, deserialize from a limited stream:
 
 ```kotlin
-route("/api/upload-stream") {
-    post {
-        try {
-            receiveLimitedStream(maxSize = 100 * 1024 * 1024).use { stream ->
-                // Stream directly to storage
-                fileStorage.save(stream, filename)
-                respondText("Upload complete")
-            }
-        } catch (e: RequestBodyTooLargeException) {
-            status = 413
-            respondText("File exceeds 100 MB limit")
-        }
-    }
+post("/api/users") { call ->
+    val request = Serializer.deserialize(call.receiveLimitedStream(maxSize = 64 * 1024), CreateUserRequest::class.java)
+    // ...
 }
 ```
 
-### Setting Servlet Container Limits
+### Servlet Container Limits
 
-Also configure limits in your servlet container (Jetty, Tomcat, etc.):
+Configure limits in the servlet container too. They protect parts of the request Kotlet doesn't read, like headers.
+For example, in Jetty:
 
 ```kotlin
-// Jetty example
-val server = Server(8080)
-val connector = ServerConnector(server)
-connector.setMaxRequestHeaderSize(32 * 1024) // 32 KB
-connector.setRequestBufferSize(64 * 1024) // 64 KB
-server.addConnector(connector)
+val httpConfiguration = HttpConfiguration().apply {
+    requestHeaderSize = 8 * 1024 // 8 KB for the request line and headers
+}
 ```
 
-## JWT Authentication
+## Authentication with JWT
 
-### Secure JWT Configuration
+The [JWT](../jwt/README.md) extension verifies the `Authorization: Bearer <token>` header and stores the identity in
+the request. **It doesn't reject requests by itself**: without a valid token `call.identity<T>()` returns `null`, and it
+is up to you to respond with `401`.
 
 ```kotlin
-val verifier = JWT.require(Algorithm.HMAC256(secretKey))
+data class UserIdentity(val userId: Long, val roles: List<String>)
+
+val verifier = JWT.require(Algorithm.HMAC256(secret))
     .withIssuer("your-app")
     .withAudience("your-api")
     .build()
 
-routing {
-    install(
-        jwtAuthentication(verifier) { decodedJWT ->
-            UserIdentity(
-                userId = decodedJWT.getClaim("userId").asLong(),
-                roles = decodedJWT.getClaim("roles").asList(String::class.java)
+fun buildIdentity(decodedJWT: DecodedJWT): UserIdentity {
+    return UserIdentity(
+        userId = decodedJWT.getClaim("userId").asLong(),
+        roles = decodedJWT.getClaim("roles").asList(String::class.java).orEmpty(),
+    )
+}
+
+val routing = Kotlet.routing {
+    installJWTAuthentication(verifier, ::buildIdentity)
+
+    get("/api/me") { call ->
+        val identity = call.identity<UserIdentity>()
+        if (identity == null) {
+            call.respondError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
+            return@get
+        }
+        call.respondText("Hello, ${identity.userId}")
+    }
+}
+```
+
+To protect a group of routes, add an interceptor that stops the call when there is no identity:
+
+```kotlin
+object RequireAuthentication : Interceptor {
+    override fun aroundCall(call: HttpCall, next: Handler) {
+        if (call.identity<UserIdentity>() == null) {
+            call.respondError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
+            return // next is not called
+        }
+        next(call)
+    }
+}
+
+val routing = Kotlet.routing {
+    installJWTAuthentication(verifier, ::buildIdentity) // global, runs before route-specific interceptors
+
+    get("/public") { call -> call.respondText("Hello, anonymous") }
+
+    use(RequireAuthentication) {
+        get("/api/profile") { call -> /* identity is guaranteed here */ }
+        get("/api/orders") { call -> /* ... */ }
+    }
+}
+```
+
+Failed verifications (expired, malformed or wrongly signed tokens) are logged at `FINE` level by the
+`kotlet.jwt.JWTAuthenticationInterceptor` logger. They are not logged at higher levels on purpose: every client can send
+an invalid token, and logging each one with a stack trace would let anyone flood your logs.
+
+### JWT Recommendations
+
+1. **Use strong secrets**: at least 256 random bits for HMAC, or prefer asymmetric algorithms (RS256, ES256) so that
+   services verifying tokens don't hold the signing key.
+2. **Validate claims**: always set the expected issuer and audience in the verifier.
+3. **Use short-lived tokens** (minutes, not days) with refresh tokens.
+4. **Don't put secrets in tokens**: JWT payloads are only base64-encoded, not encrypted.
+5. **Use HTTPS only**: a bearer token is a password for its lifetime.
+
+## Error Responses
+
+Never expose exception messages or stack traces to clients. The default `ErrorsHandler` responds with a generic
+`500 Internal server error` and logs the exception on the server. Keep it this way in custom handlers:
+
+```kotlin
+// Good: the details go to the log, the client gets a generic message
+object SafeErrorsHandler : ErrorsHandler {
+    private val log = Logger.getLogger(SafeErrorsHandler::class.java.name)
+
+    override fun internalServerError(request: HttpServletRequest, response: HttpServletResponse, e: Exception) {
+        log.log(Level.SEVERE, "Internal error: ${request.method} ${request.requestURI}", e)
+        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error")
+    }
+}
+
+// Bad: leaks SQL, file paths, internal hostnames...
+call.respondText("Error: ${e.message}\n${e.stackTraceToString()}")
+```
+
+The [kotlet-jetty](../jetty/README.md) extension also disables the `Server` and `X-Powered-By` response headers.
+
+## CORS
+
+Allow only the origins you trust with the [CORS](../cors/README.md) extension:
+
+```kotlin
+val routing = Kotlet.routing {
+    // Production: only your frontend
+    installCORS(CORS.allowOrigin("https://your-app.com"))
+
+    // Fine-grained rules
+    installCORS(object : CorsRules {
+        override fun getResponse(call: HttpCall): CorsResponse {
+            return CorsResponse.headers(
+                allowOrigin = "https://your-app.com",
+                allowMethods = listOf("GET", "POST"),
+                allowHeaders = listOf("Content-Type", "Authorization"),
+                maxAge = Duration.ofHours(1),
             )
-        }
-    )
-}
-```
-
-### Monitor JWT Failures
-
-JWT verification failures are automatically logged at WARNING level. Monitor these logs for suspicious activity:
-
-```
-WARNING: JWT verification failed: The Token has expired on 2026-01-25T10:30:00Z.
-```
-
-Excessive JWT failures may indicate:
-- Replay attacks
-- Token theft attempts
-- Clock synchronization issues
-- Legitimate token expiration
-
-### Best Practices
-
-1. **Use Strong Secrets**: Use cryptographically secure random keys (at least 256 bits for HMAC)
-2. **Set Short Expiration**: Use short-lived tokens (15-60 minutes) with refresh tokens
-3. **Validate All Claims**: Check issuer, audience, and custom claims
-4. **Use HTTPS Only**: Never transmit JWTs over unencrypted connections
-5. **Don't Store Sensitive Data**: JWTs are base64-encoded, not encrypted
-
-```kotlin
-// Good: Short-lived token
-val token = JWT.create()
-    .withIssuer("your-app")
-    .withAudience("your-api")
-    .withClaim("userId", userId)
-    .withExpiresAt(Date(System.currentTimeMillis() + 15 * 60 * 1000)) // 15 min
-    .sign(algorithm)
-
-// Bad: Long-lived token with sensitive data
-val token = JWT.create()
-    .withClaim("password", userPassword) // NEVER DO THIS
-    .withExpiresAt(Date(System.currentTimeMillis() + 365 * 24 * 60 * 60 * 1000)) // 1 year
-    .sign(algorithm)
-```
-
-## Error Handling
-
-### Don't Leak Internal Details
-
-Never expose internal error details, stack traces, or system information to users.
-
-```kotlin
-// Good: Generic error message
-route("/api/data") {
-    get {
-        try {
-            val data = database.query()
-            respondJson(data)
-        } catch (e: Exception) {
-            // Exception is logged automatically by ErrorsHandler
-            status = 500
-            respondText("An error occurred")
-        }
-    }
-}
-
-// Bad: Exposes internals
-route("/api/data") {
-    get {
-        try {
-            val data = database.query()
-            respondJson(data)
-        } catch (e: Exception) {
-            status = 500
-            respondText("Error: ${e.message}\n${e.stackTraceToString()}") // NEVER DO THIS
-        }
-    }
-}
-```
-
-### Custom Error Handler
-
-Implement a custom error handler for better control:
-
-```kotlin
-class SecureErrorsHandler : ErrorsHandler {
-    override fun internalServerError(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        e: Exception
-    ) {
-        // Logging is handled by default implementation
-        log.error("Internal error processing ${request.method} ${request.requestURI}", e)
-
-        // Send generic error to client
-        response.status = 500
-        response.contentType = "application/json"
-        response.writer.write("""{"error":"Internal server error"}""")
-    }
-}
-
-Kotlet.routing {
-    errorsHandler = SecureErrorsHandler()
-}
-```
-
-## CORS Configuration
-
-Configure CORS carefully to prevent unauthorized access:
-
-```kotlin
-routing {
-    // Restrictive CORS
-    install(
-        cors {
-            allowOrigin("https://your-app.com") // Specific origin only
-            allowMethods(HttpMethod.GET, HttpMethod.POST)
-            allowHeaders("Content-Type", "Authorization")
-            maxAge(3600)
-            // allowCredentials = false by default
-        }
-    )
-}
-
-// For development only
-routing {
-    install(
-        cors {
-            allowOrigin("*") // WARNING: Only use in development!
-            allowMethods(*HttpMethod.values())
-            allowHeaders("*")
-        }
-    )
-}
-```
-
-## Content Security
-
-### Set Security Headers
-
-Always set appropriate security headers:
-
-```kotlin
-routing {
-    install(object : Interceptor {
-        override fun afterCall(call: HttpCall): HttpCall {
-            call.rawResponse.apply {
-                setHeader("X-Content-Type-Options", "nosniff")
-                setHeader("X-Frame-Options", "DENY")
-                setHeader("X-XSS-Protection", "1; mode=block")
-                setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
-                setHeader("Content-Security-Policy", "default-src 'self'")
-            }
-            return call
         }
     })
 }
 ```
 
-### Content Type Validation
+`CORS.allowAll` (`Access-Control-Allow-Origin: *`) is meant for development only.
 
-Validate content types for endpoints:
+## Security Headers
+
+Set security headers in `beforeCall`: by the time `afterCall` runs, the handler may already have committed the
+response, and headers set then are silently ignored.
 
 ```kotlin
-route("/api/data") {
-    post {
-        val contentType = rawRequest.contentType
-
-        if (contentType == null || !contentType.startsWith("application/json")) {
-            status = 415 // Unsupported Media Type
-            respondText("Expected application/json")
-            return@post
+object SecurityHeadersInterceptor : Interceptor {
+    override fun beforeCall(call: HttpCall): HttpCall {
+        call.rawResponse.apply {
+            setHeader("X-Content-Type-Options", "nosniff")
+            setHeader("X-Frame-Options", "DENY")
+            setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+            setHeader("Content-Security-Policy", "default-src 'self'")
         }
-
-        // Safe to process JSON
-        val body = receiveText()
-        // ...
+        return call
     }
+}
+
+val routing = Kotlet.routing {
+    install(SecurityHeadersInterceptor, order = InstallOrder.FIRST)
+}
+```
+
+### Content Type Validation
+
+```kotlin
+post("/api/data") { call ->
+    val contentType = call.rawRequest.contentType
+    if (contentType == null || !contentType.startsWith("application/json")) {
+        call.respondError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Expected application/json")
+        return@post
+    }
+    // ...
 }
 ```
 
 ## Common Vulnerabilities
 
-### SQL Injection Prevention
+### SQL Injection
 
 Always use parameterized queries:
 
 ```kotlin
-// Good: Parameterized query
-val userId = parameters["id"]
-val user = database.execute(
-    "SELECT * FROM users WHERE id = ?",
-    userId
-)
+// Good
+connection.prepareStatement("SELECT * FROM users WHERE id = ?").use { statement ->
+    statement.setLong(1, userId)
+    // ...
+}
 
-// Bad: String concatenation
-val userId = parameters["id"]
-val user = database.execute(
-    "SELECT * FROM users WHERE id = $userId" // VULNERABLE!
-)
+// Bad: VULNERABLE
+connection.createStatement().executeQuery("SELECT * FROM users WHERE id = ${call.parameters["id"]}")
 ```
 
-### XSS Prevention
+### XSS
 
-Escape HTML output and set Content-Type correctly:
+Prefer JSON responses. `respondText` writes the string as is and doesn't set a content type, so escape user input
+when you return HTML:
 
 ```kotlin
-// Good: JSON response (auto-escaped by serialization)
-route("/api/user/{id}") {
-    get {
-        val user = findUser(parameters["id"])
-        respondJson(user) // Safe: JSON serialization escapes
-    }
-}
-
-// If returning HTML, escape user input
-route("/profile") {
-    get {
-        val name = getUserName()
-        val escaped = name.replace("<", "&lt;").replace(">", "&gt;")
-        rawResponse.contentType = "text/html"
-        respondText("<h1>Welcome $escaped</h1>")
-    }
+get("/profile") { call ->
+    val name = getUserName().escapeHtml() // use an HTML escaping library
+    call.rawResponse.contentType = "text/html; charset=utf-8"
+    call.respondText("<h1>Welcome $name</h1>")
 }
 ```
 
-### Path Traversal Prevention
+### Path Traversal
 
-Validate file paths:
+Never build file paths from user input without checking the result:
 
 ```kotlin
-route("/files/{filename}") {
-    get {
-        val filename = parameters["filename"] ?: run {
-            status = 400
-            respondText("Filename required")
-            return@get
-        }
+val baseDir: Path = Path.of("/safe/directory").toRealPath()
 
-        // Check for path traversal attempts
-        if (filename.contains("..") || filename.contains("/") || filename.contains("\\")) {
-            status = 400
-            respondText("Invalid filename")
-            return@get
-        }
+get("/files/{filename}") { call ->
+    val filename = call.parameters["filename"].orEmpty()
+    val file = baseDir.resolve(filename).normalize()
 
-        // Safe to use
-        val file = File("/safe/directory/$filename")
-        if (file.exists() && file.isFile) {
-            respondBytes(file.inputStream())
-        } else {
-            status = 404
-            respondText("File not found")
-        }
+    if (!file.startsWith(baseDir) || !Files.isRegularFile(file)) {
+        call.respondError(HttpServletResponse.SC_NOT_FOUND, "File not found")
+        return@get
+    }
+
+    Files.newInputStream(file).use { input ->
+        call.respondBytes(input)
     }
 }
 ```
 
-### Command Injection Prevention
+### Command Injection
 
-Never pass user input directly to shell commands:
+Don't run shell commands with user input. If you have to start a process, pass arguments as a list (no shell) and
+validate them against a strict allowlist:
 
 ```kotlin
-// Bad: Command injection vulnerability
-route("/convert") {
-    post {
-        val filename = parameters["file"]
-        Runtime.getRuntime().exec("convert $filename output.pdf") // VULNERABLE!
-    }
-}
+// Bad: VULNERABLE
+Runtime.getRuntime().exec("convert $filename output.pdf")
 
-// Good: Validate and sanitize, or avoid shell execution
-route("/convert") {
-    post {
-        val filename = parameters["file"] ?: run {
-            status = 400
-            respondText("Filename required")
-            return@post
-        }
-
-        // Validate filename
-        if (!filename.matches(Regex("^[a-zA-Z0-9_.-]+$"))) {
-            status = 400
-            respondText("Invalid filename")
-            return@post
-        }
-
-        // Use ProcessBuilder with arguments (safer)
-        val process = ProcessBuilder("convert", filename, "output.pdf").start()
-        process.waitFor()
-    }
-}
+// Better
+require(filename.matches(Regex("^[a-zA-Z0-9_.-]+$"))) { "Invalid filename" }
+ProcessBuilder("convert", filename, "output.pdf").start()
 ```
 
-## Security Checklist
+## Checklist
 
-- [ ] Input validation on all user-provided data
-- [ ] Request body size limits configured
-- [ ] JWT tokens use strong secrets and short expiration
-- [ ] Error messages don't leak internal details
-- [ ] CORS configured with specific origins (not `*` in production)
-- [ ] Security headers set (CSP, X-Frame-Options, etc.)
-- [ ] HTTPS enforced in production
-- [ ] SQL queries use parameterized statements
+- [ ] All client input (path, query, headers, body) is validated
+- [ ] Request bodies are read with a size limit (`receiveText`, `receiveBytes`, `receiveLimitedStream`)
+- [ ] Protected routes reject requests without identity (`401`)
+- [ ] JWT verifier checks issuer and audience, tokens are short-lived
+- [ ] Error responses don't leak internal details
+- [ ] CORS allows only trusted origins in production
+- [ ] Security headers are set in `beforeCall`
+- [ ] HTTPS is enforced in production
+- [ ] SQL queries are parameterized
 - [ ] HTML output is escaped
-- [ ] File paths validated against traversal
-- [ ] No shell command injection vulnerabilities
-- [ ] Sensitive data not logged
-- [ ] Authentication required on protected endpoints
-- [ ] Rate limiting implemented for public endpoints
+- [ ] File paths are checked against traversal
+- [ ] Sensitive data (tokens, passwords) is not logged
+- [ ] Rate limiting is in place for public endpoints
 
 ## Additional Resources
 
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [JWT Best Practices](https://tools.ietf.org/html/rfc8725)
+- [JSON Web Token Best Current Practices (RFC 8725)](https://datatracker.ietf.org/doc/html/rfc8725)
 - [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
-- [Servlet Security](https://jakarta.ee/specifications/servlet/6.0/)

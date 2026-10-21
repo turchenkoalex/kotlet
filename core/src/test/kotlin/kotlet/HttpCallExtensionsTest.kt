@@ -6,6 +6,7 @@ import jakarta.servlet.ServletInputStream
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import kotlet.attributes.emptyRouteAttributes
+import kotlet.mocks.Mocks
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.ByteArrayInputStream
@@ -13,10 +14,11 @@ import kotlin.test.assertEquals
 
 class HttpCallExtensionsTest {
 
-    private fun createHttpCall(content: ByteArray): HttpCall {
+    private fun createHttpCall(content: ByteArray, contentLength: Long = -1): HttpCall {
         val request = mockk<HttpServletRequest>()
         val response = mockk<HttpServletResponse>(relaxed = true)
 
+        every { request.contentLengthLong } returns contentLength
         every { request.inputStream } returns object : ServletInputStream() {
             private val stream = ByteArrayInputStream(content)
             override fun read(): Int = stream.read()
@@ -131,5 +133,72 @@ class HttpCallExtensionsTest {
         val result = call.receiveText()
 
         assertEquals("", result)
+    }
+
+    @Test
+    fun `receiveBytes should accept body of exactly maxSize`() {
+        val content = ByteArray(100) { it.toByte() }
+        val call = createHttpCall(content)
+
+        val result = call.receiveBytes(maxSize = 100)
+
+        assertEquals(content.toList(), result.toList())
+    }
+
+    @Test
+    fun `receiveLimitedStream should accept body of exactly maxSize`() {
+        val content = ByteArray(100) { it.toByte() }
+        val call = createHttpCall(content)
+
+        val result = call.receiveLimitedStream(maxSize = 100).readBytes()
+
+        assertEquals(content.toList(), result.toList())
+    }
+
+    @Test
+    fun `receiveBytes should throw when exceeding limit by one byte`() {
+        val content = ByteArray(101)
+        val call = createHttpCall(content)
+
+        assertThrows<RequestBodyTooLargeException> {
+            call.receiveBytes(maxSize = 100)
+        }
+    }
+
+    @Test
+    fun `receiveBytes should read body larger than buffer`() {
+        val content = ByteArray(100_000) { (it % 251).toByte() }
+        val call = createHttpCall(content)
+
+        val result = call.receiveBytes()
+
+        assertEquals(content.toList(), result.toList())
+    }
+
+    @Test
+    fun `receiveBytes should fail fast on large content length`() {
+        val call = createHttpCall(ByteArray(0), contentLength = 1000)
+
+        val exception = assertThrows<RequestBodyTooLargeException> {
+            call.receiveBytes(maxSize = 100)
+        }
+
+        assertEquals(100, exception.maxSize)
+        assertEquals(1000, exception.bytesRead)
+    }
+
+    @Test
+    fun `too large body should be handled with 413 by default`() {
+        val routing = Kotlet.routing {
+            post("/test") { call ->
+                call.receiveText(maxSize = 10)
+            }
+        }
+        val handler = Kotlet.handler(routing)
+        val call = Mocks.httpCall(HttpMethod.POST, "/test", data = ByteArray(100))
+
+        handler.service(call.rawRequest, call.rawResponse)
+
+        assertEquals(413, call.status)
     }
 }
