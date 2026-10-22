@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse
 import kotlet.mocks.Mocks
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class KotletTest {
     @Test
@@ -150,4 +151,25 @@ class KotletTest {
         assertEquals("Custom error", call.responseDataAsString)
     }
 
+    @Test
+    fun handlerInterruptedTest() {
+        val routing = Kotlet.routing {
+            get("/test") {
+                throw InterruptedException("Test interrupt")
+            }
+        }
+        val handler = Kotlet.handler(routing)
+
+        val call = Mocks.httpCall(HttpMethod.GET, "/test")
+
+        try {
+            handler.service(call.rawRequest, call.rawResponse)
+
+            assertEquals(500, call.status)
+            assertTrue(Thread.currentThread().isInterrupted, "Interrupted status must be restored")
+        } finally {
+            // clear the interrupted status to not affect other tests
+            Thread.interrupted()
+        }
+    }
 }

@@ -33,7 +33,7 @@ Kotlet.routing {
     // or respond with error
     val myCustomCorsRulesWithError = object : CorsRules {
         override fun getResponse(call: HttpCall): CorsResponse {
-            return CorsResponse.error(HttpStatusCode.Forbidden)
+            return CorsResponse.error(HttpServletResponse.SC_FORBIDDEN, "Origin is not allowed")
         }
     }
     installCORS(myCustomCorsRulesWithError)

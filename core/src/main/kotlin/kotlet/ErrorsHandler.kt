@@ -2,6 +2,8 @@ package kotlet
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Interface for handling errors
@@ -34,10 +36,28 @@ interface ErrorsHandler {
      * By default, it will send a 500 error with the message "Internal server error".
      */
     fun internalServerError(request: HttpServletRequest, response: HttpServletResponse, e: Exception) {
+        log.log(Level.SEVERE, "Internal server error during request processing: ${e.message}", e)
         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error")
     }
 
+    /**
+     * Handling too large request body.
+     *
+     * If a handler throws [RequestBodyTooLargeException] (see [receiveText], [receiveBytes], [receiveLimitedStream]),
+     * the [RoutingServlet] will call the [requestBodyTooLarge] method.
+     * By default, it will send a 413 error with the message "Request body too large".
+     */
+    fun requestBodyTooLarge(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        e: RequestBodyTooLargeException,
+    ) {
+        response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "Request body too large")
+    }
+
     companion object {
+        private val log = Logger.getLogger(ErrorsHandler::class.qualifiedName)
+
         /**
          * Default implementation of [ErrorsHandler].
          */
