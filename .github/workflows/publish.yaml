@@ -69,6 +69,11 @@ jobs:
           NEW_VERSION=$(git describe --tags --abbrev=0 | sed 's/v//')
           find . -name "README.md" -exec sed -Ei "s|io.github.turchenkoalex:kotlet-([a-zA-Z0-9_-]+):[0-9.]+|io.github.turchenkoalex:kotlet-\1:${NEW_VERSION}|g" {} +;
 
+      # A stale update-readme branch would be rebased onto main, pulling in workflow file changes
+      # that GITHUB_TOKEN is not allowed to push. Recreate the branch from scratch instead.
+      - name: Delete stale README branch
+        run: git push origin --delete update-readme || true
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v8
         with:
