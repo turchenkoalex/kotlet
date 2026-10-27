@@ -36,7 +36,7 @@ jobs:
       - name: Set up JDK ${{ env.JDK_VERSION }}
         uses: actions/setup-java@v6
         with:
-          distribution: 'corretto'
+          distribution: 'temurin'
           java-version: '${{ env.JDK_VERSION }}'
           cache: 'gradle'
       - name: Build and Run Tests
