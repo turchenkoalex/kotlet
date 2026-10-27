@@ -54,13 +54,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - language: actions
-            build-mode: none
-          - language: java-kotlin
-            build-mode: manual
-          - language: javascript-typescript
-            build-mode: none
+        # javascript-typescript is not analyzed: the only JS in the repo is the vendored Swagger UI bundle
+        language: [ actions, java-kotlin ]
+        # java-kotlin requires a full Gradle build, so it runs only on push to main and on schedule
+        exclude:
+          - language: ${{ github.event_name == 'pull_request' && 'java-kotlin' || '' }}
         # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift'
         # Use `c-cpp` to analyze code written in C, C++ or both
         # Use 'java-kotlin' to analyze code written in Java, Kotlin or both
@@ -79,7 +77,8 @@ jobs:
       # - name: Setup runtime (example)
       #   uses: actions/setup-example@v1
 
-      - name: Set up JDK ${{ env.JDK_VERSION }}
+      - if: matrix.language == 'java-kotlin'
+        name: Set up JDK ${{ env.JDK_VERSION }}
         uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
@@ -91,7 +90,7 @@ jobs:
         uses: github/codeql-action/init@v4.39.1
         with:
           languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.build-mode }}
+          build-mode: ${{ matrix.language == 'java-kotlin' && 'manual' || 'none' }}
           # If you wish to specify custom queries, you can do so here or in a config file.
           # By default, queries listed here will override any specified in a config file.
           # Prefix the list here with "+" to use these queries and those in the config file.
@@ -105,7 +104,7 @@ jobs:
       # to build your code.
       # ℹ️ Command-line programs to run using the OS shell.
       # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-      - if: matrix.build-mode == 'manual'
+      - if: matrix.language == 'java-kotlin'
         name: Build java-kotlin code
         run: ./gradlew build --parallel
 
