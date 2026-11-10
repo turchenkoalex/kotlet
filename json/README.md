@@ -3,7 +3,7 @@
 ## Installation
 
 ```kotlin
-implementation("io.github.turchenkoalex:kotlet-json:0.115.0")
+implementation("io.github.turchenkoalex:kotlet-json:0.118.0")
 ```
 
 ## Configuration
